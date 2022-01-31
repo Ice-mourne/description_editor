@@ -1,0 +1,44 @@
+.stats {
+   display: grid;
+   grid-auto-rows: minmax(12px, auto);
+   grid-template-columns: repeat(2, min-content) 1fr;
+   margin: 10px;
+   gap: 4px 0px;
+   * {
+      line-height: 12px;
+      white-space: nowrap;
+      vertical-align: middle;
+   }
+}
+.name {
+   text-align: right;
+   margin-right: 8px;
+   grid-column: 1 / auto;
+}
+.value {
+   font-variant-numeric: tabular-nums;
+   text-align: right !important;
+   grid-column: 2 / auto;
+}
+.barr {
+   margin-left: 8px;
+   background-color: hsl(0, 0%, 20%);
+   display: flex;
+   grid-column: -2 / -1;
+   * {
+      background-color: hsl(0, 0%, 100%);
+   }
+}
+// .in_game_stats {
+//    grid-column-end: span 3;
+//    display: grid;
+//    grid-auto-rows: minmax(12px, auto);
+//    grid-template-columns: 50% 50%;
+//    gap: 4px 0px;
+// }
+// .ing {
+//    grid-column-end: span 3;
+//    text-align: center;
+//    font-size: 13px;
+//    font-weight: bold;
+// }

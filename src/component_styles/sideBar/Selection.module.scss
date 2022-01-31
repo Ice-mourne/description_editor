@@ -1,0 +1,11 @@
+.selection_list {
+   display: flex;
+   flex-direction: column;
+   flex-wrap: nowrap;
+   select {
+      margin: 2px;
+      background-color: hsl(240, 7%, 18%);
+      color: hsl(0, 0%, 100%);
+      border: 2px solid hsl(0, 0%, 36%);
+   }
+}

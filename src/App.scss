@@ -1,0 +1,113 @@
+body {
+   background: radial-gradient(circle, hsl(240, 21%, 16%) 0%, hsl(240, 30%, 4%) 100%);
+   color: white;
+   font-family: 'Open Sans', sans-serif, 'Destiny Symbols';
+   font-size: 12px;
+   line-height: calc(16 / 12);
+   -webkit-user-drag: none;
+   margin: 8px;
+}
+#app {
+   display: flex;
+}
+.editor-container {
+   height: 80vh;
+   width: 100%;
+   margin-left: -350px;
+   margin-right: -330px;
+   #editor, #editor2 {
+      border: 3px solid hsl(47, 69%, 5%);
+      height: 70%;
+      min-width: 10%;
+      margin-left: 355px;
+      margin-right: 335px;
+   }
+   #editor2 {
+      height: 30%;
+   }
+   .monaco-scrollable-element {
+      .line-delete, .line-insert {
+         background-color: hsla(0, 0%, 100%, 0) !important;
+      }
+   }
+   .margin-view-overlays {
+      padding-left: 10px;
+   }
+}
+//----------------------------------------------------------------------------------------------------------------------
+// Side bar
+.side_bar {
+   font-family: monospace;
+   font-size: 14px;
+   width: 300px;
+   margin-left: 15px;
+   margin-right: 15px;
+   background-color: hsla(0, 0%, 48%, 0.259);
+   padding: 5px;
+   height: fit-content;
+   border: 5px solid hsl(47, 69%, 5%);
+}
+//----------------------------------------------------------------------------------------------------------------------
+// button
+.id_button {
+   display: flex;
+   flex-direction: column;
+}
+//----------------------------------------------------------------------------------------------------------------------
+// popup
+// .header_popup {
+//    background-color: hsl(0, 0%, 96%);
+//    border-bottom: 1px solid #e3e3e3;
+//    padding: 10px;
+//    position: relative;
+// }
+
+.item_popup {
+   width: 320px;
+   background-color: hsl(279, 36%, 5%);
+   margin-left: 15px;
+   margin-right: 15px;
+   margin-top: 3px;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+
+
+// .App-logo {
+//    height: 20vmin;
+//    pointer-events: none;
+// }
+
+// @media (prefers-reduced-motion: no-preference) {
+//    .App-logo {
+//       animation: App-logo-spin infinite 20s linear;
+//    }
+// }
+
+// .App-header {
+//    background-color: #282c34;
+//    min-height: 100vh;
+//    display: flex;
+//    flex-direction: column;
+//    align-items: center;
+//    justify-content: center;
+//    font-size: calc(10px + 2vmin);
+//    color: white;
+// }
+
+// .App-link {
+//   color: #61dafb;
+// }
+
+// @keyframes App-logo-spin {
+//    from {
+//       transform: rotate(0deg);
+//    }
+//    to {
+//       transform: rotate(360deg);
+//    }
+// }
+
+// button {
+//   font-size: calc(10px + 2vmin);
+// }

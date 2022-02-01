@@ -50,9 +50,9 @@ function App() {
             <Note />
             <Stats />
             <Sockets />
-            <Perks />
+            <Perks itemData={itemData}/>
          </div>
-         <Editor onMount={createEditor} itemData={itemData}/>
+         <Editor onMount={createEditor} itemData={itemData} setItemData={setItemData}/>
          <div className="side_bar">
             <div className="id_button">
                <ItemId inputEvent={handleItemIdInput} />

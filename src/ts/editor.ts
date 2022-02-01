@@ -6,7 +6,8 @@ export function createEditor() {
    monaco.languages.setMonarchTokensProvider('clarityLangue', {
       tokenizer: {
          root: [
-            [/#highlight_[1-3]/, 'highlight'],
+            [/#highlight_[1-3]|#bg|#b|#primary|#special|#heavy|#pve|#pvp/, 'highlight'],
+            [/<\/formula>/, 'extra_highlight'],
             [/< table >/, 'keyword'],
             [/<link http.+\s[\w]+ *?>/, 'link'],
             [/\|b|\|/, 'tableSeparator'],
@@ -84,26 +85,46 @@ export function createEditor() {
             {
                label: 'formula_ready',
                kind: monaco.languages.CompletionItemKind.Snippet,
-               insertText: '<formula ${2:Ready Speed:} ready_${1: }>',
+               insertText: '<formula ${2:Ready Speed:} ready_${1:0}>',
                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
             },
             {
                label: 'formula_stow',
                kind: monaco.languages.CompletionItemKind.Snippet,
-               insertText: '<formula ${2:Stow Speed:} stow_${1: }>',
+               insertText: '<formula ${2:Stow Speed:} stow_${1:0}>',
                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
             },
             {
                label: 'formula_range',
                kind: monaco.languages.CompletionItemKind.Snippet,
-               insertText: '<formula ${2:In_Game Range:} range_${1: }>',
+               insertText: '<formula ${2:In_Game Range:} range_${1:0}>',
                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
             },
             {
                label: 'formula_reload',
                kind: monaco.languages.CompletionItemKind.Snippet,
-               insertText: '<formula ${2:Reload Time:} reload_${1: }>',
+               insertText: '<formula ${2:Reload Time:} reload_${1:0}>',
                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+            },
+            {
+               label: 'bold',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '#b'
+            },
+            {
+               label: 'background',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '#bg'
+            },
+            {
+               label: 'pve',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '#pve'
+            },
+            {
+               label: 'pvp',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '#pvp'
             },
          ]
          return { suggestions: suggestions }

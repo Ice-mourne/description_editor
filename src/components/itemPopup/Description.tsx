@@ -55,7 +55,7 @@ const description = [
          },
          {
             linkUrl: 'https://www.youtube.com/',
-            linkText: 'youtube',
+            linkText: 'youtube'
          }
       ]
    },
@@ -202,11 +202,10 @@ const calculateStat = (formula: string) => {
    return '6.9s'
 }
 
-const otherOptions = (options: any) => (
+const otherOptions = (options: any) =>
    options.linkUrl ? <a href={options.linkUrl}>{options.linkText}</a> : calculateStat(options.formula)
-)
 
-export function Description() {
+export function Description({ itemData }: any) {
    const descriptionLine = (line: Description, i: number) => (
       <div className={styles[line.lineClass as string]} key={i}>
          {line.lineText?.map((text, i) => (
@@ -222,12 +221,18 @@ export function Description() {
          {table.map((line, i) => descriptionLine(line, i))}
       </div>
    )
+   // console.log(itemData.description)
+
+   const completeDescription = (description: any) => {
+      if (!description) return
+      return description?.map((description: any, i: number) =>
+            description.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
+         )
+   }
 
    return (
       <div>
-         {description.map((description, i) =>
-            description.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
-         )}
+         {completeDescription(itemData.description)}
       </div>
    )
 }

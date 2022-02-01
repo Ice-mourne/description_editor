@@ -2,16 +2,16 @@ import * as monaco from 'monaco-editor'
 
 import { useEffect, useState } from 'react'
 
-function convertDescription(editorContent: string) {
-
-}
+import convertDescription from '@ts/convertDescription'
 
 export default function Editor({
    onMount,
-   itemData
+   itemData,
+   setItemData
 }: {
    onMount: () => monaco.editor.IStandaloneCodeEditor
    itemData: any
+   setItemData: (data: any) => void
 }) {
    const [editor, setEditor] = useState({} as monaco.editor.IStandaloneCodeEditor)
    const [activated, setActivated] = useState(true)
@@ -25,6 +25,7 @@ export default function Editor({
          // this will prevent multiple did change events from being fired
          setActivated(false)
          editor.getModel()?.onDidChangeContent(() => {
+            setItemData({ ...itemData, description: convertDescription(editor.getValue()) })
             convertDescription(editor.getValue())
          })
       }

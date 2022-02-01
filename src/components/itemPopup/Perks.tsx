@@ -1,11 +1,11 @@
-const rolledPerks = [[839105230, 1392496348], [1431678320, 1087426260], [2779035018], [4082225868]]
+const rolledPerks = [ [1392496348]] // [839105230, 1392496348], [1431678320, 1087426260], [2779035018],
 
-const activePerks = [1392496348, 1431678320, 2779035018, 4082225868]
+const activePerks = [1392496348] // , 1431678320, 2779035018, 4082225868
 
-import {Description} from './Description'
+import { Description } from './Description'
 import styles from '@styles/itemPopup/Perks.module.scss'
 
-export function Perks() {
+export function Perks({ itemData }: any) {
    let text = '23'
    const perkList = (perkId: number, index: number) => {
       const classes = activePerks.includes(perkId)
@@ -42,7 +42,7 @@ export function Perks() {
             return (
                <div className={styles.perk_list} key={index}>
                   <div className={styles.description}>
-                     <Description />
+                     <Description itemData={itemData} />
                   </div>
                   {perkListArr.map(perkList)}
                </div>

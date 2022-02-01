@@ -28,10 +28,10 @@ export default function convertDescription(description: string) {
 
    const convertLine = (line: string | undefined) => {
 
-      const regStart = '#(?:primary|special|heavy|pve|pvp|bg|b|highlight_[1-3])'
+      const regStart = '#(?:primary|special|heavy|pve|pvp|bg|b|highlight_[1-3]|formula)'
       const regEnd = '<\\$>'
-      const splittedLine = line?.split(RegExp(`(${regStart}.*?${regEnd})`, 'g'))
-      console.log(RegExp(`(${regStart}.*?${regEnd})`, 'g'))
+      const splittedLine = line?.split(new RegExp(`(${regStart}.*?${regEnd})`, 'g'))
+      // console.log(RegExp(`(${regStart}.*?${regEnd})`, 'g'))
       
 
       const newLine = splittedLine?.reduce((acc: any, curr: string) => {
@@ -43,6 +43,7 @@ export default function convertDescription(description: string) {
                text: cleanText
             })
          } else {
+            if(!curr.trim()) return acc // just to remove empty ones with out className
             acc.push({ text: curr })
          }
          return acc

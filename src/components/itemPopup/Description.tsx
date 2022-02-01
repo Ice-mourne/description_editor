@@ -182,13 +182,13 @@ import styles from '@styles/itemPopup/Description.module.scss'
 
 interface Description {
    lineText?: LineText[]
-   lineClass?: string
+   className?: string
    table?: Table[]
 }
 
 interface LineText {
    text?: string
-   textClass?: string
+   className?: string
    formulaText?: string
    formula?: string
    title?: string
@@ -196,7 +196,7 @@ interface LineText {
 
 interface Table {
    lineText: LineText[]
-   lineClass?: string
+   className?: string
 }
 const calculateStat = (formula: string) => {
    return '6.9s'
@@ -205,17 +205,23 @@ const calculateStat = (formula: string) => {
 const otherOptions = (options: any) =>
    options.linkUrl ? <a href={options.linkUrl}>{options.linkText}</a> : calculateStat(options.formula)
 
-export function Description({ itemData }: any) {
+const joinClassNames = (classNames: string | undefined) =>
+   classNames
+      ?.split(' ')
+      .map((className: string) => styles[className])
+      .join(' ')
+
+export function Description({ itemData }: any): JSX.Element {
    const descriptionLine = (line: Description, i: number) => (
-      <div className={styles[line.lineClass as string]} key={i}>
+      <div className={styles[line.className as string]} key={i}>
          {line.lineText?.map((text, i) => (
-            <span className={styles[text.textClass as string]} title={text.title} key={i}>
+            <span className={joinClassNames(text.className)} title={text.title} key={i}>
                {text.text || text.formulaText || otherOptions(text)}
             </span>
          ))}
       </div>
    )
-
+   // styles[text.className as string]
    const descriptionTable = (table: Table[], i: number) => (
       <div className={styles.table} key={i}>
          {table.map((line, i) => descriptionLine(line, i))}
@@ -226,13 +232,9 @@ export function Description({ itemData }: any) {
    const completeDescription = (description: any) => {
       if (!description) return
       return description?.map((description: any, i: number) =>
-            description.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
-         )
+         description.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
+      )
    }
 
-   return (
-      <div>
-         {completeDescription(itemData.description)}
-      </div>
-   )
+   return <div>{completeDescription(itemData.description)}</div>
 }

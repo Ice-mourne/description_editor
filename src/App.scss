@@ -65,10 +65,12 @@ body {
 
 .item_popup {
    width: 320px;
+   height: fit-content;
    background-color: hsl(279, 36%, 5%);
    margin-left: 15px;
    margin-right: 15px;
    margin-top: 3px;
+   z-index: 10;
 }
 //----------------------------------------------------------------------------------------------------------------------
 

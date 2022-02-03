@@ -1,183 +1,3 @@
-const description = [
-   {
-      lineText: [
-         {
-            text: 'Upon dealing Melee Damage while an Enemy is within 15 meters:'
-         }
-      ]
-   },
-   {
-      lineText: [
-         {
-            text: '100 Handling and '
-         },
-         {
-            textClass: 'CDB-pve',
-            text: ' 500%'
-         },
-         {
-            textClass: 'CDB-pvp',
-            text: ' [100%]'
-         },
-         {
-            text: ' increased damage for 10 seconds or until firing.'
-         }
-      ]
-   },
-   {
-      lineText: [
-         {
-            text: '4 second cooldown. Can be procced while stowed.'
-         }
-      ]
-   },
-   {
-      lineClass: 'CDB-spacer'
-   },
-   {
-      lineText: [
-         {
-            text: 'Any Powered Melee which requires sprinting, sliding, or a sprinting jump to utilize will not activate Blunt Execution Rounds.',
-            title: 'Blunt Execution Rounds'
-         }
-      ]
-   },
-   {
-      lineClass: 'CDB-spacer'
-   },
-   {
-      lineText: [
-         {
-            formulaText: 'Ready Speed: '
-         },
-         {
-            formula: '{hand_r_0}'
-         },
-         {
-            linkUrl: 'https://www.youtube.com/',
-            linkText: 'youtube'
-         }
-      ]
-   },
-   {
-      lineText: [
-         {
-            formulaText: 'Stow Speed: '
-         },
-         {
-            formula: '{hand_s_0}'
-         }
-      ]
-   },
-   {
-      table: [
-         {
-            lineText: [
-               {
-                  textClass: 'CDB-bold',
-                  text: 'Stacks'
-               },
-               {
-                  textClass: 'CDB-bold',
-                  text: 'Reload Speed'
-               },
-               {
-                  textClass: 'CDB-bold',
-                  text: 'Reload Animation Length'
-               },
-               {
-                  textClass: 'CDB-bold',
-                  formulaText: 'Reload Time'
-               }
-            ]
-         },
-         {
-            lineClass: 'CDB-bg',
-            lineText: [
-               {
-                  text: '1x'
-               },
-               {
-                  text: '10'
-               },
-               {
-                  text: '1x'
-               },
-               {
-                  formula: '{relo_0}'
-               }
-            ]
-         },
-         {
-            lineText: [
-               {
-                  text: '2x'
-               },
-               {
-                  text: '45'
-               },
-               {
-                  text: '0.9x'
-               },
-               {
-                  formula: '{relo_1}s'
-               }
-            ]
-         },
-         {
-            lineClass: 'CDB-bg',
-            lineText: [
-               {
-                  text: '3x'
-               },
-               {
-                  text: '55'
-               },
-               {
-                  text: '0.875x'
-               },
-               {
-                  formula: '{relo_2}s'
-               }
-            ]
-         },
-         {
-            lineText: [
-               {
-                  text: '4x'
-               },
-               {
-                  text: '70'
-               },
-               {
-                  text: '0.85x'
-               },
-               {
-                  formula: '{relo_3}s'
-               }
-            ]
-         },
-         {
-            lineClass: 'CDB-bg',
-            lineText: [
-               {
-                  text: '5x'
-               },
-               {
-                  text: '100'
-               },
-               {
-                  text: '0.8x'
-               },
-               {
-                  formula: '{relo_4}s'
-               }
-            ]
-         }
-      ]
-   }
-]
-
 import styles from '@styles/itemPopup/Description.module.scss'
 
 interface Description {
@@ -185,38 +5,41 @@ interface Description {
    className?: string
    table?: Table[]
 }
-
+interface Table {
+   lineText: LineText[]
+   className?: string
+}
 interface LineText {
    text?: string
    className?: string
    formulaText?: string
    formula?: string
    title?: string
+   linkText?: string
+   linkUrl?: string
 }
 
-interface Table {
-   lineText: LineText[]
-   className?: string
-}
 const calculateStat = (formula: string) => {
-   return '6.9s'
+   return `${Math.round(Math.random() * 1000)}ms`
 }
 
-const otherOptions = (options: any) =>
-   options.linkUrl ? <a href={options.linkUrl}>{options.linkText}</a> : calculateStat(options.formula)
+const otherOptions = (options: any) => {
+   if (options.linkUrl) return <a href={options.linkUrl}>{options.linkText}</a>
+   if (options.formula) return <span>{options.formulaText} {calculateStat(options.formula)}</span>
+}
 
-const joinClassNames = (classNames: string | undefined) =>
-   classNames
+const joinClassNames = (classNames: string | undefined) => {
+   return classNames
       ?.split(' ')
       .map((className: string) => styles[className])
       .join(' ')
-
+}
 export function Description({ itemData }: any): JSX.Element {
    const descriptionLine = (line: Description, i: number) => (
-      <div className={styles[line.className as string]} key={i}>
+      <div className={joinClassNames(line.className)} key={i}>
          {line.lineText?.map((text, i) => (
             <span className={joinClassNames(text.className)} title={text.title} key={i}>
-               {text.text || text.formulaText || otherOptions(text)}
+               {text.text || otherOptions(text)}
             </span>
          ))}
       </div>
@@ -232,7 +55,7 @@ export function Description({ itemData }: any): JSX.Element {
    const completeDescription = (description: any) => {
       if (!description) return
       return description?.map((description: any, i: number) =>
-         description.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
+         description?.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
       )
    }
 

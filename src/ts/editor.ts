@@ -8,23 +8,23 @@ export function createEditor() {
             // table stuff
             [/< table >/, 'table', '@table'],
             // self contained stuff
-            [/<(stasis|arch|void|solar|background|center)/, 'selfContained', '@selfContained'],
+            [/<(stasis|arc|solar|void|primary|special|heavy|background|center)/, 'selfContained', '@selfContained'], // stasis|arc|solar|void|primary|special|heavy|background|center
             // highlight stuff
-            [/<(highlight_[1-3]|bold|primary|special|heavy|pve|pvp)/, 'highlight', '@highlight'],
+            [/<(highlight_[1-4]|pve|pvp|bold)/, 'highlight', '@highlight'],
             // extra stuff
-            [/<(formula|link)/, 'extra', '@extra']
+            [/<(formula|link)/, 'extra', '@extra'],
+            [/<title /, 'title', '@title']
          ],
          table: [
-            [/\n/, '@pop'],
-            [/<\$>/, 'tableEnd'],
+            [/<\$>/, 'tableEnd', '@pop'],
             [/\|b|\|/, 'tableSeparator'],
-            [/<(stasis|arch|void|solar|background|center)/, 'selfContained', '@selfContained'],
-            [/<(highlight_[1-3]|bold|primary|special|heavy|pve|pvp)/, 'highlight', '@highlight'],
+            [/<(stasis|arc|void|solar|background|center)/, 'selfContained', '@selfContained'],
+            [/<(highlight_[1-4]|bold|primary|special|heavy|pve|pvp)/, 'highlight', '@highlight'],
             [/<(formula|link)/, 'extra', '@extra']
          ],
          selfContained: [
             [/\/>/, 'selfContained', '@pop'],
-            [/./, 'selfContained.text']
+            [/./, 'selfContained.text'],
          ],
          highlight: [
             [/\/>/, 'highlight', '@pop'],
@@ -35,7 +35,12 @@ export function createEditor() {
             [/(ready|stow|range|reload)_\d+/, 'extra.content'],
             [/https:.+? /, 'extra.content'],
             [/./, 'extra.text']
+         ],
+         title: [
+            [/\/>/, 'title', '@pop'],
+            [/\[.*\]/, 'title.text']
          ]
+
       }
    })
    monaco.editor.defineTheme('myCoolTheme', {
@@ -47,7 +52,7 @@ export function createEditor() {
          { token: 'tableSeparator', foreground: '4fc1ff' }, // const blue
          { token: 'tableEnd', foreground: '4fc1ff' }, // const blue
          // self contained stuff
-         { token: 'selfContained', foreground: '9cdcfe' }, // const blue
+         { token: 'selfContained', foreground: '9cdcfe' }, // let blue
          { token: 'selfContained.text', foreground: 'd16969' }, // regex red
          // highlight stuff
          { token: 'highlight', foreground: '4fc1ff' }, // const blue
@@ -55,7 +60,15 @@ export function createEditor() {
          // formula stuff
          { token: 'extra', foreground: '4ec9b0' }, // class green
          { token: 'extra.text', foreground: 'ffffff' }, // white
-         { token: 'extra.content', foreground: '4fc1ff' } // const blue
+         { token: 'extra.content', foreground: '4fc1ff' }, // const blue
+         // exceptions
+         { token: 'bold.selfContained', foreground: '9cdcfe' }, // let blue
+         { token: 'bold', foreground: '4fc1ff' }, // const blue
+         { token: 'bold.text', foreground: 'ffffff' }, // const blue
+         // title stuff
+         { token: 'title', foreground: '4ec9b0' }, // class green
+         { token: 'title.text', foreground: '4fc1ff' }, // const blue
+
       ],
       colors: {
          'editor.foreground': '#ffffff', // normal text | white
@@ -76,13 +89,16 @@ export function createEditor() {
 
    monaco.languages.registerCompletionItemProvider('clarityLangue', {
       provideCompletionItems: () => {
+         const keywordsSettings = {
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+         }
          const suggestions = [
             //--- table stuff
             {
                label: 'table',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: ['< table > ', '$0', '<$>'].join('\n'),
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             //--- self contained
             {
@@ -96,14 +112,19 @@ export function createEditor() {
                insertText: '<center/>'
             },
             {
+               label: 'bold line',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '<bold/>',
+            },
+            {
                label: 'stasis',
                kind: monaco.languages.CompletionItemKind.Text,
                insertText: '<stasis/>'
             },
             {
-               label: 'arch',
+               label: 'arc',
                kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<arch/>'
+               insertText: '<arc/>'
             },
             {
                label: 'void',
@@ -115,67 +136,100 @@ export function createEditor() {
                kind: monaco.languages.CompletionItemKind.Text,
                insertText: '<solar/>'
             },
+            {
+               label: 'primary',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '<primary/>'
+            },
+            {
+               label: 'special',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '<special/>'
+            },
+            {
+               label: 'heavy',
+               kind: monaco.languages.CompletionItemKind.Text,
+               insertText: '<heavy/>'
+            },
+
             //--- highlight stuff
             {
                label: 'highlight',
-               kind: monaco.languages.CompletionItemKind.Keyword,
                insertText: '<highlight_${1:1} ${2: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
-               label: 'bold',
-               kind: monaco.languages.CompletionItemKind.Snippet,
+               label: 'bold text',
                insertText: '<bold ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'pve',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<pve ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'pvp',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<pvp ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             //--- extra stuff
             {
                label: 'link',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<link ${1: } ${2: }>',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'combatant',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<link https://d2clarity.page.link/combatant ${1:Combatant}/>',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'formula_ready',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<formula ${2:Ready Speed:} ready_${1:0} />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'formula_stow',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<formula ${2:Stow Speed:} stow_${1:0} />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'formula_range',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<formula ${2:In_Game Range:} range_${1:0} />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
             },
             {
                label: 'formula_reload',
-               kind: monaco.languages.CompletionItemKind.Snippet,
                insertText: '<formula ${2:Reload Time:} reload_${1:0} />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+               ...keywordsSettings
+            },
+            //--- unnamed formula stuff
+            {
+               label: 'formula_ready_empty',
+               insertText: '<formula ready_${1:0} />',
+               ...keywordsSettings
+            },
+            {
+               label: 'formula_stow_empty',
+               insertText: '<formula stow_${1:0} />',
+               ...keywordsSettings
+            },
+            {
+               label: 'formula_range_empty',
+               insertText: '<formula range_${1:0} />',
+               ...keywordsSettings
+            },
+            {
+               label: 'formula_reload_empty',
+               insertText: '<formula reload_${1:0} />',
+               ...keywordsSettings
+            },
+            //--- title stuff
+            {
+               label: 'title',
+               insertText: '<title ${1: } [${1: }] />',
+               ...keywordsSettings
             },
          ]
          return { suggestions: suggestions }

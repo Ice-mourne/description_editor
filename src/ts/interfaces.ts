@@ -6,7 +6,7 @@ export namespace Fetch {
          method: string
          link:   string
          token:  string
-         body?:  {
+         body?: {
             sha:     string
             branch:  string
             message: string

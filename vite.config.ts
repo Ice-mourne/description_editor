@@ -15,5 +15,6 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/components'),
       '@ts': path.resolve(__dirname, './src/ts'),
     }
-  }
+  },
+  base: './',
 })

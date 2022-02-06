@@ -9,15 +9,10 @@ import ReactDOM from 'react-dom'
 import { createEditor } from './ts/editor'
 import { getDataFromBungie } from './ts/parseBungieData'
 import { item_preview } from './testData'
+import { uploadToGithub } from '@ts/uploadToGithub'
 
 type SelectElement = React.ChangeEvent<HTMLSelectElement>
 type InputElement = React.ChangeEvent<HTMLInputElement>
-
-// function ItemPopup() {
-//    return (
-
-//    )
-// }
 
 function App() {
    const [selected, setSelected] = useState('')
@@ -31,16 +26,17 @@ function App() {
       name: '',
       armorId: 0,
       armorName: '',
-      description: ''
+      description: '',
+      editor: {
+         mainEditor: {} as any,
+         secondaryEditor: {} as any
+      }
    })
    const handleItemIdInput = (e: InputElement) => {
       setItemData({ ...itemData, inputId: e.target.value })
    }
    const handleButtonPress = () => {
       getDataFromBungie(itemData.inputId).then((data) => setItemData({ ...itemData, ...data }))
-   }
-   const testFun = () => {
-      console.log('test')
    }
 
    return (
@@ -60,7 +56,7 @@ function App() {
             </div>
             <Selection changeEvent={handleSelectionChange} />
             <BasicInfo selected={selected} itemData={itemData} />
-            <Button data="Add / Update description" buttonPress={testFun}/>
+            <Button data="Add / Update description" buttonPress={() => uploadToGithub(itemData)}/>
          </div>
       </>
    )
@@ -69,9 +65,6 @@ function App() {
 ReactDOM.render(
    <React.StrictMode>
       <App />
-      {/* <ItemPopup /> */}
-      {/* Editor has to be separate that's why ItemPopup and SideBar have separate functions */}
-      {/* <SideBar /> */}
    </React.StrictMode>,
    document.getElementById('app')
 )

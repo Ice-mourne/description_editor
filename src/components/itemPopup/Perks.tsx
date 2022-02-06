@@ -36,18 +36,44 @@ export function Perks({ itemData }: any) {
       )
    }
 
+   // return (
+   //    <div className={styles.perk_box}>
+   //       {rolledPerks.map((perkListArr, index) => {
+   //          return (
+   //             <div className={styles.perk_list} key={index}>
+   //                <div className={styles.description}>
+   //                   <Description itemData={itemData} />
+   //                </div>
+   //                {perkListArr.map(perkList)}
+   //             </div>
+   //          )
+   //       })}
+   //    </div>
+   // )
    return (
       <div className={styles.perk_box}>
-         {rolledPerks.map((perkListArr, index) => {
-            return (
-               <div className={styles.perk_list} key={index}>
-                  <div className={styles.description}>
-                     <Description itemData={itemData} />
-                  </div>
-                  {perkListArr.map(perkList)}
-               </div>
-            )
-         })}
+         <div className={styles.perk_list}>
+            <div className={styles.description}>
+               <Description description={itemData.editor?.mainEditor} />
+            </div>
+            {perkList(1392496348, 1)}
+         </div>
+         <div className={styles.perk_list}>
+            <div className={styles.description}>
+               <Description description={itemData.editor?.secondaryEditor} />
+            </div>
+            {perkList(1392496348, 2)}
+         </div>
+         <div className={styles.perk_list}>
+            <div className={styles.description}>
+            </div>
+            {perkList(1392496348, 3)}
+         </div>
+         <div className={styles.perk_list}>
+            <div className={styles.description}>
+            </div>
+            {perkList(1392496348, 4)}
+         </div>
       </div>
    )
 }

@@ -154,7 +154,7 @@ export default function convertDescription(description: string) {
    const completeDescription = splittedLines.map((line: any): Complete.Description => {
       if (line.table) {
          const table = line.table.map((row: LineTextString.Table) => {
-            const converted = row.lineText?.flatMap((column: string) => {console.log(column); return convertLine(column)})
+            const converted = row.lineText?.flatMap((column: string) => convertLine(column))
             return { ...row, lineText: converted }
          })
          return { ...line, table: table as Complete.Table }

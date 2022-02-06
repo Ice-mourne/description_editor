@@ -249,8 +249,8 @@ export function createEditor() {
    const editorContainer = document.getElementById('editor') as HTMLDivElement
    const this_editor = monaco.editor.create(editorContainer, monacoSettings)
 
-   const editorContainer2 = document.getElementById('editor2') as HTMLDivElement
-   const this_editor2 = monaco.editor.create(editorContainer2, monacoSettings)
+   const secondaryEditorContainer = document.getElementById('editor2') as HTMLDivElement
+   const secondaryEditor = monaco.editor.create(secondaryEditorContainer, monacoSettings)
 
    var originalModel = monaco.editor.createModel('just some text\n\nHello World\n\nSome more text', 'clarityLangue')
    var modifiedModel = monaco.editor.createModel('just some Text\n\nHello World\n\nSome more changes', 'clarityLangue')
@@ -260,5 +260,12 @@ export function createEditor() {
    //    modified: modifiedModel,
    //    original: originalModel
    // });
-   return this_editor
+
+
+
+
+   return {
+      mainEditor: this_editor,
+      secondaryEditor: secondaryEditor,
+   }
 }

@@ -4,32 +4,52 @@ import { useEffect, useState } from 'react'
 
 import convertDescription from '@ts/convertDescription'
 
+interface Editors {
+   mainEditor: monaco.editor.IStandaloneCodeEditor
+   secondaryEditor: monaco.editor.IStandaloneCodeEditor
+}
+
 export default function Editor({
    onMount,
    itemData,
    setItemData
 }: {
-   onMount: () => monaco.editor.IStandaloneCodeEditor
+   onMount: () => Editors
    itemData: any
    setItemData: (data: any) => void
 }) {
-   const [editor, setEditor] = useState({} as monaco.editor.IStandaloneCodeEditor)
+   const [editor, setEditor] = useState({} as Editors)
    const [activated, setActivated] = useState(true)
    useEffect(() => {
+      // this will prevent the editor from being created multiple times
       if (!Object.keys(editor).length) {
-         // this will prevent the editor from being created multiple times
          setEditor(onMount())
          return
       }
+      // this will prevent multiple did change events from being fired
       if (activated) {
-         // this will prevent multiple did change events from being fired
          setActivated(false)
-         editor.getModel()?.onDidChangeContent(() => {
-            setItemData({ ...itemData, description: convertDescription(editor.getValue()) })
-            convertDescription(editor.getValue())
+         editor.mainEditor.getModel()?.onDidChangeContent(() => {
+            setItemData({
+               ...itemData,
+               editor: {
+                  mainEditor: convertDescription(editor.mainEditor.getValue()),
+                  secondaryEditor: convertDescription(editor.secondaryEditor.getValue())
+               }
+            })
+            // convertDescription(editor.mainEditor.getValue())
+         })
+         editor.secondaryEditor.getModel()?.onDidChangeContent(() => {
+            setItemData({
+               ...itemData,
+               editor: {
+                  mainEditor: convertDescription(editor.mainEditor.getValue()),
+                  secondaryEditor: convertDescription(editor.secondaryEditor.getValue())
+               }
+            })
+            // convertDescription(editor.mainEditor.getValue())
          })
       }
-      // editor.setValue(itemData.description)
    })
    return (
       <div className="editor-container">

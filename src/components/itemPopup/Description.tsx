@@ -34,7 +34,7 @@ const joinClassNames = (classNames: string | undefined) => {
       .map((className: string) => styles[className])
       .join(' ')
 }
-export function Description({ itemData }: any): JSX.Element {
+export function Description({ description }: any): JSX.Element {
    const descriptionLine = (line: Description, i: number) => (
       <div className={joinClassNames(line.className)} key={i}>
          {line.lineText?.map((text, i) => (
@@ -44,20 +44,19 @@ export function Description({ itemData }: any): JSX.Element {
          ))}
       </div>
    )
-   // styles[text.className as string]
    const descriptionTable = (table: Table[], i: number) => (
       <div className={styles.table} key={i}>
          {table.map((line, i) => descriptionLine(line, i))}
       </div>
    )
-   // console.log(itemData.description)
 
    const completeDescription = (description: any) => {
-      if (!description) return
+      if (!description || Object.keys(description).length === 0) return
       return description?.map((description: any, i: number) =>
          description?.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
       )
    }
-
-   return <div>{completeDescription(itemData.description)}</div>
+   console.log(description)
+   
+   return <div>{completeDescription(description)}</div>
 }

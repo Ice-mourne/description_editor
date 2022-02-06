@@ -1,6 +1,9 @@
 .perk_box {
    display: flex;
    flex-direction: column;
+   div:last-child {
+      border-bottom: none;
+   }
 }
 .perk_list {
    display: flex;

@@ -16,7 +16,7 @@ export namespace Fetch {
    }
    export interface Response {
       status:  number
-      content: string
+      content: ClarityDescription
       sha:     string
    }
 }

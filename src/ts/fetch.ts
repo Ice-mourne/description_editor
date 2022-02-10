@@ -1,33 +1,38 @@
 import { Fetch } from './interfaces'
 
-const options: Fetch.Options = {
-   getDescription: {
-      method: 'GET',
-      link: `https://api.github.com/repos/Clovis-Breh/Clarity-database/contents/descriptions.json?ref=main?${Math.random()}`,
-      token: `token ${atob(localStorage.getItem('key') || '')}`
-   },
-   putDescription: {
-      method: 'PUT',
-      link: `https://api.github.com/repos/Clovis-Breh/Clarity-database/contents/descriptions.json`,
-      token: `token ${atob(localStorage.getItem('key') || '')}`,
-      body: {
-         'sha': 'sha',
-         'branch': 'main',
-         'message': `Updated - `,
-         'content': btoa(`${JSON.stringify('content', null, 2)}\n`)
-      }
+const options = (option: Fetch.PossibleOptions, data: any) => {
+   switch (option) {
+      case 'getDescription':
+         return {
+            method: 'GET',
+            link: `https://api.github.com/repos/Clovis-Breh/Clarity-database/contents/descriptions.json?ref=main`,
+            token: `token ${atob(localStorage.getItem('key') || '')}`
+         }
+      case 'putDescription':
+         return {
+            method: 'PUT',
+            link: `https://api.github.com/repos/Clovis-Breh/Clarity-database/contents/descriptions.json`,
+            token: `token ${atob(localStorage.getItem('key') || '')}`,
+            body: {
+               'sha': data.sha,
+               'branch': 'main',
+               'message': `Updated ${new Date().toLocaleString()}`,
+               'content': btoa(`${JSON.stringify(data.content, null, 2)}\n`)
+            }
+         }
    }
 }
 
-async function github( option: Fetch.PossibleOptions, data?: object): Promise<Fetch.Response> {
-   const resp = await fetch(options[option].link, {
-      method: options[option].method,
+export async function github( _option: Fetch.PossibleOptions, data?: object): Promise<Fetch.Response> {
+   const option = options(_option, data)
+   const resp = await fetch(option.link, {
+      method: option.method,
       mode: 'cors',
       headers: {
-         authorization: options[option].token,
+         authorization: option.token,
          accept: 'application/vnd.github.v3+json'
       },
-      body: JSON.stringify(options[option]?.body)
+      body: JSON.stringify(option?.body)
    })
    const {content, sha} = await resp.json()
    return {
@@ -36,5 +41,5 @@ async function github( option: Fetch.PossibleOptions, data?: object): Promise<Fe
       sha
    }
 }
-const {status, content, sha} = await github('getDescription')
+
 

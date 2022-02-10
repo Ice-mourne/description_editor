@@ -15,15 +15,18 @@ body {
    width: 100%;
    margin-left: -350px;
    margin-right: -330px;
-   #editor, #editor2 {
+   #editor-1, #editor-2, #diffEditor-1, #diffEditor-2 {
       border: 3px solid hsl(47, 69%, 5%);
       height: 70%;
       min-width: 10%;
       margin-left: 355px;
       margin-right: 335px;
    }
-   #editor2 {
+   #editor-2, #diffEditor-2 {
       height: 30%;
+   }
+   .hidden {
+      display: none;
    }
    .monaco-scrollable-element {
       .line-delete, .line-insert {

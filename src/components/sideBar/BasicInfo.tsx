@@ -1,19 +1,25 @@
+import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import styles from '@styles/sideBar/BasicInfo.module.scss'
+import { useContext } from 'react'
 
-export function BasicInfo({ selected, itemData }: { selected: string; itemData: any }) {
+export function BasicInfo() { // { selected, itemData }
+   const itemData = useContext(itemData_context),
+      perkData = itemData.perkData
+   const setItemData = useContext(setItemData_context)
+
    function option(): JSX.Element {
-      switch (selected) {
+      switch (itemData.inputData.selected) {
          case 'armorExotic':
             return (
                <>
                   <label>Armor name</label>
-                  <span id="input_item_name">{itemData.armorName || ''}</span>
+                  <span id="input_item_name">{perkData.armorName || ''}</span>
                   <label>Armor id</label>
-                  <span id="input_item_id">{itemData.armorId || ''}</span>
+                  <span id="input_item_id">{perkData.armorId || ''}</span>
                   <label>Perk name</label>
-                  <span id="input_name">{itemData.name || ''}</span>
+                  <span id="input_name">{perkData.name || ''}</span>
                   <label>Perk id</label>
-                  <span id="input_id">{itemData.id || ''}</span>
+                  <span id="input_id">{perkData.id || ''}</span>
                </>
             )
          case 'armorMod':
@@ -21,18 +27,18 @@ export function BasicInfo({ selected, itemData }: { selected: string; itemData: 
             return (
                <>
                   <label>Mod name</label>
-                  <span id="input_item_name">{itemData.name || ''}</span>
+                  <span id="input_item_name">{perkData.name || ''}</span>
                   <label>Mod id</label>
-                  <span id="input_item_id">{itemData.id || ''}</span>
+                  <span id="input_item_id">{perkData.id || ''}</span>
                </>
             )
          default:
             return (
                <>
                   <label>Perk name</label>
-                  <span id="input_item_name">{itemData.name || ''}</span>
+                  <span id="input_item_name">{perkData.name || ''}</span>
                   <label>Perk id</label>
-                  <span id="input_item_id">{itemData.id || ''}</span>
+                  <span id="input_item_id">{perkData.id || ''}</span>
                </>
             )
       }

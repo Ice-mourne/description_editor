@@ -1,10 +1,20 @@
-import style from '@styles/sideBar/ItemId.module.scss'
+import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 
-export function ItemId({ inputEvent }: { inputEvent: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+import style from '@styles/sideBar/ItemId.module.scss'
+import { useContext } from 'react'
+
+export function ItemId() {
+   const itemData = { ...useContext(itemData_context) }
+   const setItemData = useContext(setItemData_context)
+
+   const setItemId = (event: React.ChangeEvent<HTMLInputElement>) => {
+      itemData.inputData.inputId = event.target.value
+      return setItemData(itemData)
+   }
    return (
       <div className={style.id_input}>
          <span>ID:</span>
-         <input type="number" onChange={(e) => inputEvent(e)} />
+         <input type="number" onChange={(e) => setItemId(e)} />
       </div>
    )
 }

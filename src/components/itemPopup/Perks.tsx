@@ -1,79 +1,31 @@
-const rolledPerks = [ [1392496348]] // [839105230, 1392496348], [1431678320, 1087426260], [2779035018],
-
-const activePerks = [1392496348] // , 1431678320, 2779035018, 4082225868
-
 import { Description } from './Description'
+import { itemData_context } from '@components/provider/dataProvider'
 import styles from '@styles/itemPopup/Perks.module.scss'
+import { useContext } from 'react'
 
-export function Perks({ itemData }: any) {
-   let text = '23'
-   const perkList = (perkId: number, index: number) => {
-      const classes = activePerks.includes(perkId)
-         ? {
-              // active perks
-              perk: `${styles.perk} ${styles.perk_active}`,
-              img: `${styles.icon_container} ${styles.icon_container_active}`,
-              name: `${styles.name} ${styles.name_active}`
-           }
-         : {
-              // default non active perks
-              perk: styles.perk,
-              img: styles.icon_container,
-              name: styles.name
-           }
+export function Perks() {
+   const itemData = useContext(itemData_context)
 
-      const handleClick = () => {
-         text = 'perk description'
-      }
+   const allPerks = []
+   for (let i = 0; i < 4; i++) {
+      const description = i == 0 ? itemData?.dataFromEditor.mainEditor : i == 1 ? itemData?.dataFromEditor.secondaryEditor : null
 
-      return (
-         <div className={classes.perk} onClick={handleClick} key={index}>
-            <div className={classes.img}>
-               <img src="https://www.bungie.net/common/destiny2_content/icons/c9439f5d740d017dc9551a60a902c797.png" />
+      allPerks.push(
+         <div className={styles.perk_list} key={i}>
+            {description ? (
+               <div className={styles.description}>
+                  <Description description={description} />
+               </div>
+            ) : null}
+            <div className={`${styles.perk} ${styles.perk_active}`}>
+               <div className={`${styles.icon_container} ${styles.icon_container_active}`}>
+                  <img src="https://bungie.net/common/destiny2_content/icons/f2ff6ea4498ad2d808b4af21e93cf5fe.png" />
+               </div>
+               <div className={`${styles.name} ${styles.name_active}`}>{itemData?.perkData.name}</div>
             </div>
-            <div className={classes.name}>Confined Launch</div>
          </div>
       )
    }
 
-   // return (
-   //    <div className={styles.perk_box}>
-   //       {rolledPerks.map((perkListArr, index) => {
-   //          return (
-   //             <div className={styles.perk_list} key={index}>
-   //                <div className={styles.description}>
-   //                   <Description itemData={itemData} />
-   //                </div>
-   //                {perkListArr.map(perkList)}
-   //             </div>
-   //          )
-   //       })}
-   //    </div>
-   // )
-   return (
-      <div className={styles.perk_box}>
-         <div className={styles.perk_list}>
-            <div className={styles.description}>
-               <Description description={itemData.editor?.mainEditor} />
-            </div>
-            {perkList(1392496348, 1)}
-         </div>
-         <div className={styles.perk_list}>
-            <div className={styles.description}>
-               <Description description={itemData.editor?.secondaryEditor} />
-            </div>
-            {perkList(1392496348, 2)}
-         </div>
-         <div className={styles.perk_list}>
-            <div className={styles.description}>
-            </div>
-            {perkList(1392496348, 3)}
-         </div>
-         <div className={styles.perk_list}>
-            <div className={styles.description}>
-            </div>
-            {perkList(1392496348, 4)}
-         </div>
-      </div>
-   )
+   return <div className={styles.perk_box}>{allPerks}</div>
 }

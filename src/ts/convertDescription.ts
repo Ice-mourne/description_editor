@@ -93,13 +93,13 @@ const convertLine = (line: rowsLines | string) => {
          const link = curr.match(/(https:.+? )|((?<=https:.+? ).*(?=\/>))/g),
             title = curr.match(/\[.*\]/g)
          const isFormula = curr.includes('<formula'),
-            formula = isFormula ? curr.match(/(ready|stow|range|reload)_\d+/g)?.[0] : '',
+            formula = isFormula ? curr.match(/(ready|stow|range|reload)_\d+/g)?.[0] : undefined,
             formulaText = isFormula ? curr.replace(formula || '', '').replace(/<formula |\/>/g, '') : undefined
 
          let className = curr.match(new RegExp(regStart, 'g'))?.join(' ').replaceAll('<', ''),
             cleanText = curr.replace(new RegExp(`${regStart}|${regEnd}`, 'g'), '')
          if (isTableText) {
-            className = `${className || ''} ${curr.startsWith('|b') ? 'bold' : ''}`.trim()
+            className = `${className || ''} ${curr.startsWith('|b') ? 'bold' : ''}`.trim() || undefined
             cleanText = cleanText.replace(/\|b|\|/g, '').trim()
          }
          acc.push({
@@ -112,7 +112,7 @@ const convertLine = (line: rowsLines | string) => {
             title: title ? title[0].replace(/[[\]]/g, '') : undefined,
 
             className: className,
-            text: link ? undefined : title ? cleanText.replace(/\[.*\]/g, '') : isFormula ? undefined : cleanText
+            text: link || isFormula ? undefined : title ? cleanText.replace(/\[.*\]/g, '') : cleanText
          })
          return acc
       }
@@ -136,7 +136,7 @@ const convertLine = (line: rowsLines | string) => {
    }
 
    if (typeof line === 'string') return checkTableText(newLine)
-   return { ...line, lineText: newLine }
+   return { ...line, lineText: newLine.length == 0 ? undefined : newLine }
 }
 
 export default function convertDescription(description: string) {
@@ -146,7 +146,7 @@ export default function convertDescription(description: string) {
          acc.push(splitLines(curr) as LineTextString.Table)
          return acc
       } else {
-         acc.push(...splitLines(curr) as rowsLines[])
+         acc.push(...(splitLines(curr) as rowsLines[]))
          return acc
       }
    }, [])

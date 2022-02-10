@@ -22,8 +22,6 @@
       "@ItemPopup": ["src/components/itemPopup/exports.ts"],
       "@SideBar": ["src/components/sideBar/exports.ts"],
 
-
-
       "@styles/*": ["src/component_styles/*"],
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],

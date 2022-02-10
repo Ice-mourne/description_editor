@@ -186,6 +186,49 @@ import Recoil from '@assets/svg/Recoil'
 import styles from '@styles/itemPopup/Stats.module.scss'
 
 export function Stats() {
+
+
+   const statInfo = {
+      4284893193: { statBarPlace: null,       name: 'Rounds Per Minute' },
+      447667954:  { statBarPlace: 'ms',       name: 'Draw Time'         },
+      2961396640: { statBarPlace: 'ms',       name: 'Charge Time'       },
+      2837207746: { statBarPlace: 'stat_bar', name: 'Swing Speed'       },
+      4043523819: { statBarPlace: 'stat_bar', name: 'Impact'            },
+      3614673599: { statBarPlace: 'stat_bar', name: 'Blast Radius'      },
+      1591432999: { statBarPlace: 'stat_bar', name: 'Accuracy'          },
+      2523465841: { statBarPlace: 'stat_bar', name: 'Velocity'          },
+      2762071195: { statBarPlace: 'stat_bar', name: 'Guard Efficiency'  },
+      209426660:  { statBarPlace: 'stat_bar', name: 'Guard Resistance'  },
+      1240592695: { statBarPlace: 'stat_bar', name: 'Range'             },
+      155624089:  { statBarPlace: 'stat_bar', name: 'Stability'         },
+      943549884:  { statBarPlace: 'stat_bar', name: 'Handling'          },
+      4188031367: { statBarPlace: 'stat_bar', name: 'Reload Speed'      },
+      1345609583: { statBarPlace: 'stat_bar', name: 'Aim Assistance'    },
+      3555269338: { statBarPlace: 'stat_bar', name: 'Zoom'              },
+      2715839340: { statBarPlace: 'stat_svg', name: 'Recoil Direction'  },
+      3022301683: { statBarPlace: 'stat_bar', name: 'Charge Rate'       },
+      3736848092: { statBarPlace: 'stat_bar', name: 'Guard Endurance'   },
+      3871231066: { statBarPlace: null,       name: 'Magazine'          },
+      1931675084: { statBarPlace: null,       name: 'Inventory Size'    },
+      925767036:  { statBarPlace: null,       name: 'Ammo Capacity'     }
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    const statsWepCanHave = stat_display('Auto Rifle')
    const statsToDisplay: any[] = []
 

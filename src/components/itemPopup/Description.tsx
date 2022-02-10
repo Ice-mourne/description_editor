@@ -56,7 +56,5 @@ export function Description({ description }: any): JSX.Element {
          description?.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
       )
    }
-   console.log(description)
-   
    return <div>{completeDescription(description)}</div>
 }

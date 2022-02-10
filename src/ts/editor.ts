@@ -24,7 +24,7 @@ export function createEditor() {
          ],
          selfContained: [
             [/\/>/, 'selfContained', '@pop'],
-            [/./, 'selfContained.text'],
+            [/./, 'selfContained.text']
          ],
          highlight: [
             [/\/>/, 'highlight', '@pop'],
@@ -40,7 +40,6 @@ export function createEditor() {
             [/\/>/, 'title', '@pop'],
             [/\[.*\]/, 'title.text']
          ]
-
       }
    })
    monaco.editor.defineTheme('myCoolTheme', {
@@ -67,8 +66,7 @@ export function createEditor() {
          { token: 'bold.text', foreground: 'ffffff' }, // const blue
          // title stuff
          { token: 'title', foreground: '4ec9b0' }, // class green
-         { token: 'title.text', foreground: '4fc1ff' }, // const blue
-
+         { token: 'title.text', foreground: '4fc1ff' } // const blue
       ],
       colors: {
          'editor.foreground': '#ffffff', // normal text | white
@@ -114,7 +112,7 @@ export function createEditor() {
             {
                label: 'bold line',
                kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<bold/>',
+               insertText: '<bold/>'
             },
             {
                label: 'stasis',
@@ -230,14 +228,13 @@ export function createEditor() {
                label: 'title',
                insertText: '<title ${1: } [${1: }] />',
                ...keywordsSettings
-            },
+            }
          ]
          return { suggestions: suggestions }
       }
    })
    const monacoSettings = {
       theme: 'myCoolTheme',
-      // value: getCode(),
       language: 'clarityLangue',
       minimap: {
          enabled: false
@@ -246,26 +243,57 @@ export function createEditor() {
       automaticLayout: true,
       wordWrap: 'on' as const
    }
-   const editorContainer = document.getElementById('editor') as HTMLDivElement
-   const this_editor = monaco.editor.create(editorContainer, monacoSettings)
-
-   const secondaryEditorContainer = document.getElementById('editor2') as HTMLDivElement
-   const secondaryEditor = monaco.editor.create(secondaryEditorContainer, monacoSettings)
-
-   var originalModel = monaco.editor.createModel('just some text\n\nHello World\n\nSome more text', 'clarityLangue')
-   var modifiedModel = monaco.editor.createModel('just some Text\n\nHello World\n\nSome more changes', 'clarityLangue')
-
-   // var diffEditor = monaco.editor.createDiffEditor(editorContainer);
-   // diffEditor.setModel({
-   //    modified: modifiedModel,
-   //    original: originalModel
-   // });
-
-
-
-
-   return {
-      mainEditor: this_editor,
-      secondaryEditor: secondaryEditor,
+   const containers = {
+      normal: {
+         main: document.querySelector('#editor-1') as HTMLDivElement,
+         secondary: document.querySelector('#editor-2') as HTMLDivElement
+      },
+      diff: {
+         main: document.querySelector('#diffEditor-1') as HTMLDivElement,
+         secondary: document.querySelector('#diffEditor-2') as HTMLDivElement
+      }
    }
+   const models = {
+      main: {
+         original: monaco.editor.createModel('', 'clarityLangue'),
+         modified: monaco.editor.createModel('', 'clarityLangue')
+      },
+      secondary: {
+         original: monaco.editor.createModel('', 'clarityLangue'),
+         modified: monaco.editor.createModel('', 'clarityLangue')
+      }
+   }
+   const editors = {
+      normal: {
+         main: monaco.editor.create(containers.normal.main, monacoSettings),
+         secondary: monaco.editor.create(containers.normal.secondary, monacoSettings)
+      },
+      diff: {
+         main: monaco.editor.createDiffEditor(containers.diff.main, monacoSettings),
+         secondary: monaco.editor.createDiffEditor(containers.diff.secondary, monacoSettings)
+      }
+   }
+   editors.diff.main.setModel({
+      modified: models.main.modified,
+      original: models.main.original
+   })
+   editors.diff.secondary.setModel({
+      modified: models.secondary.modified,
+      original: models.secondary.original
+   })
+
+   // toggle between editors
+   document.querySelector<HTMLButtonElement>('#toggleEditor')?.addEventListener('click', () => {
+      const normal = containers.normal
+      const diff = containers.diff
+
+      normal.main.classList.toggle('hidden')
+      normal.secondary.classList.toggle('hidden')
+      diff.main.classList.toggle('hidden')
+      diff.secondary.classList.toggle('hidden')
+   })
+
+   return {...editors}
 }
+// https://stackoverflow.com/questions/56828421/how-to-make-left-side-original-code-of-monaco-diff-editor-editable
+// change witch editor is editable

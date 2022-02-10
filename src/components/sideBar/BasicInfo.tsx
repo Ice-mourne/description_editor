@@ -2,7 +2,7 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 import styles from '@styles/sideBar/BasicInfo.module.scss'
 import { useContext } from 'react'
 
-export function BasicInfo() { // { selected, itemData }
+export function BasicInfo() {
    const itemData = useContext(itemData_context),
       perkData = itemData.perkData
    const setItemData = useContext(setItemData_context)

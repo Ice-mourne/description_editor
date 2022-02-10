@@ -30,7 +30,7 @@ export function getDataFromBungie(id: string) {
          name: perk.displayProperties.name,
          armorId: item.hash,
          armorName: item.displayProperties.name,
-         description: perk.displayProperties.description,
+         description: perk.displayProperties.description
       }
       return itemData
    }
@@ -38,12 +38,10 @@ export function getDataFromBungie(id: string) {
       return {
          id: item.hash,
          name: item.displayProperties.name,
-         description: item.displayProperties.description,
+         description: item.displayProperties.description
       }
    }
    return fetchBungie(id)
       .then((item) => (item.itemType == 2 ? extractFromArmor(item) : extractFromMod(item)))
       .catch(console.error)
 }
-
-

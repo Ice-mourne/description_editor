@@ -20,12 +20,17 @@ interface LineText {
 }
 
 const calculateStat = (formula: string) => {
-   if(formula) return `${Math.round(Math.random() * 1000)}ms`
+   if (formula) return `${Math.round(Math.random() * 1000)}ms`
 }
 
 const otherOptions = (options: any) => {
    if (options.linkUrl) return <a href={options.linkUrl}>{options.linkText}</a>
-   if (options.formula || options.formulaText) return <span>{options.formulaText} {calculateStat(options.formula)}</span>
+   if (options.formula || options.formulaText)
+      return (
+         <span>
+            {options.formulaText} {calculateStat(options.formula)}
+         </span>
+      )
 }
 
 const joinClassNames = (classNames: string | undefined) => {

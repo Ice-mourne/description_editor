@@ -8,7 +8,8 @@ export function Perks() {
 
    const allPerks = []
    for (let i = 0; i < 4; i++) {
-      const description = i == 0 ? itemData?.dataFromEditor.mainEditor : i == 1 ? itemData?.dataFromEditor.secondaryEditor : null
+      const description =
+         i == 0 ? itemData?.dataFromEditor.mainEditor : i == 1 ? itemData?.dataFromEditor.secondaryEditor : null
 
       allPerks.push(
          <div className={styles.perk_list} key={i}>

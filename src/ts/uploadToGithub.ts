@@ -36,11 +36,6 @@ export async function uploadToGithub(itemData: ItemData): Promise<void> {
    }
    console.log(JSON.stringify(item, null, 2))
 
-   const {status, content, sha} = await github('getDescription')
-   github('putDescription', {sha: sha, content: {...content[itemData.type], ...item[itemData.type]}})
-
-
-
-
-   // console.log(itemData);
+   const { status, content, sha } = await github('getDescription')
+   github('putDescription', { sha: sha, content: { ...content[itemData.type], ...item[itemData.type] } })
 }

@@ -14,16 +14,16 @@ const options = (option: Fetch.PossibleOptions, data: any) => {
             link: `https://api.github.com/repos/Clovis-Breh/Clarity-database/contents/descriptions.json`,
             token: `token ${atob(localStorage.getItem('key') || '')}`,
             body: {
-               'sha': data.sha,
-               'branch': 'main',
-               'message': `Updated ${new Date().toLocaleString()}`,
-               'content': btoa(`${JSON.stringify(data.content, null, 2)}\n`)
+               sha: data.sha,
+               branch: 'main',
+               message: `Updated ${new Date().toLocaleString()}`,
+               content: btoa(`${JSON.stringify(data.content, null, 2)}\n`)
             }
          }
    }
 }
 
-export async function github( _option: Fetch.PossibleOptions, data?: object): Promise<Fetch.Response> {
+export async function github(_option: Fetch.PossibleOptions, data?: object): Promise<Fetch.Response> {
    const option = options(_option, data)
    const resp = await fetch(option.link, {
       method: option.method,
@@ -34,12 +34,10 @@ export async function github( _option: Fetch.PossibleOptions, data?: object): Pr
       },
       body: JSON.stringify(option?.body)
    })
-   const {content, sha} = await resp.json()
+   const { content, sha } = await resp.json()
    return {
       status: resp.status,
       content,
       sha
    }
 }
-
-

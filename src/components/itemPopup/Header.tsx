@@ -22,28 +22,13 @@ export function Header(itemPreview: ItemPreview) {
    const left = (
       <div className={styles.left}>
          <div className={styles.type}>Shadow Rifle</div>
-         {itemPreview.ammo.img ? (
-            <img
-               className={styles.ammo}
-               src={specialAmmo}
-            />
-         ) : null}
-         {itemPreview.breaker.img ? (
-            <img
-               className={styles.breaker}
-               src={itemPreview.breaker.img}
-            />
-         ) : null}
+         {itemPreview.ammo.img ? <img className={styles.ammo} src={specialAmmo} /> : null}
+         {itemPreview.breaker.img ? <img className={styles.breaker} src={itemPreview.breaker.img} /> : null}
       </div>
    )
    const right = (
       <div className={styles.right}>
-         {itemPreview.element?.img ? (
-            <img
-               className={styles.element}
-               src={itemPreview.element.img}
-            />
-         ) : null}
+         {itemPreview.element?.img ? <img className={styles.element} src={itemPreview.element.img} /> : null}
          <div className={styles.power}>{itemPreview.power}</div>
       </div>
    )

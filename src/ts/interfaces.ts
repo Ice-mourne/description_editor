@@ -21,19 +21,6 @@ export namespace Fetch {
    }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //--- Bellow is just placeholder
 
 export interface ClarityDescription {

@@ -54,9 +54,7 @@ export function DataProvider({ children }: { children: JSX.Element }) {
 
    return (
       <itemData_context.Provider value={itemDataTemplate}>
-         <setItemData_context.Provider value={setItemData}>
-            {children}
-         </setItemData_context.Provider>
+         <setItemData_context.Provider value={setItemData}>{children}</setItemData_context.Provider>
       </itemData_context.Provider>
    )
 }

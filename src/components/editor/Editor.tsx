@@ -79,6 +79,7 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
          .getModel()
          ?.onDidChangeContent(() => setData('diff'))
 
+      // set default value to diff editor
       editor.diff.main.getOriginalEditor().setValue('some value')
       editor.diff.secondary.getOriginalEditor().setValue('some value')
    }, [activated])

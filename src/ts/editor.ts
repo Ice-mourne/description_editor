@@ -293,7 +293,7 @@ export function createEditor() {
       diff.secondary.classList.toggle('hidden')
    })
 
-   return {...editors}
+   return { ...editors }
 }
 // https://stackoverflow.com/questions/56828421/how-to-make-left-side-original-code-of-monaco-diff-editor-editable
 // change witch editor is editable

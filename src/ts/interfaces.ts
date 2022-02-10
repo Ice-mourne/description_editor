@@ -29,6 +29,7 @@ export interface ClarityDescription {
    weaponPerks:  { [key: string]: ModsPerks   }
    weaponFrames: { [key: string]: ModsPerks   }
    weaponMods:   { [key: string]: ModsPerks   }
+   none:         any // this will never be used
 }
 
 export interface ArmorExotic {

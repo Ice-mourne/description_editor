@@ -5,7 +5,6 @@ interface ItemDataTemplate {
       inputId: string
       type: 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
       rarity: string
-      selected: string
    }
    perkData: {
       id: number
@@ -32,8 +31,7 @@ export function DataProvider({ children }: { children: JSX.Element }) {
       inputData: {
          inputId: '',
          type: 'none',
-         rarity: '',
-         selected: ''
+         rarity: ''
       },
       perkData: {
          id: 0,

@@ -23,7 +23,7 @@ const options = (option: Fetch.PossibleOptions, data: any) => {
    }
 }
 
-export async function github(_option: Fetch.PossibleOptions, data?: object): Promise<Fetch.Response> {
+export async function github(_option: Fetch.PossibleOptions, data?: object): Promise<Fetch.Response | undefined> {
    const option = options(_option, data)
    const resp = await fetch(option.link, {
       method: option.method,
@@ -35,9 +35,12 @@ export async function github(_option: Fetch.PossibleOptions, data?: object): Pro
       body: JSON.stringify(option?.body)
    })
    const { content, sha } = await resp.json()
-   return {
-      status: resp.status,
-      content,
-      sha
+
+   if (option.method == 'GET') {
+      return {
+         status: resp.status,
+         content: JSON.parse(atob(content)),
+         sha
+      }
    }
 }

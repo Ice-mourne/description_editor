@@ -8,7 +8,7 @@ export function BasicInfo() {
    const setItemData = useContext(setItemData_context)
 
    function option(): JSX.Element {
-      switch (itemData.inputData.selected) {
+      switch (itemData.inputData.type) {
          case 'armorExotic':
             return (
                <>
@@ -22,8 +22,8 @@ export function BasicInfo() {
                   <span id="input_id">{perkData.id || ''}</span>
                </>
             )
-         case 'armorMod':
-         case 'weaponMod':
+         case 'armorMods':
+         case 'weaponMods':
             return (
                <>
                   <label>Mod name</label>

@@ -2,6 +2,8 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 import styles from '@styles/sideBar/Selection.module.scss'
 import React, { useContext } from 'react'
 
+type SelectableType = 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
+
 export function Selection() {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
@@ -11,7 +13,7 @@ export function Selection() {
          ...itemData,
          inputData: {
             ...itemData.inputData,
-            selected: e.target.value
+            type: e.target.value as SelectableType
          }
       })
    }

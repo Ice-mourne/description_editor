@@ -8,19 +8,19 @@ export function Selection() {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
 
-   const selectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setItemData({
-         ...itemData,
-         inputData: {
-            ...itemData.inputData,
-            type: e.target.value as SelectableType
-         }
-      })
+   const typeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      itemData.inputData.type = e.target.value as SelectableType
+      setItemData(itemData)
    }
+   const rarityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      itemData.inputData.rarity = e.target.value
+      setItemData(itemData)
+   }
+
 
    return (
       <div className={styles.selection_list}>
-         <select onChange={(e) => selectionChange(e)}>
+         <select onChange={(e) => typeChange(e)}>
             <option value="none">Select description type</option>
             <option value="armorExotic">Exotic Armor</option>
             <option value="armorMod">Armor Mod</option>
@@ -28,13 +28,13 @@ export function Selection() {
             <option value="weaponFrame">Weapon Frame</option>
             <option value="weaponMod">Weapon Mod</option>
          </select>
-         <select name="" id="">
+         <select onChange={(e) => rarityChange(e)}>
             <option value="undefined">Rarity All</option>
             <option value="normal">Rarity Normal</option>
             <option value="exotic">Rarity Exotic</option>
          </select>
-         <select name="" id="">
-            <option></option>
+         <select>
+            <option value="perks id">Perks name</option>
          </select>
       </div>
    )

@@ -1,27 +1,6 @@
+import { ItemDataTemplate } from '@components/interfaces/editor'
+import { ClarityDescription } from '@ts/interfaces'
 import React, { useContext, useState } from 'react'
-
-interface ItemDataTemplate {
-   inputData: {
-      inputId: string
-      type: 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
-      rarity: string
-   }
-   perkData: {
-      id: number
-      name: string
-      armorId: number
-      armorName: string
-      defaultDescription: string
-      descriptions: {
-         mainEditor: string
-         secondaryEditor: string
-      }
-   }
-   dataFromEditor: {
-      mainEditor: object
-      secondaryEditor: object
-   }
-}
 
 export const itemData_context = React.createContext({} as ItemDataTemplate)
 export const setItemData_context = React.createContext({} as React.Dispatch<React.SetStateAction<ItemDataTemplate>>)
@@ -45,8 +24,18 @@ export function DataProvider({ children }: { children: JSX.Element }) {
          }
       },
       dataFromEditor: {
-         mainEditor: {} as any,
-         secondaryEditor: {} as any
+         converted: {
+            mainEditor: {},
+            secondaryEditor: {}
+         },
+         original: {
+            mainEditor: '',
+            secondaryEditor: ''
+         }
+      },
+      dataFromGithub: {
+         dataForEditor: {},
+         dataForDescription: {} as ClarityDescription
       }
    })
 

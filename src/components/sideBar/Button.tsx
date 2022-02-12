@@ -5,7 +5,7 @@ import styles from '@styles/sideBar/Button.module.scss'
 import { useContext } from 'react'
 import { uploadToGithub } from '@ts/uploadToGithub'
 
-export function Button({ data }: { data: string }) {
+export function Button({ labelText }: { labelText: string }) {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
 
@@ -23,15 +23,21 @@ export function Button({ data }: { data: string }) {
 
    const upload = () => {
       uploadToGithub(itemData)
+      .then((data) => {
+         setItemData({
+            ...itemData,
+            dataFromGithub: data
+         })
+      })
    }
 
    const buttonFunction =
-      data == 'Get data from bungie' ? addBungieData : data == 'Add / Update description' ? upload : undefined
+      labelText == 'Get data from bungie' ? addBungieData : labelText == 'Add / Update description' ? upload : undefined
 
-   const buttonId = data == 'Change Editor' ? 'toggleEditor' : undefined
+   const buttonId = labelText == 'Change Editor' ? 'toggleEditor' : undefined
    return (
       <button className={styles.button} onClick={buttonFunction} id={buttonId}>
-         {data}
+         {labelText}
       </button>
    )
 }

@@ -45,8 +45,14 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
          setItemData({
             ...itemData,
             dataFromEditor: {
-               mainEditor: convertDescription(editorValue.normal.main),
-               secondaryEditor: convertDescription(editorValue.normal.secondary)
+               converted: {
+                  mainEditor: convertDescription(editorValue.normal.main),
+                  secondaryEditor: convertDescription(editorValue.normal.secondary)
+               },
+               original: {
+                  mainEditor: editorValue.normal.main,
+                  secondaryEditor: editorValue.normal.secondary
+               }
             }
          })
 

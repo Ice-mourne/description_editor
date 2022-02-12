@@ -16,21 +16,28 @@ interface ItemDataTemplate {
       }
    }
    dataFromEditor: {
-      mainEditor: object
-      secondaryEditor: object
-   }
+      converted: {
+         mainEditor: object
+         secondaryEditor: object
+      },
+      original: {
+         mainEditor: string
+         secondaryEditor: string
+      }
+   },
+   dataFromGithub: {}
 }
 
 import { github } from './fetch'
-import { Fetch } from './interfaces'
+import { ClarityDescription, Fetch } from './interfaces'
 
-export async function uploadToGithub(itemData: ItemDataTemplate): Promise<void> {
+export async function uploadToGithub(itemData: ItemDataTemplate): Promise<ClarityDescription> {
    const conditional = {
       armorName: itemData.perkData.armorName ? itemData.perkData.armorName : undefined,
       armorId: itemData.perkData.armorId ? itemData.perkData.armorId : undefined,
       secondaryEditor:
-         Object.keys(itemData.dataFromEditor.secondaryEditor).length > 0
-            ? itemData.dataFromEditor.secondaryEditor
+         Object.keys(itemData.dataFromEditor.converted.secondaryEditor).length > 0
+            ? itemData.dataFromEditor.converted.secondaryEditor
             : undefined
    }
 
@@ -39,8 +46,12 @@ export async function uploadToGithub(itemData: ItemDataTemplate): Promise<void> 
       id: itemData.perkData.id,
       armorName: conditional.armorName,
       armorId: conditional.armorId,
-      description: itemData.dataFromEditor.mainEditor,
+      description: itemData.dataFromEditor.converted.mainEditor,
       simpleDescription: conditional.secondaryEditor,
+      editor: {
+         mainEditor: itemData.dataFromEditor.original.mainEditor,
+         secondaryEditor: itemData.dataFromEditor.original.secondaryEditor
+      },
       lastUpdate: new Date()
    }
    const { status, content, sha } = (await github('getDescription')) as Fetch.Response
@@ -51,4 +62,6 @@ export async function uploadToGithub(itemData: ItemDataTemplate): Promise<void> 
       sha,
       content
    })
+   // used to update data in the editor website
+   return content
 }

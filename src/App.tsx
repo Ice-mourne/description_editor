@@ -24,12 +24,13 @@ function App() {
          <div className="side_bar">
             <div className="id_button">
                <ItemId />
-               <Button data="Get data from bungie" />
+               <Button labelText="Get data from bungie" />
             </div>
             <Selection />
             <BasicInfo />
-            <Button data="Change Editor" />
-            <Button data="Add / Update description" />
+            <Button labelText="Change Editor" />
+            <Button labelText="Get updated data" />
+            <Button labelText="Add / Update description" />
          </div>
       </>
    )

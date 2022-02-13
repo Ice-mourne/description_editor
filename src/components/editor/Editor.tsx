@@ -3,6 +3,7 @@ import * as monaco from 'monaco-editor'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import { useContext, useEffect, useState } from 'react'
 
+import { ItemDataTemplate } from '@components/interfaces/editor'
 import convertDescription from '@ts/convertDescription'
 
 interface Editors {
@@ -29,8 +30,6 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
          setActivated(true)
          return
       }
-      // itemData is updated but editor are getting old value from it (setItemData is working)
-      // and i have no clue how to fix that
       const setData = (editorType: string) => {
          const editorValue = {
             normal: {
@@ -42,7 +41,7 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
                secondary: editor.diff.secondary.getModifiedEditor().getValue()
             }
          }
-         setItemData({
+         setItemData((itemData) => ({
             ...itemData,
             dataFromEditor: {
                converted: {
@@ -54,7 +53,7 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
                   secondaryEditor: editorValue.normal.secondary
                }
             }
-         })
+         }))
 
          if (editorType === 'normal') {
             if (editorValue.normal.main != editorValue.diff.main) {
@@ -85,10 +84,27 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
          .getModel()
          ?.onDidChangeContent(() => setData('diff'))
 
-      // set default value to diff editor
-      editor.diff.main.getOriginalEditor().setValue('some value')
-      editor.diff.secondary.getOriginalEditor().setValue('some value')
+
    }, [activated])
+
+   useEffect(() => {
+      console.log(123)
+      
+      if (!editor) return
+      const mainEditorDescription = itemData.perkData.descriptions.mainEditor
+      const secondaryEditorDescription = itemData.perkData.descriptions.secondaryEditor
+
+      editor.normal.main.setValue(mainEditorDescription)
+      editor.normal.secondary.setValue(secondaryEditorDescription)
+
+      editor.diff.main.getModifiedEditor().setValue(mainEditorDescription)
+      editor.diff.secondary.getModifiedEditor().setValue(secondaryEditorDescription)
+
+      editor.diff.main.getOriginalEditor().setValue(mainEditorDescription)
+      editor.diff.secondary.getOriginalEditor().setValue(secondaryEditorDescription)
+
+   }, [itemData.perkData.descriptions.mainEditor, itemData.perkData.descriptions.secondaryEditor])
+
    return (
       <div className="editor-container">
          <div id="editor-1"></div>
@@ -98,3 +114,7 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
       </div>
    )
 }
+function ItemData_context(ItemData_context: any) {
+   throw new Error('Function not implemented.')
+}
+

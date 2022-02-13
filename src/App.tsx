@@ -2,10 +2,10 @@ import './App.scss'
 
 import { BasicInfo, Button, ItemId, Selection } from '@SideBar'
 import { Header, Note, Perks, Sockets, Stats } from '@ItemPopup'
-import React from 'react'
 
 import { DataProvider } from '@components/provider/dataProvider'
 import Editor from '@components/editor/Editor'
+import React from 'react'
 import ReactDOM from 'react-dom'
 import { createEditor } from './ts/editor'
 import { item_preview } from './testData'

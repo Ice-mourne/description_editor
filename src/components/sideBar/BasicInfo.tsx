@@ -1,11 +1,10 @@
-import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
+import { itemData_context } from '@components/provider/dataProvider'
 import styles from '@styles/sideBar/BasicInfo.module.scss'
 import { useContext } from 'react'
 
 export function BasicInfo() {
    const itemData = useContext(itemData_context),
       perkData = itemData.perkData
-   const setItemData = useContext(setItemData_context)
 
    function option(): JSX.Element {
       switch (itemData.inputData.type) {

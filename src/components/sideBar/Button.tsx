@@ -1,9 +1,9 @@
+import { getDataFromGithub, uploadToGithub } from '@ts/uploadToGithub'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 
 import { getDataFromBungie } from '@ts/parseBungieData'
 import styles from '@styles/sideBar/Button.module.scss'
 import { useContext } from 'react'
-import { uploadToGithub } from '@ts/uploadToGithub'
 
 export function Button({ labelText }: { labelText: string }) {
    const itemData = useContext(itemData_context)
@@ -21,18 +21,23 @@ export function Button({ labelText }: { labelText: string }) {
       )
    }
 
-   const upload = () => {
-      uploadToGithub(itemData)
-      .then((data) => {
-         setItemData({
+   const upload = () => uploadToGithub(itemData)
+   const download = () =>
+      getDataFromGithub().then((data) =>
+         setItemData((itemData) => ({
             ...itemData,
             dataFromGithub: data
-         })
-      })
-   }
+         }))
+      )
 
    const buttonFunction =
-      labelText == 'Get data from bungie' ? addBungieData : labelText == 'Add / Update description' ? upload : undefined
+      labelText == 'Get data from bungie'
+         ? addBungieData
+         : labelText == 'Add / Update description'
+         ? upload
+         : labelText == 'Get updated data'
+         ? download
+         : undefined
 
    const buttonId = labelText == 'Change Editor' ? 'toggleEditor' : undefined
    return (

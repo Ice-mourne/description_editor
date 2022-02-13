@@ -1,10 +1,13 @@
+import { ClarityDescription } from "@ts/interfaces";
+
 export interface ItemDataTemplate {
    inputData: {
       inputId: string
       type: 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
       rarity: string
    }
-   perkData: { // selected perk or perk fetched from bungie
+   perkData: {
+      // selected perk or perk fetched from bungie
       id: number
       name: string
       armorId: number
@@ -19,11 +22,11 @@ export interface ItemDataTemplate {
       converted: {
          mainEditor: object
          secondaryEditor: object
-      },
+      }
       original: {
          mainEditor: string
          secondaryEditor: string
       }
-   },
-   dataFromGithub: {}
+   }
+   dataFromGithub: ClarityDescription
 }

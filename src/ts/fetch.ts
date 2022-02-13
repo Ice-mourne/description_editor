@@ -1,6 +1,8 @@
 import { Fetch } from './interfaces'
 
 const options = (option: Fetch.PossibleOptions, data: any) => {
+   console.log(data);
+   
    switch (option) {
       case 'getDescription':
          return {
@@ -20,6 +22,12 @@ const options = (option: Fetch.PossibleOptions, data: any) => {
                content: btoa(`${JSON.stringify(data.content, null, 2)}\n`)
             }
          }
+      case 'rateLimit':
+         return {
+            method: 'GET',
+            link: `https://api.github.com/rate_limit`,
+            token: `token ${atob(localStorage.getItem('key') || '')}`
+         }
    }
 }
 
@@ -37,9 +45,11 @@ export async function github(_option: Fetch.PossibleOptions, data?: object): Pro
    const { content, sha } = await resp.json()
 
    if (option.method == 'GET') {
+      // console.log(JSON.parse(atob(content)));
+      
       return {
          status: resp.status,
-         content: JSON.parse(atob(content)),
+         content: content ? JSON.parse(atob(content)) : null,
          sha
       }
    }

@@ -1,6 +1,6 @@
 //--- fetch.ts
 export namespace Fetch {
-   export type PossibleOptions = 'getDescription' | 'putDescription'
+   export type PossibleOptions = 'getDescription' | 'putDescription' | 'rateLimit'
    export interface Options {
       [key: string]: {
          method: string
@@ -29,27 +29,37 @@ export interface ClarityDescription {
    weaponPerks:  { [key: string]: ModsPerks   }
    weaponFrames: { [key: string]: ModsPerks   }
    weaponMods:   { [key: string]: ModsPerks   }
-   none:         any // this will never be used
+   none:         { [key: string]: ModsPerks   } // this will never be used
 }
 
 export interface ArmorExotic {
    name:               string // Armor perk name
-   id:                 string // Armor perk id
-   itemName:           string // Armor name
-   itemId:             string // Armor id
+   id:                 string | number // Armor perk id
+   armorName:          string // Armor name
+   armorId:            string | number // Armor id
    description:        Description[]
    simpleDescription?: Description[] // shorter simpler description
    lastUpdate:         string // Last time description was updated
+   editor: {
+      mainEditor:      string // Editor's main description
+      secondaryEditor: string // Editor's secondary description
+   }
 }
 
 export interface ModsPerks {
    name:               string // Mod, perk, frame name
-   id:                 string // Mod, perk, frame id
+   id:                 string | number // Mod, perk, frame id
+   armorName:          string // Armor name
+   armorId:            string | number // Armor id
    description:        Description[]
    simpleDescription?: Description[] // shorter simpler description
    stats?:             Stats  // Community gathered stats
    lastUpdate:         string // Last time description was updated
    exotic?:            boolean // True then perk, frame is only on exotic weapon // nothing on mods, armor
+   editor: {
+      mainEditor:      string // Editor's main description
+      secondaryEditor: string // Editor's secondary description
+   }
 }
 
 export interface Description {

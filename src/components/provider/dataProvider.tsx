@@ -1,6 +1,9 @@
-import { ItemDataTemplate } from '@components/interfaces/editor'
+import React, { useEffect, useState } from 'react'
+
 import { ClarityDescription } from '@ts/interfaces'
-import React, { useContext, useState } from 'react'
+import { ItemDataTemplate } from '@components/interfaces/editor'
+import { getDataFromGithub } from '@ts/uploadToGithub'
+import { github } from '@ts/fetch'
 
 export const itemData_context = React.createContext({} as ItemDataTemplate)
 export const setItemData_context = React.createContext({} as React.Dispatch<React.SetStateAction<ItemDataTemplate>>)
@@ -33,11 +36,15 @@ export function DataProvider({ children }: { children: JSX.Element }) {
             secondaryEditor: ''
          }
       },
-      dataFromGithub: {
-         dataForEditor: {},
-         dataForDescription: {} as ClarityDescription
-      }
+      dataFromGithub: {} as ClarityDescription
    })
+
+   useEffect(() => {
+      getDataFromGithub().then((data) => setItemData((itemData) => ({ ...itemData, dataFromGithub: data })))
+      
+      github('rateLimit')
+      .then(console.log)
+   },[])
 
    return (
       <itemData_context.Provider value={itemDataTemplate}>

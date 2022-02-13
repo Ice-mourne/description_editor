@@ -28,10 +28,11 @@ interface ItemDataTemplate {
    dataFromGithub: {}
 }
 
-import { github } from './fetch'
 import { ClarityDescription, Fetch } from './interfaces'
 
-export async function uploadToGithub(itemData: ItemDataTemplate): Promise<ClarityDescription> {
+import { github } from './fetch'
+
+export async function uploadToGithub(itemData: ItemDataTemplate) {
    const conditional = {
       armorName: itemData.perkData.armorName ? itemData.perkData.armorName : undefined,
       armorId: itemData.perkData.armorId ? itemData.perkData.armorId : undefined,
@@ -56,12 +57,24 @@ export async function uploadToGithub(itemData: ItemDataTemplate): Promise<Clarit
    }
    const { status, content, sha } = (await github('getDescription')) as Fetch.Response
 
-   if (content[itemData.inputData.type] == undefined) content[itemData.inputData.type] = {}
-   content[itemData.inputData.type][itemData.perkData.id] = item
+   // const updatedContent = 
+   // console.log(updatedContent);
+   
    github('putDescription', {
       sha,
-      content
+      content: {
+         ...content,
+         [itemData.inputData.type]: {
+            ...content[itemData.inputData.type],
+            [item.id]: item
+         }
+      }
    })
    // used to update data in the editor website
+   // return updatedContent
+}
+
+export async function getDataFromGithub() {
+   const { status, content } = (await github('getDescription')) as Fetch.Response
    return content
 }

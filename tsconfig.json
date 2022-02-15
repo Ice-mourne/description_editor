@@ -26,6 +26,8 @@
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@ts/*": ["src/ts/*"],
+
+      "@interfaces": ["src/interfaces.ts"],
     }
   },
   "include": ["./src"]

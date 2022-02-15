@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 
-import { getDataFromGithub } from '@ts/uploadToGithub'
 import styles from '@styles/sideBar/Selection.module.scss'
 
 type SelectableType = 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
@@ -30,14 +29,14 @@ export function Selection() {
    }
 
    const items = () =>
-      Object.values(itemData.dataFromGithub[itemData.inputData.type] || {}).map((item) => (
+      Object.values(itemData.dataFromGithub?.[itemData.inputData.type] || {}).map((item) => (
          <option key={item.id} value={item.id}>
             {item.name}
          </option>
       ))
 
    const itemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedItem = itemData.dataFromGithub[itemData.inputData.type]?.[e.target.value]
+      const selectedItem = itemData.dataFromGithub?.[itemData.inputData.type]?.[e.target.value]
       if (!selectedItem) return
       setItemData((itemData) => ({
          ...itemData,
@@ -47,9 +46,10 @@ export function Selection() {
             name: selectedItem.name,
             armorId: selectedItem.armorId as number,
             armorName: selectedItem.armorName,
+            lastUpdate: new Date(selectedItem.lastUpdate).toLocaleString(),
             descriptions: {
-               mainEditor: selectedItem.editor.mainEditor,
-               secondaryEditor: selectedItem.editor.secondaryEditor
+               mainEditor: selectedItem.editor?.mainEditor,
+               secondaryEditor: selectedItem.editor?.secondaryEditor
             }
          }
       }))

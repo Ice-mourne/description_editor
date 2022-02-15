@@ -1,9 +1,6 @@
+import { ClarityDescription, ItemDataTemplate } from '@interfaces'
 import React, { useEffect, useState } from 'react'
-
-import { ClarityDescription } from '@ts/interfaces'
-import { ItemDataTemplate } from '@components/interfaces/editor'
-import { getDataFromGithub } from '@ts/uploadToGithub'
-import { github } from '@ts/fetch'
+import { getDataFromGithub, githubGet } from '@ts/github'
 
 export const itemData_context = React.createContext({} as ItemDataTemplate)
 export const setItemData_context = React.createContext({} as React.Dispatch<React.SetStateAction<ItemDataTemplate>>)
@@ -18,9 +15,10 @@ export function DataProvider({ children }: { children: JSX.Element }) {
       perkData: {
          id: 0,
          name: 'Fading Memory',
-         armorId: 0,
-         armorName: '',
+         armorId: undefined,
+         armorName: undefined,
          defaultDescription: '',
+         lastUpdate: '',
          descriptions: {
             mainEditor: '',
             secondaryEditor: ''
@@ -36,15 +34,17 @@ export function DataProvider({ children }: { children: JSX.Element }) {
             secondaryEditor: ''
          }
       },
-      dataFromGithub: {} as ClarityDescription
+      dataFromGithub: {} as ClarityDescription,
+      error: ''
    })
 
    useEffect(() => {
-      getDataFromGithub().then((data) => setItemData((itemData) => ({ ...itemData, dataFromGithub: data })))
-      
-      github('rateLimit')
-      .then(console.log)
-   },[])
+      getDataFromGithub().then((data) => {
+         setItemData((itemData) => ({ ...itemData, dataFromGithub: data }))
+      })
+
+      githubGet('getRateLimit').then(console.log)
+   }, [])
 
    return (
       <itemData_context.Provider value={itemDataTemplate}>

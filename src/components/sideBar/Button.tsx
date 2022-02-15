@@ -1,4 +1,4 @@
-import { getDataFromGithub, uploadToGithub } from '@ts/uploadToGithub'
+import { getDataFromGithub, uploadDescriptionClovis, uploadDescriptionIce } from '@ts/github'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 
 import { getDataFromBungie } from '@ts/parseBungieData'
@@ -21,7 +21,7 @@ export function Button({ labelText }: { labelText: string }) {
       )
    }
 
-   const upload = () => uploadToGithub(itemData)
+   const upload = itemData.perkData.id ? () => uploadDescriptionIce(itemData) : ()=>{} // uploadDescriptionIce // uploadDescriptionClovis
    const download = () =>
       getDataFromGithub().then((data) =>
          setItemData((itemData) => ({

@@ -47,7 +47,7 @@ export function BasicInfo() {
       <div className={styles.info_display}>
          {option()}
          <label>Last update</label>
-         <span id="input_item_id">2022.1.27-13.22</span>
+         <span id="input_item_id">{itemData.perkData.lastUpdate}</span>
       </div>
    )
 }

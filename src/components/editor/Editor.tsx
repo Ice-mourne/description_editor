@@ -3,7 +3,6 @@ import * as monaco from 'monaco-editor'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import { useContext, useEffect, useState } from 'react'
 
-import { ItemDataTemplate } from '@components/interfaces/editor'
 import convertDescription from '@ts/convertDescription'
 
 interface Editors {
@@ -88,19 +87,18 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
    }, [activated])
 
    useEffect(() => {
-      console.log(123)
-      
       if (!editor) return
       const mainEditorDescription = itemData.perkData.descriptions.mainEditor
       const secondaryEditorDescription = itemData.perkData.descriptions.secondaryEditor
 
+      if (!mainEditorDescription) return
       editor.normal.main.setValue(mainEditorDescription)
-      editor.normal.secondary.setValue(secondaryEditorDescription)
-
       editor.diff.main.getModifiedEditor().setValue(mainEditorDescription)
-      editor.diff.secondary.getModifiedEditor().setValue(secondaryEditorDescription)
-
       editor.diff.main.getOriginalEditor().setValue(mainEditorDescription)
+
+      if (!secondaryEditorDescription) return
+      editor.normal.secondary.setValue(secondaryEditorDescription)
+      editor.diff.secondary.getModifiedEditor().setValue(secondaryEditorDescription)
       editor.diff.secondary.getOriginalEditor().setValue(secondaryEditorDescription)
 
    }, [itemData.perkData.descriptions.mainEditor, itemData.perkData.descriptions.secondaryEditor])
@@ -114,7 +112,3 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
       </div>
    )
 }
-function ItemData_context(ItemData_context: any) {
-   throw new Error('Function not implemented.')
-}
-

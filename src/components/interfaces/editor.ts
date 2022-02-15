@@ -1,6 +1,6 @@
-import { ClarityDescription } from "@ts/interfaces";
+import { ClarityDescription } from "src/interfaces";
 
-export interface ItemDataTemplate {
+interface ItemDataTemplate {
    inputData: {
       inputId: string
       type: 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
@@ -10,8 +10,8 @@ export interface ItemDataTemplate {
       // selected perk or perk fetched from bungie
       id: number
       name: string
-      armorId: number
-      armorName: string
+      armorId?: number
+      armorName?: string
       defaultDescription: string
       descriptions: {
          mainEditor: string

@@ -230,19 +230,32 @@ export function createEditor() {
                ...keywordsSettings
             }
          ]
-         return { suggestions: suggestions }
+         return { suggestions }
       }
    })
-   const monacoSettings = {
+   const defaultSettings = {
       theme: 'myCoolTheme',
       language: 'clarityLangue',
       minimap: {
          enabled: false
       },
-      lineNumbersMinChars: 2,
       automaticLayout: true,
-      wordWrap: 'on' as const
+      wordWrap: 'on' as const,
+      mouseWheelZoom: true
    }
+   const normalSettings = {
+      ...defaultSettings,
+      lineNumbersMinChars: 2,
+      lineDecorationsWidth: 0
+   }
+   const diffSettings = {
+      ...defaultSettings,
+      lineNumbersMinChars: 3,
+      lineDecorationsWidth: 15,
+      renderOverviewRuler: false,
+      renderIndicators: false
+   }
+
    const containers = {
       normal: {
          main: document.querySelector('#editor-1') as HTMLDivElement,
@@ -265,12 +278,12 @@ export function createEditor() {
    }
    const editors = {
       normal: {
-         main: monaco.editor.create(containers.normal.main, monacoSettings),
-         secondary: monaco.editor.create(containers.normal.secondary, monacoSettings)
+         main: monaco.editor.create(containers.normal.main, normalSettings),
+         secondary: monaco.editor.create(containers.normal.secondary, normalSettings)
       },
       diff: {
-         main: monaco.editor.createDiffEditor(containers.diff.main, monacoSettings),
-         secondary: monaco.editor.createDiffEditor(containers.diff.secondary, monacoSettings)
+         main: monaco.editor.createDiffEditor(containers.diff.main, diffSettings),
+         secondary: monaco.editor.createDiffEditor(containers.diff.secondary, diffSettings)
       }
    }
    editors.diff.main.setModel({

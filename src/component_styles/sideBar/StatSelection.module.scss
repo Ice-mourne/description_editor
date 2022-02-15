@@ -1,0 +1,33 @@
+.stat_input {
+   display: grid;
+   grid-template-columns: auto auto;
+   grid-row-gap: 3px;
+   margin-top: 3px;
+   align-items: center;
+   input {
+      background-color: rgba(255, 255, 255, 0);
+      color: hsl(0, 0%, 100%);
+   }
+}
+.stat_name {
+   text-align: center;
+}
+.buttons {
+   display: flex;
+   flex-direction: row;
+   justify-content: space-evenly;
+   button {
+      background-color: hsl(0, 0%, 20%);
+      color: hsl(0, 0%, 100%);
+      padding: 2px 3px;
+   }
+   button:hover {
+      color: hsl(38, 80%, 56%);
+   }
+}
+.stat_container {
+   border-top: 5px solid;
+   border-color: hsl(0, 0%, 40%);
+   margin-top: 5px;
+   padding-top: 3px;
+}

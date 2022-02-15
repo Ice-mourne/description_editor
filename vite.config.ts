@@ -14,6 +14,8 @@ export default defineConfig({
       '@assets': path.resolve(__dirname, './src/assets'),
       '@components': path.resolve(__dirname, './src/components'),
       '@ts': path.resolve(__dirname, './src/ts'),
+
+      '@interfaces': path.resolve(__dirname, './src/interfaces'),
     }
   },
   base: './',

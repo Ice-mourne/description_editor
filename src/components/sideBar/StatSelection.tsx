@@ -2,68 +2,63 @@ import styles from '@styles/sideBar/StatSelection.module.scss'
 import { useState } from 'react'
 
 export function StatSelection() {
-   const [selectedStats, setSelectedStats] = useState<string[]>([])
+   const [selectedStats, setSelectedStats] = useState<any[]>([])
 
-   const addRemoveStats = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selected = e.target.value
-      if (selectedStats.includes(selected)) {
-         setSelectedStats((stats) => stats.filter((item) => item != selected))
-      } else {
-         setSelectedStats((stats) => [...stats, selected])
-      }
-   }
-   console.log(selectedStats)
+   const addRemoveActive = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) =>
+      setSelectedStats((stat) => ({
+         ...stat,
+         [index]: {
+            ...stat[index],
+            active: stat[index].active ? false : true
+         }
+      }))
+   const addRemovePassive = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) =>
+      setSelectedStats((stat) => ({
+         ...stat,
+         [index]: {
+            ...stat[index],
+            passive: stat[index].passive ? false : true
+         }
+      }))
 
-   const statList = selectedStats.map((stat, i) =>
+   const statList = ['range', 'reload', 'handling', 'stow', 'draw']
+   const statListTemplate = statList.map((stat, i) => (
       <div className={styles.stat_container} key={i}>
-
-
-
-         <div className={styles.stat_name}>{stat}</div>
          <div className={styles.buttons}>
-            <button>Add Active</button>
-            <button>Add Passive</button>
-            <button>Remove</button>
+            <button onClick={(e) => addRemoveActive(e, i)}>Add Active</button>
+            <span className={styles.stat_name}>{stat}</span>
+            <button onClick={(e) => addRemovePassive(e, i)}>Add Passive</button>
          </div>
 
-         <div className={styles.stat_name}>Passive</div>
+         {selectedStats[i]?.passive ? (
+            <>
+               <div className={styles.stat_name}>Passive</div>
+               <div className={styles.stat_input}>
+                  <span>Stat</span>
+                  <input />
+                  <span>Multiplier</span>
+                  <input />
+               </div>
+            </>
+         ) : null}
 
-
-         <div className={styles.stat_input}>
-            <span>Stat</span>
-            <input />
-            <span>Multiplier</span>
-            <input />
-         </div>
-
-
-
-
-
-
-
-         <div className={styles.stat_name}>{stat} Active</div>
-         <div className={styles.stat_input}>
-            <span>Stat</span>
-            <input />
-            <span>Multiplier</span>
-            <input />
-         </div>
+         {selectedStats[i]?.active ? (
+            <>
+               <div className={styles.stat_name}>Active</div>
+               <div className={styles.stat_input}>
+                  <span>Stat</span>
+                  <input />
+                  <span>Multiplier</span>
+                  <input />
+               </div>
+            </>
+         ) : null}
       </div>
-   )
+   ))
 
    return (
       <>
-         <select onChange={(e) => addRemoveStats(e)}>
-            <option value="">Select stat</option>
-            <option value="range">Range</option>
-            <option value="handling">Handling</option>
-            <option value="reload">Reload</option>
-            <option value="readyStow">Ready Stow</option>
-            <option value="ready">Ready</option>
-            <option value="stow">Stow</option>
-         </select>
-         <div>{statList}</div>
+         <div>{statListTemplate}</div>
       </>
    )
 }

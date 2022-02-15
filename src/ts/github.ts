@@ -147,7 +147,10 @@ export async function uploadDescriptionIce(itemData: ItemDataTemplate) {
 }
 
 export async function getUnauthorizedDescription() {
-   const data = await fetch('https://raw.githubusercontent.com/Clovis-Breh/clarity-database/main/descriptions.json')
+   const data = await fetch('https://raw.githubusercontent.com/Clovis-Breh/clarity-database/main/descriptions.json',{
+      method: 'GET',
+      mode: 'cors',
+   })
    const json: ClarityDescription = await data.json()
    return json
 }

@@ -1,6 +1,6 @@
 import { ClarityDescription, ItemDataTemplate } from '@interfaces'
 import React, { useEffect, useState } from 'react'
-import { getDataFromGithub, githubGet } from '@ts/github'
+import { getDataFromGithub, getUnauthorizedDescription, githubGet } from '@ts/github'
 
 export const itemData_context = React.createContext({} as ItemDataTemplate)
 export const setItemData_context = React.createContext({} as React.Dispatch<React.SetStateAction<ItemDataTemplate>>)
@@ -39,7 +39,7 @@ export function DataProvider({ children }: { children: JSX.Element }) {
    })
 
    useEffect(() => {
-      getDataFromGithub().then((data) => {
+      getUnauthorizedDescription().then((data) => {
          setItemData((itemData) => ({ ...itemData, dataFromGithub: data }))
       })
 

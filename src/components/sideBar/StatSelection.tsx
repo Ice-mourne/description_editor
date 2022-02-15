@@ -9,7 +9,7 @@ export function StatSelection() {
          ...stat,
          [index]: {
             ...stat[index],
-            active: stat[index].active ? false : true
+            active: stat[index]?.active ? false : true
          }
       }))
    const addRemovePassive = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) =>
@@ -17,7 +17,7 @@ export function StatSelection() {
          ...stat,
          [index]: {
             ...stat[index],
-            passive: stat[index].passive ? false : true
+            passive: stat[index]?.passive ? false : true
          }
       }))
 
@@ -25,9 +25,9 @@ export function StatSelection() {
    const statListTemplate = statList.map((stat, i) => (
       <div className={styles.stat_container} key={i}>
          <div className={styles.buttons}>
-            <button onClick={(e) => addRemoveActive(e, i)}>Add Active</button>
+            <button onClick={(e) => addRemoveActive(e, i)}>Active</button>
             <span className={styles.stat_name}>{stat}</span>
-            <button onClick={(e) => addRemovePassive(e, i)}>Add Passive</button>
+            <button onClick={(e) => addRemovePassive(e, i)}>Passive</button>
          </div>
 
          {selectedStats[i]?.passive ? (

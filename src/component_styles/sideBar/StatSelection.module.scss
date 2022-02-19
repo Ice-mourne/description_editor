@@ -8,6 +8,9 @@
       background-color: rgba(255, 255, 255, 0);
       color: hsl(0, 0%, 100%);
    }
+   input::placeholder {
+      color: hsl(38, 80%, 56%);
+   }
 }
 .stat_name {
    text-align: center;

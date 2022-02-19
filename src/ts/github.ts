@@ -6,30 +6,43 @@ import {
    GithubData,
    ItemDataTemplate,
    Items,
-   RespJson
+   RespJson,
+   Stats
 } from '@interfaces'
 
+function removeEmptyFromObj<T>(dirtyObject: T): T {
+   const obj = { ...dirtyObject }
+   const remover = (obj: any) => {
+      for (const key in obj) {
+         if (obj[key] === null || obj[key] === '') delete obj[key]
+         // if (obj[key]?.[0] === 0 && obj[key]?.length === 1) delete obj[key] // if [0] remove
+         if (!obj[key] || typeof obj[key] !== 'object') continue
+         remover(obj[key])
+         if (Object.keys(obj[key]).length === 0) delete obj[key]
+      }
+      return obj
+   }
+   return remover(obj)
+}
+
 async function handleResponse(resp: Response): Promise<GithubData> {
+   const displayMessage = (msg: string) => {
+      const messageContainer = document.querySelector<HTMLDivElement>('#message')
+      if (messageContainer) {
+         messageContainer.textContent = `${messageContainer.textContent}\n${msg}`.trim()
+         setTimeout(() => {
+            messageContainer.textContent = ''
+         }, 15000)
+      }
+   }
+
    const respJson: RespJson = await resp.json()
    if (resp.status !== 200) {
       const message: string = (<any>respJson).message
       console.error(`Error: ${resp.status} - ${message}`)
-
-      const messageContainer = document.querySelector<HTMLDivElement>('#message')
-      if (messageContainer) {
-         messageContainer.textContent = `${messageContainer.textContent}\n${message} 😒`.trim()
-         setTimeout(() => {
-            messageContainer.textContent = ''
-         }, 15000)
-      }
+      displayMessage(`${message} 😒`)
    } else {
-      const messageContainer = document.querySelector<HTMLDivElement>('#message')
-      if (messageContainer) {
-         messageContainer.textContent = `${messageContainer.textContent} 🍕`.trim()
-         setTimeout(() => {
-            messageContainer.textContent = ''
-         }, 15000)
-      }
+      displayMessage(` 🍕`)
    }
    return {
       content: typeof respJson.content == 'string' ? JSON.parse(atob(respJson.content)) : null,
@@ -88,14 +101,31 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate) {
       editorConverted = itemData.dataFromEditor.converted,
       editorOriginal = itemData.dataFromEditor.original
 
+   // converts stats from string to string[]
+   const statConverter = (stats?: Stats) => {
+      if (!stats) return
+      const statsToSend = { ...stats }
+      const converter = (stats: any) => {
+         for (const key in stats) {
+            if (typeof stats[key] == 'string') {
+               stats[key] = stats[key].split(',').map((stat: string) => Number(stat))
+            }
+            if (typeof stats[key] != 'object') continue
+            converter(stats[key])
+         }
+         return stats
+      }
+      return converter(statsToSend)
+   }
+
    const item = {
       name: perkData.name,
       id: perkData.id,
-      armorName: perkData.armorName,
-      armorId: perkData.armorId,
+      armorName: perkData.itemName,
+      armorId: perkData.itemId,
+      stats: statConverter(perkData.stats),
       description: editorConverted.mainEditor,
-      simpleDescription:
-         Object.keys(editorConverted.secondaryEditor).length > 0 ? editorConverted.secondaryEditor : undefined,
+      simpleDescription: editorConverted.secondaryEditor,
       editor: {
          mainEditor: editorOriginal.mainEditor,
          secondaryEditor: editorOriginal.secondaryEditor
@@ -114,43 +144,58 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate) {
          }
       }
    }
-   githubPut('putDescriptionClovis', dataToSend)
-   return dataToSend
+   const cleanDataToSend = removeEmptyFromObj(dataToSend)
+   githubPut('putDescriptionClovis', cleanDataToSend)
+   return cleanDataToSend
 }
 
 export async function uploadDescriptionIce(itemData: ItemDataTemplate) {
    const dataToSend = await uploadDescriptionClovis(itemData)
    const githubData_ice = await githubGet('getDescriptionIce')
 
-   // remove data used only by editor
-   const removeEditorData = (idItemObjectArr: { [key: string]: Items }) =>
-      Object.entries(idItemObjectArr).reduce((acc, [id, item]) => {
-         delete item.editor
-         return {
-            ...acc,
-            [id]: item
-         }
-      }, {} as { [key: string]: Items })
+   //todo: i only wan't to update single item not copy database
 
-   const descriptions: Array<[string, { [key: string]: Items }]> = Object.entries(dataToSend.content)
-   const cleanContent = descriptions.reduce((acc, [itemType, idItemObjectArr]) => {
-      return {
-         ...acc,
-         [itemType]: removeEditorData(idItemObjectArr)
+   // remove data used only by editor
+   // const removeEditorData = (idItemObjectArr: { [key: string]: Items }) =>
+   //    Object.entries(idItemObjectArr).reduce((acc, [id, item]) => {
+   //       delete item.editor
+   //       return {
+   //          ...acc,
+   //          [id]: item
+   //       }
+   //    }, {} as { [key: string]: Items })
+
+   // const descriptions: Array<[string, { [key: string]: Items }]> = Object.entries(dataToSend.content)
+   // const cleanContent = descriptions.reduce((acc, [itemType, idItemObjectArr]) => {
+   //    return {
+   //       ...acc,
+   //       [itemType]: removeEditorData(idItemObjectArr)
+   //    }
+   // }, {} as ClarityDescription)
+
+   const removeEditorData = (data: DataToSend) => {
+      const cleanData = { ...data }
+      type key = keyof DataToSend['content'];
+      for (const key in data.content) {
+         const itemsObj = data.content[key as key]
+         for (const key in itemsObj) {
+            itemsObj[key].editor = undefined
+         }
       }
-   }, {} as ClarityDescription)
+      return cleanData
+   }
 
    githubPut('putDescriptionIce', {
       sha: githubData_ice.sha,
-      content: cleanContent
+      content: removeEditorData(dataToSend).content
    })
 }
 
 export async function getUnauthorizedDescription() {
-   const data = await fetch('https://raw.githubusercontent.com/Clovis-Breh/clarity-database/main/descriptions.json',{
+   const resp = await fetch('https://raw.githubusercontent.com/Clovis-Breh/clarity-database/main/descriptions.json', {
       method: 'GET',
-      mode: 'cors',
+      mode: 'cors'
    })
-   const json: ClarityDescription = await data.json()
+   const json: ClarityDescription = await resp.json()
    return json
 }

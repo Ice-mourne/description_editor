@@ -15,9 +15,8 @@ export function DataProvider({ children }: { children: JSX.Element }) {
       perkData: {
          id: 0,
          name: 'Fading Memory',
-         armorId: undefined,
-         armorName: undefined,
-         defaultDescription: '',
+         itemId: undefined,
+         itemName: undefined,
          lastUpdate: '',
          descriptions: {
             mainEditor: '',

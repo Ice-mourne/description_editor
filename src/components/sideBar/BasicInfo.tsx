@@ -12,9 +12,9 @@ export function BasicInfo() {
             return (
                <>
                   <label>Armor name</label>
-                  <span id="input_item_name">{perkData.armorName || ''}</span>
+                  <span id="input_item_name">{perkData.itemName || ''}</span>
                   <label>Armor id</label>
-                  <span id="input_item_id">{perkData.armorId || ''}</span>
+                  <span id="input_item_id">{perkData.itemId || ''}</span>
                   <label>Perk name</label>
                   <span id="input_name">{perkData.name || ''}</span>
                   <label>Perk id</label>

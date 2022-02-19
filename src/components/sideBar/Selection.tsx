@@ -3,7 +3,7 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 
 import styles from '@styles/sideBar/Selection.module.scss'
 
-type SelectableType = 'none' | 'armorExotic' | 'armorMods' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
+type SelectableType = 'none' | 'armorExotic' | 'armorMods' | 'weaponExotic' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
 
 export function Selection() {
    const setItemData = useContext(setItemData_context)
@@ -44,9 +44,10 @@ export function Selection() {
             ...itemData.perkData,
             id: selectedItem.id as number,
             name: selectedItem.name,
-            armorId: selectedItem.armorId as number,
-            armorName: selectedItem.armorName,
+            itemId: selectedItem.itemId as number,
+            itemName: selectedItem.itemName,
             lastUpdate: new Date(selectedItem.lastUpdate).toLocaleString(),
+            stats: selectedItem.stats,
             descriptions: {
                mainEditor: selectedItem.editor?.mainEditor,
                secondaryEditor: selectedItem.editor?.secondaryEditor
@@ -61,6 +62,7 @@ export function Selection() {
             <option value="none">Select description type</option>
             <option value="armorExotic">Exotic Armor</option>
             <option value="armorMods">Armor Mod</option>
+            <option value="weaponExotic">Exotic Weapon</option>
             <option value="weaponPerks">Weapon Perk</option>
             <option value="weaponFrames">Weapon Frame</option>
             <option value="weaponMods">Weapon Mod</option>

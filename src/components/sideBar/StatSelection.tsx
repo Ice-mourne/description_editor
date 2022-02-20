@@ -23,6 +23,7 @@ export function StatSelection() {
       console.log(e)
 
       if (e.key.match(/[0-9]|[ ,.]|Backspace|Delete|Arrow(Left|Right)/)) return
+      if (e.key.match(/[axv]|[zy]/i) && e.ctrlKey) return
       e.preventDefault()
    }
 

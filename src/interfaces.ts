@@ -54,10 +54,10 @@ export interface ItemDataTemplate {
       /**
        * Data used in editor not converted
        */
-      descriptions: {
-         mainEditor?: string
-         secondaryEditor?: string
-      }
+      // descriptions: {
+      //    mainEditor?: string
+      //    secondaryEditor?: string
+      // }
    }
    dataFromEditor: {
       converted: {

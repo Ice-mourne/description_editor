@@ -25,15 +25,16 @@ function App() {
          <div className="side_bar">
             <div className="id_button">
                <ItemId />
-               <Button labelText="Get data from bungie" />
+               <Button labelText="Get data from bungie" fnName="addBungieData" />
             </div>
             <Selection />
             <BasicInfo />
             <Button labelText="Change Editor" />
-            <Button labelText="Get updated data" />
-            <Button labelText="Add / Update description" />
-            <Message />
+            <Button labelText="Get updated data" fnName="download" />
             <StatSelection />
+            <Button labelText="Add / Update - Database" fnName="uploadClovis" />
+            <Button labelText="Add / Update - Live database" fnName="uploadIce" />
+            <Message />
          </div>
       </>
    )

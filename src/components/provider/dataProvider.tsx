@@ -18,10 +18,10 @@ export function DataProvider({ children }: { children: JSX.Element }) {
          itemId: undefined,
          itemName: undefined,
          lastUpdate: '',
-         descriptions: {
-            mainEditor: '',
-            secondaryEditor: ''
-         }
+         // descriptions: { // just remove this is not used anywhere most likely
+         //    mainEditor: '',
+         //    secondaryEditor: ''
+         // }
       },
       dataFromEditor: {
          converted: {
@@ -36,6 +36,24 @@ export function DataProvider({ children }: { children: JSX.Element }) {
       dataFromGithub: {} as ClarityDescription,
       error: ''
    })
+
+   const newData = {
+      inputData: {
+         Id: '',
+         descriptionType: 'none',
+         rarity: ''
+         
+      },
+      perkData: {
+         id: 0,
+         name: '',
+         itemId: 0,              // optional
+         itemName: '',           // optional
+         stats: {},              // optional
+         advanceStats: {},       // optional
+         lastUpdate: '',
+      },
+   }
 
    useEffect(() => {
       getUnauthorizedDescription().then((data) => {

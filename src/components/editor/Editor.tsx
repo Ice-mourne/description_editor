@@ -82,26 +82,26 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
          .getModifiedEditor()
          .getModel()
          ?.onDidChangeContent(() => setData('diff'))
-
-
    }, [activated])
 
    useEffect(() => {
+      // set new descriptions on perk change to editor
       if (!editor) return
-      const mainEditorDescription = itemData.perkData.descriptions.mainEditor
-      const secondaryEditorDescription = itemData.perkData.descriptions.secondaryEditor
+      const type = itemData.inputData.type,
+         id = itemData.perkData.id,
+         selectedPerk = itemData.dataFromGithub?.[type][id]
 
-      if (!mainEditorDescription) return
-      editor.normal.main.setValue(mainEditorDescription)
-      editor.diff.main.getModifiedEditor().setValue(mainEditorDescription)
-      editor.diff.main.getOriginalEditor().setValue(mainEditorDescription)
+      const description = selectedPerk?.editor?.mainEditor || '',
+         simpleDescription = selectedPerk?.editor?.secondaryEditor || ''
 
-      if (!secondaryEditorDescription) return
-      editor.normal.secondary.setValue(secondaryEditorDescription)
-      editor.diff.secondary.getModifiedEditor().setValue(secondaryEditorDescription)
-      editor.diff.secondary.getOriginalEditor().setValue(secondaryEditorDescription)
+      editor.normal.main.setValue(description)
+      editor.diff.main.getModifiedEditor().setValue(description)
+      editor.diff.main.getOriginalEditor().setValue(description)
 
-   }, [itemData.perkData.descriptions.mainEditor, itemData.perkData.descriptions.secondaryEditor])
+      editor.normal.secondary.setValue(simpleDescription)
+      editor.diff.secondary.getModifiedEditor().setValue(simpleDescription)
+      editor.diff.secondary.getOriginalEditor().setValue(simpleDescription)
+   }, [itemData.perkData.id])
 
    return (
       <div className="editor-container">

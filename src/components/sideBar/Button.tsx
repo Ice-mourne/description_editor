@@ -3,45 +3,60 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 
 import { getDataFromBungie } from '@ts/parseBungieData'
 import styles from '@styles/sideBar/Button.module.scss'
-import { useContext } from 'react'
+import { useContext, useRef } from 'react'
 
-export function Button({ labelText }: { labelText: string }) {
+type fnNames = 'addBungieData' | 'download' | 'uploadClovis' | 'uploadIce'
+export function Button({ labelText, fnName }: { labelText: string; fnName?: fnNames }) {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
 
-   const addBungieData = () => {
-      getDataFromBungie(itemData.inputData.inputId).then((data) =>
+   const idPresent = itemData.perkData.id ? true : false
+   const typePresent = itemData.inputData.type != 'none' ? true : false
+
+   const errorMessage = () => {
+      const message = [`${idPresent ? '' : 'Id is missing'}`, `${typePresent ? '' : 'Type is missing'}`]
+         .join('\n')
+         .trim()
+
+      setItemData({
+         ...itemData,
+         error: message
+      })
+      setTimeout(() => {
          setItemData({
             ...itemData,
-            perkData: {
-               ...itemData.perkData,
-               ...data
-            }
+            error: ''
          })
-      )
+      }, 15000)
    }
 
-   const upload = itemData.perkData.id ? () => uploadDescriptionIce(itemData) : ()=>{} // uploadDescriptionIce // uploadDescriptionClovis
-   const download = () =>
-      getDataFromGithub().then((data) =>
-         setItemData((itemData) => ({
-            ...itemData,
-            dataFromGithub: data
-         }))
-      )
-
-   const buttonFunction =
-      labelText == 'Get data from bungie'
-         ? addBungieData
-         : labelText == 'Add / Update description'
-         ? upload
-         : labelText == 'Get updated data'
-         ? download
-         : undefined
+   const allowUpload = idPresent && typePresent ? true : false
+   const functions = {
+      addBungieData: () =>
+         getDataFromBungie(itemData.inputData.inputId).then((data) =>
+            setItemData({
+               ...itemData,
+               perkData: {
+                  ...itemData.perkData,
+                  ...data
+               }
+            })
+         ),
+      download: () =>
+         getDataFromGithub().then((data) =>
+            setItemData((itemData) => ({
+               ...itemData,
+               dataFromGithub: data
+            }))
+         ),
+      uploadClovis: () => (allowUpload ? uploadDescriptionClovis(itemData) : errorMessage()),
+      uploadIce: () => (allowUpload ? uploadDescriptionIce(itemData) : errorMessage()),
+      doNothing: () => {}
+   }
 
    const buttonId = labelText == 'Change Editor' ? 'toggleEditor' : undefined
    return (
-      <button className={styles.button} onClick={buttonFunction} id={buttonId}>
+      <button className={styles.button} onClick={functions[fnName || 'doNothing']} id={buttonId}>
          {labelText}
       </button>
    )

@@ -1,0 +1,20 @@
+.login_container {
+   display: grid;
+   grid-template-columns: auto auto;
+   grid-row-gap: 3px;
+   margin: 3px 0 3px 0;
+   align-items: center;
+   input {
+      background-color: hsla(0, 0%, 100%, 0);
+      color: hsl(0, 0%, 100%);
+      letter-spacing: 1px;
+   }
+}
+.login_btn {
+   background-color: hsl(0, 0%, 20%);
+   color: hsl(0, 0%, 100%);
+   width: 50%;
+   padding: 2px 3px;
+   margin: 2px 0 2px 0;
+   align-self: center;
+}

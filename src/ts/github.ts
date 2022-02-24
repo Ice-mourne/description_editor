@@ -48,8 +48,8 @@ async function handleResponse(resp: Response): Promise<GithubData> {
 }
 
 interface Login {
-   name: string
-   key: string
+   username: string
+   password: string
 }
 const login = JSON.parse(localStorage.getItem('login') || '{}') as Login
 const fetchUrl = {
@@ -63,12 +63,12 @@ const fetchUrl = {
 
 type FetchOptionsGet = 'getDescriptionClovis' | 'getDescriptionIce' | 'getRateLimit'
 export async function githubGet(option: FetchOptionsGet): Promise<GithubData | undefined> {
-   if (!login.key) return
+   if (!login.password) return
    const resp = await fetch(fetchUrl[option], {
       method: 'GET',
       mode: 'cors',
       headers: {
-         authorization: `token ${atob(login.key)}`,
+         authorization: `token ${atob(login.password)}`,
          accept: 'application/vnd.github.v3+json'
       }
    })
@@ -85,7 +85,7 @@ async function githubPut(option: FetchOptionsPut, data: DataToSend) {
       method: 'PUT',
       mode: 'cors',
       headers: {
-         authorization: `token ${atob(login.key)}`,
+         authorization: `token ${atob(login.password)}`,
          accept: 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
@@ -133,7 +133,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate) {
       description: editorConverted.mainEditor,
       simpleDescription: editorConverted.secondaryEditor,
       lastUpdate: Date.now(),
-      updatedBy: login.name
+      updatedBy: login.username
    }
 
    const githubData = await githubGet('getDescriptionClovis')

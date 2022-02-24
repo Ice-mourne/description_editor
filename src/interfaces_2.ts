@@ -46,6 +46,7 @@ interface Item {
    stats?: { [key: string]: any }
 
    lastUpdate: number
+   updatedBy: string
 }
 export interface ClarityDescription {
    [key: string]: Item
@@ -68,6 +69,7 @@ export interface ItemData {
    itemName?: string
    stats?: { [key: string]: any }
    lastUpdate: string
+   updatedBy?: string
 }
 
 export interface ItemDataTemplate {

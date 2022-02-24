@@ -51,6 +51,7 @@ export function Selection() {
             itemId: selectedItem.itemId,
             itemName: selectedItem.itemName,
             lastUpdate: new Date(selectedItem.lastUpdate).toLocaleString(),
+            updatedBy: selectedItem.updatedBy,
             stats: selectedItem.stats
          },
          dataFromEditor: {

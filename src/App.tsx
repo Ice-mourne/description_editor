@@ -1,6 +1,6 @@
 import './App.scss'
 
-import { BasicInfo, Button, ItemId, Selection, StatSelection } from '@SideBar'
+import { BasicInfo, Button, ItemId, Login, Selection, StatSelection } from '@SideBar'
 import { Header, Note, Perks, Sockets, Stats } from '@ItemPopup'
 
 import { DataProvider } from '@components/provider/dataProvider'
@@ -35,6 +35,7 @@ function App() {
             <Button labelText="Add / Update - Database" fnName="uploadClovis" />
             <Button labelText="Add / Update - Live database" fnName="uploadIce" />
             <Message />
+            <Login />
          </div>
       </>
    )

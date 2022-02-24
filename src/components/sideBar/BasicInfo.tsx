@@ -67,7 +67,9 @@ export function BasicInfo() {
       <div className={styles.info_display}>
          {option()}
          <label>Last update</label>
-         <span id="input_item_id">{itemData.ItemData.lastUpdate}</span>
+         <span>{itemData.ItemData.lastUpdate}</span>
+         <label>Updated by</label>
+         <span>{itemData.ItemData.updatedBy || ''}</span>
       </div>
    )
 }

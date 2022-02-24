@@ -59,7 +59,6 @@ export function StatSelection() {
       if (!itemData.ItemData.stats) return
       Object.entries(itemData.ItemData.stats).forEach(([stat, statValue]) => {
          const statIndex = statList.indexOf(stat)
-         debugger
          setSelectedStats((stat) => ({
             ...stat,
             [statIndex]: {

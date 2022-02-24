@@ -1,29 +1,11 @@
 import styles from '@styles/itemPopup/Description.module.scss'
+import { Description as descriptionInterface, LineText } from 'src/interfaces_2'
 
-interface Description {
-   lineText?: LineText[]
-   className?: string
-   table?: Table[]
-}
-interface Table {
-   lineText: LineText[]
-   className?: string
-}
-interface LineText {
-   text?: string
-   className?: string
-   formulaText?: string
-   formula?: string
-   title?: string
-   linkText?: string
-   linkUrl?: string
-}
-
-const calculateStat = (formula: string) => {
+const calculateStat = (formula?: string) => {
    if (formula) return `${Math.round(Math.random() * 1000)}ms`
 }
 
-const otherOptions = (options: any) => {
+const otherOptions = (options: LineText) => {
    if (options.linkUrl) return <a href={options.linkUrl}>{options.linkText}</a>
    if (options.formula || options.formulaText)
       return (
@@ -33,14 +15,14 @@ const otherOptions = (options: any) => {
       )
 }
 
-const joinClassNames = (classNames: string | undefined) => {
+const joinClassNames = (classNames?: string) => {
    return classNames
       ?.split(' ')
       .map((className: string) => styles[className])
       .join(' ')
 }
-export function Description({ description }: any): JSX.Element {
-   const descriptionLine = (line: Description, i: number) => (
+export function Description({ description }: { description: descriptionInterface[] }): JSX.Element {
+   const descriptionLine = (line: descriptionInterface, i: number) => (
       <div className={joinClassNames(line.className)} key={i}>
          {line.lineText?.map((text, i) => (
             <span className={joinClassNames(text.className)} title={text.title} key={i}>
@@ -49,15 +31,17 @@ export function Description({ description }: any): JSX.Element {
          ))}
       </div>
    )
-   const descriptionTable = (table: Table[], i: number) => (
+
+   const descriptionTable = <T extends object[]>(table: T, i: number) => (
       <div className={styles.table} key={i}>
          {table.map((line, i) => descriptionLine(line, i))}
       </div>
    )
 
-   const completeDescription = (description: any) => {
+   const completeDescription = (description: descriptionInterface[]) => {
       if (!description || Object.keys(description).length === 0) return
-      return description?.map((description: any, i: number) =>
+
+      return description?.map((description: descriptionInterface, i: number) =>
          description?.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
       )
    }

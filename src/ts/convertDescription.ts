@@ -86,25 +86,8 @@ const splitTableColumns_new = (description: LinesWithClassNames[]): SplitTableCo
       }
    })
 
-interface AssignTextClassNames {
-   lineText?: LineText[]
-   className?: string
-   isFormulaTable?: boolean
-   table?: {
-      lineText?: LineText[]
-      className?: string
-   }
-}
-interface LineText {
-   text?: string
-   formulaText?: string
-   formula?: string
-   className?: string
-   linkUrl?: string
-   linkText?: string
-   title?: string
-}
-const assignTextClassNames = (description: SplitTableColumns[]): AssignTextClassNames => {
+import { Description } from 'src/interfaces_2'
+const assignTextClassNames = (description: SplitTableColumns[]): Description[] => {
    const convertText = (text: string) => {
       const regStart = [
             text.startsWith('|') ? '(\\||\\|b)\\s*<(?:bold' : '<(?:bold', // this is for table
@@ -122,6 +105,7 @@ const assignTextClassNames = (description: SplitTableColumns[]): AssignTextClass
          if (text.trim() === '') return []
          if (!text.match(/^(<|\|)/)) return { text: text } // check if text starts with < or |
          const isFormula = text.includes('<formula')
+         const isTitle = text.includes('<title')
 
          let className = text.match(new RegExp(regStart, 'g'))?.join(' ').replaceAll('<', '') || ''
          let cleanText = text.replace(new RegExp(`${regStart}|${regEnd}`, 'g'), '')
@@ -140,7 +124,7 @@ const assignTextClassNames = (description: SplitTableColumns[]): AssignTextClass
             }
 
          const title = text.match(/\[.*\]/g)
-         if (title)
+         if (title && isTitle)
             return {
                title: title[0].replace(/[[\]]/g, ''),
                text: cleanText.replace(/\[.*\]/g, '').trim(),
@@ -189,7 +173,7 @@ const assignTextClassNames = (description: SplitTableColumns[]): AssignTextClass
          ...lineTable,
          lineText: convertText(lineTable.lineText)
       }
-   }) as AssignTextClassNames // Because TS complains about lineText conversion
+   }) as Description[] // Because TS complains about lineText conversion
 }
 
 export default function convertDescription(description: string) {

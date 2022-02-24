@@ -2,14 +2,14 @@ import React, { useContext } from 'react'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 
 import styles from '@styles/sideBar/Selection.module.scss'
-
-type SelectableType = 'none' | 'armorExotic' | 'armorMods' | 'weaponExotic' | 'weaponPerks' | 'weaponFrames' | 'weaponMods'
+import { SelectableType } from 'src/interfaces_2'
 
 export function Selection() {
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
 
    const typeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      // saves selected item type to itemData.inputData.type
       setItemData((itemData) => ({
          ...itemData,
          inputData: {
@@ -18,40 +18,45 @@ export function Selection() {
          }
       }))
    }
-   const rarityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setItemData((itemData) => ({
-         ...itemData,
-         inputData: {
-            ...itemData.inputData,
-            rarity: e.target.value
-         }
-      }))
+
+   const items = () => {
+      // filters items in githubData and then sorts them then returns items from selected type as JSX.Element array
+      // runs after typeChange()
+      if (!itemData.dataFromGithub) return
+      const selectedTypeItems = Object.values(itemData.dataFromGithub).flatMap((item) => {
+         if (item.type === itemData.inputData.type) return item
+         return []
+      })
+      const sortedItems = selectedTypeItems.sort((a, b) => a.name.localeCompare(b.name))
+      return sortedItems.map((item, i) => {
+         return (
+            <option key={i} value={item.id}>
+               {item.name}
+            </option>
+         )
+      })
    }
 
-   const items = () =>
-      Object.values(itemData.dataFromGithub?.[itemData.inputData.type] || {}).map((item) => (
-         <option key={item.id} value={item.id}>
-            {item.name}
-         </option>
-      ))
-
    const itemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedItem = itemData.dataFromGithub?.[itemData.inputData.type]?.[e.target.value]
+      // after item is selected saves item data // that also triggers display update
+      const selectedItem = itemData.dataFromGithub?.[e.target.value]
       if (!selectedItem) return
       setItemData((itemData) => ({
          ...itemData,
-         perkData: {
-            ...itemData.perkData,
-            id: selectedItem.id as number,
+         ItemData: {
+            id: selectedItem.id,
             name: selectedItem.name,
-            itemId: selectedItem.itemId as number,
+            itemId: selectedItem.itemId,
             itemName: selectedItem.itemName,
             lastUpdate: new Date(selectedItem.lastUpdate).toLocaleString(),
-            stats: selectedItem.stats,
-            descriptions: {
-               mainEditor: selectedItem.editor?.mainEditor,
-               secondaryEditor: selectedItem.editor?.secondaryEditor
-            }
+            stats: selectedItem.stats
+         },
+         dataFromEditor: {
+            converted: {
+               mainEditor: selectedItem.description,
+               secondaryEditor: selectedItem.simpleDescription
+            },
+            original: selectedItem.editor
          }
       }))
    }
@@ -59,18 +64,33 @@ export function Selection() {
    return (
       <div className={styles.selection_list}>
          <select onChange={(e) => typeChange(e)}>
-            <option value="none">Select description type</option>
-            <option value="armorExotic">Exotic Armor</option>
-            <option value="armorMods">Armor Mod</option>
-            <option value="weaponExotic">Exotic Weapon</option>
-            <option value="weaponPerks">Weapon Perk</option>
-            <option value="weaponFrames">Weapon Frame</option>
-            <option value="weaponMods">Weapon Mod</option>
-         </select>
-         <select onChange={(e) => rarityChange(e)}>
-            <option value="undefined">Rarity All</option>
-            <option value="normal">Rarity Normal</option>
-            <option value="exotic">Rarity Exotic</option>
+            <option>Select description type</option>
+
+            <optgroup label="Armor">
+               <option value="armorExotic">Exotic Armor</option>
+               <option value="armorMod">Armor Mod</option>
+            </optgroup>
+
+            <optgroup label="Exotic Weapon">
+               <option value="weaponPerkExotic">Exotic Weapon Perk</option>
+               <option value="weaponFrameExotic">Exotic Weapon Frame</option>
+               <option value="weaponCatalystExotic">Exotic Weapon catalyst</option>
+            </optgroup>
+
+            <optgroup label="Exotic Weapon">
+               <option value="weaponPerk">Weapon Perk</option>
+               <option value="weaponPerkEnhanced">Weapon Perk Enhanced</option>
+            </optgroup>
+
+            <optgroup label="Weapon">
+               <option value="weaponFrame">Weapon Frame</option>
+               <option value="weaponMod">Weapon Mod</option>
+            </optgroup>
+
+            <optgroup label="Other">
+               <option value="ghostMod">Ghost Mod</option>
+            </optgroup>
+
          </select>
          <select onChange={(e) => itemChange(e)}>{items()}</select>
       </div>

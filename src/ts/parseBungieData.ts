@@ -1,10 +1,5 @@
-type itemInfo = {
-   id: number
-   name: string
-   armorId?: number
-   armorName?: string
-   description: string
-}
+import { ItemData } from "src/interfaces_2"
+
 
 const fetchBungie = async (id: string): Promise<any> => {
    return new Promise((resolve, reject) => {
@@ -22,7 +17,7 @@ const fetchBungie = async (id: string): Promise<any> => {
 }
 
 export function getDataFromBungie(id: string) {
-   const extractFromArmor = async (item: any): Promise<itemInfo> => {
+   const extractFromArmor = async (item: any): Promise<ItemData> => {
       const armorPerkId = item.sockets.socketEntries[11].singleInitialItemHash
       const perk = await fetchBungie(armorPerkId)
       let itemData = {
@@ -30,18 +25,18 @@ export function getDataFromBungie(id: string) {
          name: perk.displayProperties.name,
          armorId: item.hash,
          armorName: item.displayProperties.name,
-         description: perk.displayProperties.description
+         lastUpdate: 'Never'
       }
       return itemData
    }
-   const extractFromMod = (item: any): itemInfo => {
+   const extractFromEverythingElse = (item: any): ItemData => {
       return {
          id: item.hash,
          name: item.displayProperties.name,
-         description: item.displayProperties.description
+         lastUpdate: 'Never'
       }
    }
    return fetchBungie(id)
-      .then((item) => (item.itemType == 2 ? extractFromArmor(item) : extractFromMod(item)))
+      .then((item) => (item.itemType == 2 ? extractFromArmor(item) : extractFromEverythingElse(item)))
       .catch(console.error)
 }

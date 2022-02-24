@@ -3,41 +3,46 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 
 import { getDataFromBungie } from '@ts/parseBungieData'
 import styles from '@styles/sideBar/Button.module.scss'
-import { useContext, useRef } from 'react'
+import { useContext } from 'react'
 
 type fnNames = 'addBungieData' | 'download' | 'uploadClovis' | 'uploadIce'
 export function Button({ labelText, fnName }: { labelText: string; fnName?: fnNames }) {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
 
-   const idPresent = itemData.perkData.id ? true : false
-   const typePresent = itemData.inputData.type != 'none' ? true : false
+   const idPresent = itemData.ItemData.id ? true : false
+   const typePresent = itemData.inputData.type ? true : false
+   const loginPresent = localStorage.getItem('login') ? true : false
 
    const errorMessage = () => {
-      const message = [`${idPresent ? '' : 'Id is missing'}`, `${typePresent ? '' : 'Type is missing'}`]
+      const message = [
+         `${idPresent ? '' : 'Id is missing'}`,
+         `${typePresent ? '' : 'Type is missing'}`,
+         `${loginPresent ? '' : 'Login to upload'}`,
+      ]
          .join('\n')
          .trim()
 
       setItemData({
          ...itemData,
-         error: message
+         message
       })
-      setTimeout(() => {
+      setTimeout(() => { // clear message
          setItemData({
             ...itemData,
-            error: ''
+            message: ''
          })
       }, 15000)
    }
 
-   const allowUpload = idPresent && typePresent ? true : false
+   const allowUpload = idPresent && typePresent && loginPresent ? true : false
    const functions = {
       addBungieData: () =>
-         getDataFromBungie(itemData.inputData.inputId).then((data) =>
+         getDataFromBungie(itemData.inputData.id).then((data) =>
             setItemData({
                ...itemData,
-               perkData: {
-                  ...itemData.perkData,
+               ItemData: {
+                  ...itemData.ItemData,
                   ...data
                }
             })

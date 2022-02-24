@@ -87,9 +87,8 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
    useEffect(() => {
       // set new descriptions on perk change to editor
       if (!editor) return
-      const type = itemData.inputData.type,
-         id = itemData.perkData.id,
-         selectedPerk = itemData.dataFromGithub?.[type][id]
+      const id = itemData.ItemData.id,
+         selectedPerk = itemData.dataFromGithub?.[id]
 
       const description = selectedPerk?.editor?.mainEditor || '',
          simpleDescription = selectedPerk?.editor?.secondaryEditor || ''
@@ -101,7 +100,7 @@ export default function Editor({ onMount }: { onMount: () => Editors }) {
       editor.normal.secondary.setValue(simpleDescription)
       editor.diff.secondary.getModifiedEditor().setValue(simpleDescription)
       editor.diff.secondary.getOriginalEditor().setValue(simpleDescription)
-   }, [itemData.perkData.id])
+   }, [itemData.ItemData.id])
 
    return (
       <div className="editor-container">

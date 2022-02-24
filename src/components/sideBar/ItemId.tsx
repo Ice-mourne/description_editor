@@ -8,7 +8,7 @@ export function ItemId() {
    const setItemData = useContext(setItemData_context)
 
    const setItemId = (event: React.ChangeEvent<HTMLInputElement>) => {
-      itemData.inputData.inputId = event.target.value
+      itemData.inputData.id = event.target.value
       return setItemData(itemData)
    }
    return (

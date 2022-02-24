@@ -4,7 +4,7 @@ import { useContext } from 'react'
 
 export function BasicInfo() {
    const itemData = useContext(itemData_context),
-      perkData = itemData.perkData
+      perkData = itemData.ItemData
 
    function option(): JSX.Element {
       switch (itemData.inputData.type) {
@@ -21,13 +21,33 @@ export function BasicInfo() {
                   <span id="input_id">{perkData.id || ''}</span>
                </>
             )
-         case 'armorMods':
-         case 'weaponMods':
+         case 'armorMod':
+         case 'weaponMod':
+         case 'ghostMod':
             return (
                <>
                   <label>Mod name</label>
                   <span id="input_item_name">{perkData.name || ''}</span>
                   <label>Mod id</label>
+                  <span id="input_item_id">{perkData.id || ''}</span>
+               </>
+            )
+         case 'weaponFrameExotic':
+         case 'weaponFrame':
+            return (
+               <>
+                  <label>Frame name</label>
+                  <span id="input_item_name">{perkData.name || ''}</span>
+                  <label>Frame id</label>
+                  <span id="input_item_id">{perkData.id || ''}</span>
+               </>
+            )
+         case 'weaponCatalystExotic':
+            return (
+               <>
+                  <label>Catalyst name</label>
+                  <span id="input_item_name">{perkData.name || ''}</span>
+                  <label>Catalyst id</label>
                   <span id="input_item_id">{perkData.id || ''}</span>
                </>
             )
@@ -47,7 +67,7 @@ export function BasicInfo() {
       <div className={styles.info_display}>
          {option()}
          <label>Last update</label>
-         <span id="input_item_id">{itemData.perkData.lastUpdate}</span>
+         <span id="input_item_id">{itemData.ItemData.lastUpdate}</span>
       </div>
    )
 }

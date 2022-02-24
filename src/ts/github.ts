@@ -1,21 +1,10 @@
-import {
-   ClarityDescription,
-   DataToSend,
-   FetchOptionsGet,
-   FetchOptionsPut,
-   GithubData,
-   ItemDataTemplate,
-   Items,
-   RespJson,
-   Stats
-} from '@interfaces'
+import { ClarityDescriptionWithEditor, ItemDataTemplate } from 'src/interfaces_2'
 
 function removeEmptyFromObj<T>(dirtyObject: T): T {
    const obj = { ...dirtyObject }
    const remover = (obj: any) => {
       for (const key in obj) {
          if (obj[key] === null || obj[key] === '') delete obj[key]
-         // if (obj[key]?.[0] === 0 && obj[key]?.length === 1) delete obj[key] // if [0] remove
          if (!obj[key] || typeof obj[key] !== 'object') continue
          remover(obj[key])
          if (Object.keys(obj[key]).length === 0) delete obj[key]
@@ -25,6 +14,10 @@ function removeEmptyFromObj<T>(dirtyObject: T): T {
    return remover(obj)
 }
 
+interface GithubData {
+   sha: string
+   content: ClarityDescriptionWithEditor
+}
 async function handleResponse(resp: Response): Promise<GithubData> {
    const displayMessage = (msg: string) => {
       const messageContainer = document.querySelector<HTMLDivElement>('#message')
@@ -36,6 +29,10 @@ async function handleResponse(resp: Response): Promise<GithubData> {
       }
    }
 
+   interface RespJson {
+      content: string
+      sha: string
+   }
    const respJson: RespJson = await resp.json()
    if (resp.status !== 200) {
       const message: string = (<any>respJson).message
@@ -50,7 +47,11 @@ async function handleResponse(resp: Response): Promise<GithubData> {
    }
 }
 
-const key = localStorage.getItem('key') as string
+interface Login {
+   name: string
+   key: string
+}
+const login = JSON.parse(localStorage.getItem('login') || '{}') as Login
 const fetchUrl = {
    getDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/clarity-database/contents/descriptions.json',
    getDescriptionIce: 'https://api.github.com/repos/Ice-mourne/clarity-database/contents/descriptions.json',
@@ -60,31 +61,38 @@ const fetchUrl = {
    putDescriptionIce: 'https://api.github.com/repos/Ice-mourne/clarity-database/contents/descriptions.json'
 }
 
-export async function githubGet(option: FetchOptionsGet): Promise<GithubData> {
+type FetchOptionsGet = 'getDescriptionClovis' | 'getDescriptionIce' | 'getRateLimit'
+export async function githubGet(option: FetchOptionsGet): Promise<GithubData | undefined> {
+   if (!login.key) return
    const resp = await fetch(fetchUrl[option], {
       method: 'GET',
       mode: 'cors',
       headers: {
-         authorization: `token ${atob(key)}`,
+         authorization: `token ${atob(login.key)}`,
          accept: 'application/vnd.github.v3+json'
       }
    })
    return await handleResponse(resp)
 }
 
+type FetchOptionsPut = 'putDescriptionClovis' | 'putDescriptionIce'
+export interface DataToSend {
+   sha: string
+   content: string
+}
 async function githubPut(option: FetchOptionsPut, data: DataToSend) {
    const resp = await fetch(fetchUrl[option], {
       method: 'PUT',
       mode: 'cors',
       headers: {
-         authorization: `token ${atob(key)}`,
+         authorization: `token ${atob(login.key)}`,
          accept: 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
          sha: data.sha,
          branch: 'main',
          message: `Updated ${new Date().toLocaleString()}`,
-         content: btoa(`${JSON.stringify(data.content, null, 2)}\n`)
+         content: btoa(`${data.content}\n`)
       })
    })
    handleResponse(resp)
@@ -92,17 +100,17 @@ async function githubPut(option: FetchOptionsPut, data: DataToSend) {
 
 export async function getDataFromGithub() {
    const githubData = await githubGet('getDescriptionClovis')
-   if (!githubData.content) return
+   if (!githubData?.content) return
    return githubData.content
 }
 
 export async function uploadDescriptionClovis(itemData: ItemDataTemplate) {
-   const perkData = itemData.perkData,
+   const perkData = itemData.ItemData,
       editorConverted = itemData.dataFromEditor.converted,
       editorOriginal = itemData.dataFromEditor.original
 
    // converts stats from string to string[]
-   const statConverter = (stats?: Stats) => {
+   const statConverter = (stats?: { [key: string]: any }) => {
       if (!stats) return
       const statsToSend = { ...stats }
       const converter = (stats: any) => {
@@ -119,75 +127,45 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate) {
    }
 
    const item = {
-      name: perkData.name,
-      id: perkData.id,
-      armorName: perkData.itemName,
-      armorId: perkData.itemId,
+      ...perkData,
+      type: itemData.inputData.type,
       stats: statConverter(perkData.stats),
       description: editorConverted.mainEditor,
       simpleDescription: editorConverted.secondaryEditor,
-      editor: {
-         mainEditor: editorOriginal.mainEditor,
-         secondaryEditor: editorOriginal.secondaryEditor
-      },
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
+      updatedBy: login.name
    }
 
    const githubData = await githubGet('getDescriptionClovis')
-   const dataToSend: DataToSend = {
-      sha: githubData.sha,
-      content: {
-         ...githubData.content,
-         [itemData.inputData.type]: {
-            ...githubData.content[itemData.inputData.type],
-            [item.id]: item
-         }
+   if (!githubData) return
+   const cleanObj = removeEmptyFromObj({
+      ...githubData.content,
+      [item.id]: {
+         ...item,
+         editor: editorOriginal
       }
-   }
-   const cleanDataToSend = removeEmptyFromObj(dataToSend)
-   githubPut('putDescriptionClovis', cleanDataToSend)
-   return cleanDataToSend
+   })
+
+   githubPut('putDescriptionClovis', {
+      sha: githubData.sha,
+      content: JSON.stringify(cleanObj, null, 2)
+   })
+   return item
 }
 
 export async function uploadDescriptionIce(itemData: ItemDataTemplate) {
-   const dataToSend = await uploadDescriptionClovis(itemData)
+   const item = await uploadDescriptionClovis(itemData)
    const githubData_ice = await githubGet('getDescriptionIce')
+   if (!githubData_ice || !item) return
 
-   //todo: i only wan't to update single item not copy database
-
-   // remove data used only by editor
-   // const removeEditorData = (idItemObjectArr: { [key: string]: Items }) =>
-   //    Object.entries(idItemObjectArr).reduce((acc, [id, item]) => {
-   //       delete item.editor
-   //       return {
-   //          ...acc,
-   //          [id]: item
-   //       }
-   //    }, {} as { [key: string]: Items })
-
-   // const descriptions: Array<[string, { [key: string]: Items }]> = Object.entries(dataToSend.content)
-   // const cleanContent = descriptions.reduce((acc, [itemType, idItemObjectArr]) => {
-   //    return {
-   //       ...acc,
-   //       [itemType]: removeEditorData(idItemObjectArr)
-   //    }
-   // }, {} as ClarityDescription)
-
-   const removeEditorData = (data: DataToSend) => {
-      const cleanData = { ...data }
-      type key = keyof DataToSend['content'];
-      for (const key in data.content) {
-         const itemsObj = data.content[key as key]
-         for (const key in itemsObj) {
-            itemsObj[key].editor = undefined
-         }
-      }
-      return cleanData
-   }
+   const cleanObj = removeEmptyFromObj({
+      ...githubData_ice.content,
+      [item.id]: item
+   })
 
    githubPut('putDescriptionIce', {
       sha: githubData_ice.sha,
-      content: removeEditorData(dataToSend).content
+      content: JSON.stringify(cleanObj)
    })
 }
 
@@ -196,6 +174,6 @@ export async function getUnauthorizedDescription() {
       method: 'GET',
       mode: 'cors'
    })
-   const json: ClarityDescription = await resp.json()
+   const json: ClarityDescriptionWithEditor = await resp.json()
    return json
 }

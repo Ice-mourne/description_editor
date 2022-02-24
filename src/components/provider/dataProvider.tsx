@@ -1,6 +1,7 @@
-import { ClarityDescription, ItemDataTemplate } from '@interfaces'
+// import { ClarityDescription } from '@interfaces'
 import React, { useEffect, useState } from 'react'
-import { getDataFromGithub, getUnauthorizedDescription, githubGet } from '@ts/github'
+import { getUnauthorizedDescription, githubGet } from '@ts/github'
+import { ItemDataTemplate } from 'src/interfaces_2'
 
 export const itemData_context = React.createContext({} as ItemDataTemplate)
 export const setItemData_context = React.createContext({} as React.Dispatch<React.SetStateAction<ItemDataTemplate>>)
@@ -8,52 +9,27 @@ export const setItemData_context = React.createContext({} as React.Dispatch<Reac
 export function DataProvider({ children }: { children: JSX.Element }) {
    const [itemDataTemplate, setItemData] = useState<ItemDataTemplate>({
       inputData: {
-         inputId: '',
-         type: 'none',
-         rarity: ''
+         id: '',
+         type: undefined,
       },
-      perkData: {
+      ItemData: {
          id: 0,
-         name: 'Fading Memory',
-         itemId: undefined,
-         itemName: undefined,
-         lastUpdate: '',
-         // descriptions: { // just remove this is not used anywhere most likely
-         //    mainEditor: '',
-         //    secondaryEditor: ''
-         // }
+         name: '',
+         lastUpdate: ''
       },
       dataFromEditor: {
          converted: {
-            mainEditor: {},
-            secondaryEditor: {}
+            mainEditor: [],
+            secondaryEditor: []
          },
          original: {
             mainEditor: '',
             secondaryEditor: ''
          }
       },
-      dataFromGithub: {} as ClarityDescription,
-      error: ''
+      dataFromGithub: {},
+      message: ''
    })
-
-   const newData = {
-      inputData: {
-         Id: '',
-         descriptionType: 'none',
-         rarity: ''
-         
-      },
-      perkData: {
-         id: 0,
-         name: '',
-         itemId: 0,              // optional
-         itemName: '',           // optional
-         stats: {},              // optional
-         advanceStats: {},       // optional
-         lastUpdate: '',
-      },
-   }
 
    useEffect(() => {
       getUnauthorizedDescription().then((data) => {

@@ -1,7 +1,7 @@
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import { useContext, useEffect, useState } from 'react'
 
-import { ItemDataTemplate } from '@interfaces'
+import { ItemDataTemplate } from 'src/interfaces_2'
 import styles from '@styles/sideBar/StatSelection.module.scss'
 
 export function StatSelection() {
@@ -35,19 +35,19 @@ export function StatSelection() {
       nameIndex: number
    ) => {
       const statValues = (itemData: ItemDataTemplate) => ({
-         ...itemData.perkData.stats?.[statList[nameIndex]],
+         ...itemData.ItemData.stats?.[statList[nameIndex]],
          [activePassive]: {
-            ...itemData.perkData.stats?.[statList[nameIndex]]?.[activePassive],
+            ...itemData.ItemData.stats?.[statList[nameIndex]]?.[activePassive],
             [multiStat]: e.target.value
          }
       })
 
       setItemData((itemData) => ({
          ...itemData,
-         perkData: {
-            ...itemData.perkData,
+         ItemData: {
+            ...itemData.ItemData,
             stats: {
-               ...itemData.perkData.stats,
+               ...itemData.ItemData.stats,
                [statList[nameIndex]]: statValues(itemData)
             }
          }
@@ -55,10 +55,11 @@ export function StatSelection() {
    }
 
    useEffect(() => {
-      if (!itemData.perkData.stats) return
       setSelectedStats(() => ({}))
-      Object.entries(itemData.perkData.stats).forEach(([stat, statValue]) => {
+      if (!itemData.ItemData.stats) return
+      Object.entries(itemData.ItemData.stats).forEach(([stat, statValue]) => {
          const statIndex = statList.indexOf(stat)
+         debugger
          setSelectedStats((stat) => ({
             ...stat,
             [statIndex]: {
@@ -67,11 +68,11 @@ export function StatSelection() {
             }
          }))
       })
-   }, [itemData.perkData.id])
+   }, [itemData.ItemData.id])
 
    type statMulti = 'stat' | 'multiplier'
    const newValue = (statName: string, passiveActive: activePassive, statMulti: statMulti) => {
-      const stat = itemData.perkData.stats?.[statName]?.[passiveActive]?.[statMulti]
+      const stat = itemData.ItemData.stats?.[statName]?.[passiveActive]?.[statMulti]
       if (typeof stat == 'string') return stat
       if (stat) return stat.join(', ')
       return ''

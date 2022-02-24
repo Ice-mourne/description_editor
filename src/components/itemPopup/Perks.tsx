@@ -26,7 +26,7 @@ export function Perks() {
                <div className={`${styles.icon_container} ${styles.icon_container_active}`}>
                   <img src="https://bungie.net/common/destiny2_content/icons/f2ff6ea4498ad2d808b4af21e93cf5fe.png" />
                </div>
-               <div className={`${styles.name} ${styles.name_active}`}>{itemData?.perkData.name}</div>
+               <div className={`${styles.name} ${styles.name_active}`}>{itemData?.ItemData.name}</div>
             </div>
          </div>
       )

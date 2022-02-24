@@ -23,8 +23,8 @@ export function getDataFromBungie(id: string) {
       let itemData = {
          id: perk.hash,
          name: perk.displayProperties.name,
-         armorId: item.hash,
-         armorName: item.displayProperties.name,
+         itemId: item.hash,
+         itemName: item.displayProperties.name,
          lastUpdate: 'Never'
       }
       return itemData

@@ -27,11 +27,13 @@ export function Selection() {
          if (item.type === itemData.inputData.type) return item
          return []
       })
-      const sortedItems = selectedTypeItems.sort((a, b) => a.name.localeCompare(b.name))
+      const sortedItems = selectedTypeItems.sort((a, b) =>
+         a.itemName && b.itemName ? a.itemName.localeCompare(b.itemName) : a.name.localeCompare(b.name)
+      )
       return sortedItems.map((item, i) => {
          return (
             <option key={i} value={item.id}>
-               {item.name}
+               {item.itemName || item.name}
             </option>
          )
       })
@@ -90,7 +92,6 @@ export function Selection() {
             <optgroup label="Other">
                <option value="ghostMod">Ghost Mod</option>
             </optgroup>
-
          </select>
          <select onChange={(e) => itemChange(e)}>{items()}</select>
       </div>

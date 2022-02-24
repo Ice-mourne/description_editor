@@ -5,7 +5,7 @@ export function Sockets() {
       <div className={styles.item_sockets}>
          <img
             className={styles.frame_img}
-            src="https://www.bungie.net/common/destiny2_content/icons/0ce2f3a9046c3b1e2fc007d903563e66.png"
+            src="https://www.bungie.net/common/destiny2_content/icons/2a53b9dc2c9c90d3d8ee224d06368412.png"
          />
          <div className={styles.frame_info}>
             <div>Shadow Frame</div>

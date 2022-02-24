@@ -18,11 +18,10 @@
 }
 .buttons {
    display: grid;
-   grid-template-columns: 30% 30% 30%;
+   grid-template-columns: 30% 40% 30%;
    justify-content: center;
    button {
       background-color: hsl(0, 0%, 20%);
-      color: hsl(0, 0%, 100%);
       padding: 2px 3px;
    }
    button:hover {
@@ -31,4 +30,10 @@
 }
 .stat_container {
    padding: 5px 0 5px 0;
+}
+.active_button {
+   color: hsl(38, 80%, 56%);
+}
+.default_button {
+   color: hsl(0, 0%, 100%);
 }

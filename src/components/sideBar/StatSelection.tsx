@@ -8,7 +8,18 @@ export function StatSelection() {
    const [selectedStats, setSelectedStats] = useState<{ [key: string]: { [key: string]: boolean } }>({})
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
-   const statList = ['range', 'reload', 'handling', 'stability', 'zoom', 'stow', 'draw']
+   const statList = [
+      'range',
+      'reload',
+      'handling',
+      'stability',
+      'zoom',
+      'aimAssist',
+      'chargeDraw',
+      'stow',
+      'draw',
+      'damage'
+   ]
 
    const addRemoveStatInput = (index: number, type: string) =>
       setSelectedStats((stat) => ({
@@ -77,33 +88,25 @@ export function StatSelection() {
       return ''
    }
 
+   const fixStatName = (statName: string) => statName.match(/([A-Z][a-z]+)|([a-z]+)/g)?.join(' ')
+
    const statListTemplate = statList.map((stat, i) => (
       <div className={styles.stat_container} key={i}>
          <div className={styles.buttons}>
-            <button onClick={() => addRemoveStatInput(i, 'active')}>Active</button>
-            <span className={styles.stat_name}>{stat}</span>
-            <button onClick={() => addRemoveStatInput(i, 'passive')}>Passive</button>
+            <button
+               onClick={() => addRemoveStatInput(i, 'active')}
+               className={selectedStats[i]?.active ? styles.active_button : styles.default_button}
+            >
+               Active
+            </button>
+            <span className={styles.stat_name}>{fixStatName(stat)}</span>
+            <button
+               onClick={() => addRemoveStatInput(i, 'passive')}
+               className={selectedStats[i]?.passive ? styles.active_button : styles.default_button}
+            >
+               Passive
+            </button>
          </div>
-
-         {selectedStats[i]?.passive ? (
-            <>
-               <div className={styles.stat_name}>Passive</div>
-               <div className={styles.stat_input}>
-                  <span>Stat</span>
-                  <input
-                     onKeyDown={filterInput}
-                     onChange={(e) => addStatInput(e, 'passive', 'stat', i)}
-                     value={newValue(statList[i], 'passive', 'stat')}
-                  />
-                  <span>Multiplier</span>
-                  <input
-                     onKeyDown={filterInput}
-                     onChange={(e) => addStatInput(e, 'passive', 'multiplier', i)}
-                     value={newValue(statList[i], 'passive', 'multiplier')}
-                  />
-               </div>
-            </>
-         ) : null}
 
          {selectedStats[i]?.active ? (
             <>
@@ -120,6 +123,26 @@ export function StatSelection() {
                      onKeyDown={filterInput}
                      onChange={(e) => addStatInput(e, 'active', 'multiplier', i)}
                      value={newValue(statList[i], 'active', 'multiplier')}
+                  />
+               </div>
+            </>
+         ) : null}
+
+         {selectedStats[i]?.passive ? (
+            <>
+               <div className={styles.stat_name}>Passive</div>
+               <div className={styles.stat_input}>
+                  <span>Stat</span>
+                  <input
+                     onKeyDown={filterInput}
+                     onChange={(e) => addStatInput(e, 'passive', 'stat', i)}
+                     value={newValue(statList[i], 'passive', 'stat')}
+                  />
+                  <span>Multiplier</span>
+                  <input
+                     onKeyDown={filterInput}
+                     onChange={(e) => addStatInput(e, 'passive', 'multiplier', i)}
+                     value={newValue(statList[i], 'passive', 'multiplier')}
                   />
                </div>
             </>

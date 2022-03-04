@@ -68,7 +68,7 @@ export interface ItemData {
    itemId?: number
    itemName?: string
    stats?: { [key: string]: any }
-   lastUpdate: string
+   lastUpdate?: string
    updatedBy?: string
 }
 

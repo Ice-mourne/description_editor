@@ -1,6 +1,5 @@
 import { ItemData } from "src/interfaces_2"
 
-
 const fetchBungie = async (id: string): Promise<any> => {
    return new Promise((resolve, reject) => {
       fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/${id}`, {
@@ -25,7 +24,6 @@ export function getDataFromBungie(id: string) {
          name: perk.displayProperties.name,
          itemId: item.hash,
          itemName: item.displayProperties.name,
-         lastUpdate: 'Never'
       }
       return itemData
    }
@@ -33,7 +31,6 @@ export function getDataFromBungie(id: string) {
       return {
          id: item.hash,
          name: item.displayProperties.name,
-         lastUpdate: 'Never'
       }
    }
    return fetchBungie(id)

@@ -38,15 +38,19 @@ export function Button({ labelText, fnName }: { labelText: string; fnName?: fnNa
    const allowUpload = idPresent && typePresent && loginPresent ? true : false
    const functions = {
       addBungieData: () =>
-         getDataFromBungie(itemData.inputData.id).then((data) =>
+         getDataFromBungie(itemData.inputData.id).then((data) => {
+            if (!data) return
+            const {lastUpdate, updatedBy} = itemData.dataFromGithub?.[data.id] || {}
             setItemData({
                ...itemData,
                ItemData: {
                   ...itemData.ItemData,
+                  lastUpdate: lastUpdate ? new Date(lastUpdate).toLocaleString() : undefined,
+                  updatedBy,
                   ...data
                }
             })
-         ),
+         }),
       download: () =>
          getDataFromGithub().then((data) =>
             setItemData((itemData) => ({

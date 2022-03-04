@@ -1,6 +1,8 @@
 // import { ClarityDescription } from '@interfaces'
+
 import React, { useEffect, useState } from 'react'
 import { getUnauthorizedDescription, githubGet } from '@ts/github'
+
 import { ItemDataTemplate } from 'src/interfaces_2'
 
 export const itemData_context = React.createContext({} as ItemDataTemplate)
@@ -10,7 +12,7 @@ export function DataProvider({ children }: { children: JSX.Element }) {
    const [itemDataTemplate, setItemData] = useState<ItemDataTemplate>({
       inputData: {
          id: '',
-         type: undefined,
+         type: undefined
       },
       ItemData: {
          id: 0,
@@ -33,9 +35,9 @@ export function DataProvider({ children }: { children: JSX.Element }) {
 
    useEffect(() => {
       getUnauthorizedDescription().then((data) => {
+         if (!data) setItemData((itemData) => ({ ...itemData, message: 'AdBlock Error' }))
          setItemData((itemData) => ({ ...itemData, dataFromGithub: data }))
       })
-
       githubGet('getRateLimit').then(console.log)
    }, [])
 

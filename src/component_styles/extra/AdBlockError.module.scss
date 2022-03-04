@@ -1,0 +1,13 @@
+.add_block {
+   top: 30%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   position: absolute;
+   background-color: hsl(0, 1%, 63%);
+   color: hsl(0, 0%, 0%);
+   padding: 15px;
+   margin: 15px 0;
+}

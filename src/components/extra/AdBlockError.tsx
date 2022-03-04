@@ -10,6 +10,8 @@ export default function AdBlockError() {
       <div className={styles.add_block}>
          <h1>Seems like AdBlock is being stupid and blocking description download.</h1>
          <h2>Please disable AdBlock and try again.</h2>
+         <h3>If you use uBlock Origin ctrl + lmb is to disable only for current website.</h3>
+         <h3>Other AdBlockers should have similar option.</h3>
       </div>
    ) : null
 }

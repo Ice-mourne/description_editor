@@ -194,7 +194,7 @@ export function createEditor() {
             },
             {
                label: 'formula_range',
-               insertText: '<formula ${2:In_Game Range:} range_${1:0} />',
+               insertText: '<formula ${2:In-Game Range:} range_${1:0} />',
                ...keywordsSettings
             },
             {

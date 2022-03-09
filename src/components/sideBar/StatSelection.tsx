@@ -31,9 +31,9 @@ export function StatSelection() {
       }))
 
    const filterInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      console.log(e)
+      // console.log(e)
 
-      if (e.key.match(/[0-9]|[ ,.]|Backspace|Delete|Arrow(Left|Right)/)) return
+      if (e.key.match(/[0-9]|[ ,.-]|Backspace|Delete|Arrow(Left|Right)/)) return
       if (e.key.match(/[axv]|[zy]/i) && e.ctrlKey) return
       e.preventDefault()
    }

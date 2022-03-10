@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 
-import styles from '@styles/sideBar/Selection.module.scss'
 import { SelectableType } from 'src/interfaces_2'
+import styles from '@styles/sideBar/Selection.module.scss'
 
 export function Selection() {
    const setItemData = useContext(setItemData_context)
@@ -70,24 +70,22 @@ export function Selection() {
             <option>Select description type</option>
 
             <optgroup label="Armor">
-               <option value="armorExotic">Exotic Armor</option>
-               <option value="armorMod">Armor Mod</option>
+               <option value="armorExotic">Exotic</option>
+               <option value="armorMod">Mod</option>
             </optgroup>
 
             <optgroup label="Exotic Weapon">
-               <option value="weaponPerkExotic">Exotic Weapon Perk</option>
-               <option value="weaponFrameExotic">Exotic Weapon Frame</option>
-               <option value="weaponCatalystExotic">Exotic Weapon catalyst</option>
-            </optgroup>
-
-            <optgroup label="Exotic Weapon">
-               <option value="weaponPerk">Weapon Perk</option>
-               <option value="weaponPerkEnhanced">Weapon Perk Enhanced</option>
+               <option value="weaponPerkExotic">Perk</option>
+               <option value="weaponFrameExotic">Frame</option>
+               <option value="weaponCatalystExotic">Catalyst</option>
             </optgroup>
 
             <optgroup label="Weapon">
-               <option value="weaponFrame">Weapon Frame</option>
-               <option value="weaponMod">Weapon Mod</option>
+               <option value="weaponPerk">Perk</option>
+               <option value="weaponPerkEnhanced">Enhanced Perk</option>
+               <option value="weaponOriginTrait">Origin Trait</option>
+               <option value="weaponFrame">Frame</option>
+               <option value="weaponMod">Mod</option>
             </optgroup>
 
             <optgroup label="Other">

@@ -87,6 +87,7 @@ const splitTableColumns_new = (description: LinesWithClassNames[]): SplitTableCo
    })
 
 import { Description } from 'src/interfaces_2'
+
 const assignTextClassNames = (description: SplitTableColumns[]): Description[] => {
    const convertText = (text: string) => {
       const regStart = [
@@ -104,6 +105,7 @@ const assignTextClassNames = (description: SplitTableColumns[]): Description[] =
       return textArr.flatMap((text) => {
          if (text.trim() === '') return []
          if (!text.match(/^(<|\|)/)) return { text: text } // check if text starts with < or |
+         if (text.trim() === '|') return { text: ' ' } // check if text is empty table cell
          const isFormula = text.includes('<formula')
          const isTitle = text.includes('<title')
 

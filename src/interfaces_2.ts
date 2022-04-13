@@ -52,7 +52,7 @@ export interface ClarityDescription {
    [key: string]: Item
 }
 
-interface ItemWithEditor extends Item {
+export interface ItemWithEditor extends Item {
    editor: {
       mainEditor: string
       secondaryEditor: string

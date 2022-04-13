@@ -226,7 +226,7 @@ export function createEditor() {
             //--- title stuff
             {
                label: 'title',
-               insertText: '<title ${1: } [${1: }] />',
+               insertText: '<title ${1: } [${2: }] />',
                ...keywordsSettings
             }
          ]

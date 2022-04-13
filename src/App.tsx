@@ -7,6 +7,7 @@ import AdBlockError from '@components/extra/AdBlockError'
 import { DataProvider } from '@components/provider/dataProvider'
 import Editor from '@components/editor/Editor'
 import { Message } from '@components/sideBar/Message'
+import { PerkLinking } from '@components/sideBar/PerkLinking'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { createEditor } from './ts/editor'
@@ -30,6 +31,7 @@ function App() {
             </div>
             <Selection />
             <BasicInfo />
+            <PerkLinking />
             <Button labelText="Change Editor" />
             <Button labelText="Get updated data" fnName="download" />
             <StatSelection />

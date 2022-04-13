@@ -115,7 +115,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate) {
       const statsToSend = { ...stats }
       const converter = (stats: any) => {
          for (const key in stats) {
-            if (typeof stats[key] == 'string') {
+            if (typeof stats[key] == 'string' && stats[key] != '') {
                stats[key] = stats[key].split(',').map((stat: string) => Number(stat))
             }
             if (typeof stats[key] != 'object') continue

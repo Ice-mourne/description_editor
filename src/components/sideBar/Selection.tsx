@@ -18,6 +18,17 @@ export function Selection() {
          }
       }))
    }
+   const randomEmoji = () => {
+      // generates random emoji
+      const emojis = [
+         '🍉', '🍊', '🍌', '🍍', '🍎', '🍏', '🍑', '🍒', '🍓', '🍔',
+         '🍕', '🍖', '🍗', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍞',
+         '🍟', '🍠', '🍡', '🍢', '🍣', '🍤', '🍥', '🍦', '🍧', '🍨',
+         '🍩', '🍪', '🍫', '🍬', '🍭', '🍮', '🍯', '🍰', '🍱', '🍲',
+         '🍵', '🍶', '🍷', '🍸', '🍹', '🍺', '🍻', '🍾', '🍿', '🎂'
+      ]
+      return emojis[Math.floor(Math.random()*emojis.length)]
+   }
 
    const items = () => {
       // filters items in githubData and then sorts them then returns items from selected type as JSX.Element array
@@ -33,7 +44,7 @@ export function Selection() {
       return sortedItems.map((item, i) => {
          return (
             <option key={i} value={item.id}>
-               {`${item.itemName || item.name}${item.inLiveDatabase ? ' 🍖' : ''}`}
+               {`${item.itemName || item.name}${!item.notInLiveDatabase ? `${randomEmoji()}` : ''}`}
             </option>
          )
       })

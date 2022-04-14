@@ -104,7 +104,7 @@ export async function getDataFromGithub() {
    return githubData.content
 }
 
-export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLiveDatabase = false) {
+export async function uploadDescriptionClovis(itemData: ItemDataTemplate, notInLiveDatabase = true) {
    const perkData = itemData.ItemData,
       editorConverted = itemData.dataFromEditor.converted,
       editorOriginal = itemData.dataFromEditor.original
@@ -134,7 +134,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLive
       simpleDescription: editorConverted.secondaryEditor,
       lastUpdate: Date.now(),
       updatedBy: login.username,
-      inLiveDatabase
+      notInLiveDatabase
    }
 
    const githubData = await githubGet('getDescriptionClovis')
@@ -155,7 +155,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLive
 }
 
 export async function uploadDescriptionIce(itemData: ItemDataTemplate) {
-   const item = await uploadDescriptionClovis(itemData, true)
+   const item = await uploadDescriptionClovis(itemData, false)
    const githubData_ice = await githubGet('getDescriptionIce')
    if (!githubData_ice || !item) return
 

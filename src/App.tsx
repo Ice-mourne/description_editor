@@ -6,6 +6,7 @@ import { Header, Note, Perks, Sockets, Stats } from '@ItemPopup'
 import AdBlockError from '@components/extra/AdBlockError'
 import { DataProvider } from '@components/provider/dataProvider'
 import Editor from '@components/editor/Editor'
+import { HotKeys } from '@components/extra/HotKeys'
 import { Message } from '@components/sideBar/Message'
 import { PerkLinking } from '@components/sideBar/PerkLinking'
 import React from 'react'
@@ -41,6 +42,7 @@ function App() {
             <Login />
          </div>
          <AdBlockError />
+         <HotKeys />
       </>
    )
 }

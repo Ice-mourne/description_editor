@@ -44,7 +44,7 @@ export function Selection() {
       return sortedItems.map((item, i) => {
          return (
             <option key={i} value={item.id}>
-               {`${item.itemName || item.name}${!item.notInLiveDatabase ? `${randomEmoji()}` : ''}`}
+               {`${item.itemName || item.name}${item.inLiveDatabase ? `` : ` ${randomEmoji()}`}`}
             </option>
          )
       })

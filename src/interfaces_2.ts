@@ -57,7 +57,7 @@ export interface ItemWithEditor extends Item {
       mainEditor: string
       secondaryEditor: string
    }
-   notInLiveDatabase?: boolean
+   inLiveDatabase?: boolean
 }
 export interface ClarityDescriptionWithEditor {
    [key: string]: ItemWithEditor

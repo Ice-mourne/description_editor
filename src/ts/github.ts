@@ -104,7 +104,7 @@ export async function getDataFromGithub() {
    return githubData.content
 }
 
-export async function uploadDescriptionClovis(itemData: ItemDataTemplate, notInLiveDatabase = true) {
+export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLiveDatabase = false) {
    const perkData = itemData.ItemData,
       editorConverted = itemData.dataFromEditor.converted,
       editorOriginal = itemData.dataFromEditor.original
@@ -134,7 +134,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, notInL
       simpleDescription: editorConverted.secondaryEditor,
       lastUpdate: Date.now(),
       updatedBy: login.username,
-      notInLiveDatabase
+      inLiveDatabase
    }
 
    const githubData = await githubGet('getDescriptionClovis')
@@ -155,7 +155,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, notInL
 }
 
 export async function uploadDescriptionIce(itemData: ItemDataTemplate) {
-   const item = await uploadDescriptionClovis(itemData, false)
+   const item = await uploadDescriptionClovis(itemData, true)
    const githubData_ice = await githubGet('getDescriptionIce')
    if (!githubData_ice || !item) return
 
@@ -175,7 +175,7 @@ export async function getUnauthorizedDescription() {
       method: 'GET',
       mode: 'cors'
    })
-   .then(resp => resp.json())
-   .then(json => json as ClarityDescriptionWithEditor)
-   .catch(err => undefined)
+      .then((resp) => resp.json())
+      .then((json) => json as ClarityDescriptionWithEditor)
+      .catch((err) => undefined)
 }

@@ -15,3 +15,26 @@
       }
    }
 }
+
+.xMark {
+   svg {
+      height: 18px;
+   }
+}
+
+.linkedWith {
+   display: flex;
+   flex-direction: row;
+   justify-content: space-between;
+}
+
+.button {
+   background-color: hsl(0, 0%, 20%);
+   color: hsl(0, 0%, 100%);
+   padding: 2px 3px;
+   margin: 2px 0 2px 0;
+   width: 100%;
+}
+.button:hover {
+   color: hsl(38, 80%, 56%);
+}

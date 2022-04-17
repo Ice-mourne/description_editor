@@ -12,6 +12,8 @@ export function PerkLinking() {
    const [selectedType, setSelectedType] = useState<SelectableType | undefined>(undefined)
    const [selectedPerk, setSelectedPerk] = useState('')
    const [linkedPerks, setLinkedPerks] = useState<Set<ItemWithEditor | undefined>>(new Set())
+   console.log(linkedPerks)
+   
 
    const typeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       // saves selected item type to itemData.inputData.type
@@ -100,9 +102,9 @@ export function PerkLinking() {
          <div>Linked With</div>
          <div>
             {Array.from(linkedPerks).map((perk, i) => (
-               <div key={i}>
+               <div key={i} className={styles.linkedWith}>
                   <div>{`${fixTypeName(perk?.type)} - ${perk?.itemName || perk?.name}`}</div>
-                  <div onClick={() => removePerk(perk)}>
+                  <div onClick={() => removePerk(perk)} className={styles.xMark}>
                      <XMark />
                   </div>
                </div>

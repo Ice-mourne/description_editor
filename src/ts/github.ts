@@ -134,7 +134,7 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLive
       simpleDescription: editorConverted.secondaryEditor,
       lastUpdate: Date.now(),
       updatedBy: login.username,
-      inLiveDatabase
+      // inLiveDatabase
    }
 
    const githubData = await githubGet('getDescriptionClovis')
@@ -143,7 +143,8 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLive
       ...githubData.content,
       [item.id]: {
          ...item,
-         editor: editorOriginal
+         editor: editorOriginal,
+         inLiveDatabase
       }
    })
 

@@ -1,43 +1,23 @@
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import { uploadDescriptionClovis, uploadDescriptionIce } from '@ts/github'
-import { useCallback, useContext, useEffect, useState } from 'react'
-
-function eventHandler(handler: Function) {
-   useEffect(() => {
-      const listener = (e: KeyboardEvent) => {
-         handler(e)
-      }
-
-      const target = document.querySelector('body') as HTMLElement
-      target.addEventListener('keydown', listener)
-
-      return () => {
-         target.removeEventListener('keydown', listener)
-      }
-   }, [handler])
-}
+import { useContext, useEffect, useState } from 'react'
 
 export function HotKeys() {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
 
    const [pressTimeout, setPressTimeout] = useState<number | null>(null)
-   const [keyboardEvent, setKeyboardEvent] = useState<React.KeyboardEvent<HTMLDivElement> | null>(null)
 
-   const eventCallback = useCallback(
-      (event) => {
-         setKeyboardEvent(event)
-      },
-      [1]
-   )
-   eventHandler(eventCallback)
-
+   const keyboardEvent = useExternalEventListener('body', 'keydown') as React.KeyboardEvent<HTMLDivElement> | null
+   console.log(keyboardEvent)
+   
    useEffect(() => {
       uploadHotKey()
    }, [keyboardEvent])
 
+
    const uploadHotKey = () => {
-      if (keyboardEvent?.key != 'Insert') return
+      if (keyboardEvent?.key != 'F8') return
 
       const idPresent = itemData.ItemData.id ? true : false
       const typePresent = itemData.inputData.type ? true : false
@@ -82,4 +62,19 @@ export function HotKeys() {
    }
 
    return null
+}
+
+
+
+
+/**
+ * Outside react event listener
+ * @param targetName querySelector target
+ * @param eventType addEventListener event type
+ * @returns event
+ */
+function useExternalEventListener(targetName: string, eventType: keyof HTMLElementEventMap) {
+   const [keyboardEvent, setKeyboardEvent] = useState<Event | null>(null)
+   useEffect(() => document.querySelector(targetName)?.addEventListener(eventType, (e) => setKeyboardEvent(e)), [])
+   return keyboardEvent
 }

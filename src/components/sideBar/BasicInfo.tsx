@@ -33,6 +33,18 @@ export function BasicInfo() {
                </>
             )
          case 'weaponFrameExotic':
+            return (
+               <>
+                  <label>Weapon name</label>
+                  <span id="input_item_name">{perkData.itemName || ''}</span>
+                  <label>Weapon id</label>
+                  <span id="input_item_id">{perkData.itemId || ''}</span>
+                  <label>Frame name</label>
+                  <span id="input_name">{perkData.name || ''}</span>
+                  <label>Frame id</label>
+                  <span id="input_id">{perkData.id || ''}</span>
+               </>
+            )
          case 'weaponFrame':
             return (
                <>
@@ -45,10 +57,27 @@ export function BasicInfo() {
          case 'weaponCatalystExotic':
             return (
                <>
+                  <label>Weapon name</label>
+                  <span id="input_item_name">{perkData.itemName || ''}</span>
+                  <label>Weapon id</label>
+                  <span id="input_item_id">{perkData.itemId || ''}</span>
                   <label>Catalyst name</label>
                   <span id="input_item_name">{perkData.name || ''}</span>
                   <label>Catalyst id</label>
                   <span id="input_item_id">{perkData.id || ''}</span>
+               </>
+            )
+         case 'weaponPerkExotic':
+            return (
+               <>
+                  <label>Weapon name</label>
+                  <span id="input_item_name">{perkData.itemName || ''}</span>
+                  <label>Weapon id</label>
+                  <span id="input_item_id">{perkData.itemId || ''}</span>
+                  <label>Perk name</label>
+                  <span id="input_name">{perkData.name || ''}</span>
+                  <label>Perk id</label>
+                  <span id="input_id">{perkData.id || ''}</span>
                </>
             )
          default:

@@ -1,4 +1,4 @@
-import { ItemData } from "src/interfaces_2"
+import { ItemData } from 'src/interfaces_2'
 
 const fetchBungie = async (id: string): Promise<any> => {
    return new Promise((resolve, reject) => {
@@ -23,17 +23,31 @@ export function getDataFromBungie(id: string) {
          id: perk.hash,
          name: perk.displayProperties.name,
          itemId: item.hash,
-         itemName: item.displayProperties.name,
+         itemName: item.displayProperties.name
       }
       return itemData
    }
    const extractFromEverythingElse = (item: any): ItemData => {
       return {
          id: item.hash,
-         name: item.displayProperties.name,
+         name: item.displayProperties.name
+      }
+   }
+   const extractFromWeapon = (item: any): ItemData => {
+      return {
+         id: 69420,
+         name: 'add perk now',
+         itemId: item.hash,
+         itemName: item.displayProperties.name
       }
    }
    return fetchBungie(id)
-      .then((item) => (item.itemType == 2 ? extractFromArmor(item) : extractFromEverythingElse(item)))
+      .then((item) =>
+         item.itemType == 2
+            ? extractFromArmor(item)
+            : item.itemType == 3
+            ? extractFromWeapon(item)
+            : extractFromEverythingElse(item)
+      )
       .catch(console.error)
 }

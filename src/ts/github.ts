@@ -54,11 +54,11 @@ interface Login {
 const login = JSON.parse(localStorage.getItem('login') || '{}') as Login
 const fetchUrl = {
    getDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/clarity-database/contents/descriptions.json',
-   getDescriptionIce: 'https://api.github.com/repos/Ice-mourne/clarity-database/contents/descriptions.json',
+   getDescriptionIce: 'https://api.github.com/repos/Ice-mourne/database-clarity/contents/descriptions.json',
    getRateLimit: 'https://api.github.com/rate_limit',
 
    putDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/clarity-database/contents/descriptions.json',
-   putDescriptionIce: 'https://api.github.com/repos/Ice-mourne/clarity-database/contents/descriptions.json'
+   putDescriptionIce: 'https://api.github.com/repos/Ice-mourne/database-clarity/contents/descriptions.json'
 }
 
 type FetchOptionsGet = 'getDescriptionClovis' | 'getDescriptionIce' | 'getRateLimit'

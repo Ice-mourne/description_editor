@@ -4,6 +4,7 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 import { getDataFromBungie } from '@ts/parseBungieData'
 import styles from '@styles/sideBar/Button.module.scss'
 import { useContext } from 'react'
+import { useErrorSuccessMessage } from '@ts/tools'
 
 type fnNames = 'addBungieData' | 'download' | 'uploadClovis' | 'uploadIce'
 export function Button({ labelText, fnName }: { labelText: string; fnName?: fnNames }) {
@@ -23,16 +24,7 @@ export function Button({ labelText, fnName }: { labelText: string; fnName?: fnNa
          .join('\n')
          .trim()
 
-      setItemData({
-         ...itemData,
-         message
-      })
-      setTimeout(() => { // clear message
-         setItemData({
-            ...itemData,
-            message: ''
-         })
-      }, 15000)
+         useErrorSuccessMessage(message)
    }
 
    const allowUpload = idPresent && typePresent && loginPresent ? true : false

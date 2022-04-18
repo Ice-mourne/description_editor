@@ -1,6 +1,6 @@
 import { ItemWithEditor, SelectableType } from 'src/interfaces_2'
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import XMark from '@assets/svg/XMark'
 import styles from '@styles/sideBar/Selection.module.scss'
@@ -12,8 +12,18 @@ export function PerkLinking() {
    const [selectedType, setSelectedType] = useState<SelectableType | undefined>(undefined)
    const [selectedPerk, setSelectedPerk] = useState('')
    const [linkedPerks, setLinkedPerks] = useState<Set<ItemWithEditor | undefined>>(new Set())
-   console.log(linkedPerks)
-   
+
+   useEffect(() => {
+      setItemData((itemData) => {
+         return {
+            ...itemData,
+            linkedPerks: [...linkedPerks]
+               .map((perk) => perk!.id)
+               .filter((id) => id !== undefined)
+               .map((id) => Number(id))
+         }
+      })
+   }, [linkedPerks])
 
    const typeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       // saves selected item type to itemData.inputData.type

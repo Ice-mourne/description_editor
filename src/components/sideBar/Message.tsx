@@ -4,5 +4,5 @@ import { useContext } from 'react'
 
 export function Message() {
    const itemData = useContext(itemData_context)
-   return <div className={styles.message} id="message">{itemData.message}</div>
+   return <div className={styles.message}>{itemData.message?.map((message) => message.jsx)}</div> // id="message"
 }

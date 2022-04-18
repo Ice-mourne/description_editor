@@ -3,7 +3,6 @@ import './App.scss'
 import { BasicInfo, Button, ItemId, Login, Selection, StatSelection } from '@SideBar'
 import { Header, Note, Perks, Sockets, Stats } from '@ItemPopup'
 
-import AdBlockError from '@components/extra/AdBlockError'
 import { DataProvider } from '@components/provider/dataProvider'
 import Editor from '@components/editor/Editor'
 import { HotKeys } from '@components/extra/HotKeys'
@@ -41,7 +40,6 @@ function App() {
             <Message />
             <Login />
          </div>
-         <AdBlockError />
          <HotKeys />
       </>
    )

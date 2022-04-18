@@ -30,7 +30,6 @@ export type SelectableType =
    //---------
    | 'ghostMod'
 
-
 interface Item {
    id: number
    name: string
@@ -90,5 +89,10 @@ export interface ItemDataTemplate {
       }
    }
    dataFromGithub?: ClarityDescriptionWithEditor
-   message: string
+   message: Array<{
+      jsx: JSX.Element
+      number: number
+   }>
+
+   linkedPerks?: number[]
 }

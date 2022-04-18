@@ -2,6 +2,8 @@ import { itemData_context, setItemData_context } from '@components/provider/data
 import { uploadDescriptionClovis, uploadDescriptionIce } from '@ts/github'
 import { useContext, useEffect, useState } from 'react'
 
+import { useErrorSuccessMessage } from '@ts/tools'
+
 export function HotKeys() {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
@@ -9,8 +11,7 @@ export function HotKeys() {
    const [pressTimeout, setPressTimeout] = useState<number | null>(null)
 
    const keyboardEvent = useExternalEventListener('body', 'keydown') as React.KeyboardEvent<HTMLDivElement> | null
-   console.log(keyboardEvent)
-   
+
    useEffect(() => {
       uploadHotKey()
    }, [keyboardEvent])
@@ -30,20 +31,7 @@ export function HotKeys() {
             `${loginPresent ? '' : 'Login to upload'}`,
             `${customMessage ? customMessage : ''}`
          ]
-            .join('\n')
-            .trim()
-
-         setItemData({
-            ...itemData,
-            message
-         })
-         setTimeout(() => {
-            // clear message
-            setItemData({
-               ...itemData,
-               message: ''
-            })
-         }, 15000)
+         message.forEach((m) => useErrorSuccessMessage(m))
       }
 
       if (pressTimeout != null && pressTimeout > Date.now()) {

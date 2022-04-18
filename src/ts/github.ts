@@ -1,45 +1,23 @@
 import { ClarityDescriptionWithEditor, ItemDataTemplate } from 'src/interfaces_2'
-
-function removeEmptyFromObj<T>(dirtyObject: T): T {
-   const obj = { ...dirtyObject }
-   const remover = (obj: any) => {
-      for (const key in obj) {
-         if (obj[key] === null || obj[key] === '') delete obj[key]
-         if (!obj[key] || typeof obj[key] !== 'object') continue
-         remover(obj[key])
-         if (Object.keys(obj[key]).length === 0) delete obj[key]
-      }
-      return obj
-   }
-   return remover(obj)
-}
+import { removeEmptyFromObj, statStringToStatArray, useErrorSuccessMessage } from '@ts/tools'
 
 interface GithubData {
    sha: string
    content: ClarityDescriptionWithEditor
 }
 async function handleResponse(resp: Response): Promise<GithubData> {
-   const displayMessage = (msg: string) => {
-      const messageContainer = document.querySelector<HTMLDivElement>('#message')
-      if (messageContainer) {
-         messageContainer.textContent = `${messageContainer.textContent}\n${msg}`.trim()
-         setTimeout(() => {
-            messageContainer.textContent = ''
-         }, 15000)
-      }
-   }
-
    interface RespJson {
       content: string
       sha: string
+      message?: string
    }
    const respJson: RespJson = await resp.json()
    if (resp.status !== 200) {
-      const message: string = (<any>respJson).message
+      const message = respJson.message
       console.error(`Error: ${resp.status} - ${message}`)
-      displayMessage(`${message} 😒`)
+      useErrorSuccessMessage(`${message} 😒`)
    } else {
-      displayMessage(` 🍕`)
+      useErrorSuccessMessage(` 🍕`)
    }
    return {
       content: typeof respJson.content == 'string' ? JSON.parse(atob(respJson.content)) : null,
@@ -53,11 +31,11 @@ interface Login {
 }
 const login = JSON.parse(localStorage.getItem('login') || '{}') as Login
 const fetchUrl = {
-   getDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/clarity-database/contents/descriptions.json',
+   getDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/database-clarity/contents/descriptions.json',
    getDescriptionIce: 'https://api.github.com/repos/Ice-mourne/database-clarity/contents/descriptions.json',
    getRateLimit: 'https://api.github.com/rate_limit',
 
-   putDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/clarity-database/contents/descriptions.json',
+   putDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/database-clarity/contents/descriptions.json',
    putDescriptionIce: 'https://api.github.com/repos/Ice-mourne/database-clarity/contents/descriptions.json'
 }
 
@@ -81,6 +59,10 @@ export interface DataToSend {
    content: string
 }
 async function githubPut(option: FetchOptionsPut, data: DataToSend) {
+   const fetchUrl = {
+      putDescriptionClovis: 'https://api.github.com/repos/Clovis-Breh/database-clarity/contents/descriptions.json',
+      putDescriptionIce: 'https://api.github.com/repos/Ice-mourne/database-clarity/contents/descriptions.json'
+   }
    const resp = await fetch(fetchUrl[option], {
       method: 'PUT',
       mode: 'cors',
@@ -91,7 +73,7 @@ async function githubPut(option: FetchOptionsPut, data: DataToSend) {
       body: JSON.stringify({
          sha: data.sha,
          branch: 'main',
-         message: `Updated ${new Date().toLocaleString()}`,
+         message: `Updated by ${login.username}`,
          content: btoa(`${data.content}\n`)
       })
    })
@@ -104,37 +86,19 @@ export async function getDataFromGithub() {
    return githubData.content
 }
 
-export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLiveDatabase = false) {
+export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLiveDatabase = false, newPerk?: any) {
    const perkData = itemData.ItemData,
       editorConverted = itemData.dataFromEditor.converted,
       editorOriginal = itemData.dataFromEditor.original
 
-   // converts stats from string to string[]
-   const statConverter = (stats?: { [key: string]: any }) => {
-      if (!stats) return
-      const statsToSend = { ...stats }
-      const converter = (stats: any) => {
-         for (const key in stats) {
-            if (typeof stats[key] == 'string' && stats[key] != '') {
-               stats[key] = stats[key].split(',').map((stat: string) => Number(stat))
-            }
-            if (typeof stats[key] != 'object') continue
-            converter(stats[key])
-         }
-         return stats
-      }
-      return converter(statsToSend)
-   }
-
    const item = {
       ...perkData,
       type: itemData.inputData.type,
-      stats: statConverter(perkData.stats),
+      stats: statStringToStatArray(perkData.stats),
       description: editorConverted.mainEditor,
       simpleDescription: editorConverted.secondaryEditor,
       lastUpdate: Date.now(),
-      updatedBy: login.username,
-      // inLiveDatabase
+      updatedBy: login.username
    }
 
    const githubData = await githubGet('getDescriptionClovis')
@@ -144,7 +108,8 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLive
       [item.id]: {
          ...item,
          editor: editorOriginal,
-         inLiveDatabase
+         inLiveDatabase,
+         linkedWith: itemData.linkedPerks
       }
    })
 
@@ -152,6 +117,16 @@ export async function uploadDescriptionClovis(itemData: ItemDataTemplate, inLive
       sha: githubData.sha,
       content: JSON.stringify(cleanObj, null, 2)
    })
+
+   if (itemData.linkedPerks?.length != 0 && !newPerk) {
+      itemData.linkedPerks?.forEach((perkId) => {
+         const perk = itemData.dataFromGithub?.[perkId]
+         if (!perk) return
+         uploadDescriptionClovis(itemData, false, {
+            ...itemData
+         })
+      })
+   }
    return item
 }
 
@@ -172,7 +147,7 @@ export async function uploadDescriptionIce(itemData: ItemDataTemplate) {
 }
 
 export async function getUnauthorizedDescription() {
-   return fetch('https://raw.githubusercontent.com/Clovis-Breh/clarity-database/main/descriptions.json', {
+   return fetch('https://raw.githubusercontent.com/Clovis-Breh/database-clarity/main/descriptions.json', {
       method: 'GET',
       mode: 'cors'
    })

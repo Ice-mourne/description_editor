@@ -103,7 +103,7 @@ const assignTextClassNames = (description: SplitTableColumns[]): Description[] =
       const textArr = text.split(new RegExp(`(${regStart}.*?${regEnd})`, 'g'))
 
       return textArr.flatMap((text, i, arr) => {
-         if (text.trim() === '' || arr.length > 1 && text.trim() === '|') return []
+         if (text.trim() === '' || (arr.length > 1 && (text.trim() === '|' || text.trim() === '|b'))) return []
          if (!text.match(/^(<|\|)/)) return { text: text } // check if text starts with < or |
          if (text.trim() === '|') return { text: ' ' } // check if text is empty table cell
          const isFormula = text.includes('<formula')

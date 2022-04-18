@@ -20,7 +20,8 @@ export function createEditor() {
             [/\|b|\|/, 'tableSeparator'],
             [/<(stasis|arc|void|solar|background|center)/, 'selfContained', '@selfContained'],
             [/<(highlight_[1-4]|bold|primary|special|heavy|pve|pvp)/, 'highlight', '@highlight'],
-            [/<(formula|link)/, 'extra', '@extra']
+            [/<(formula|link)/, 'extra', '@extra'],
+            [/<title /, 'title', '@title']
          ],
          selfContained: [
             [/\/>/, 'selfContained', '@pop'],

@@ -30,16 +30,8 @@ export function DataProvider({ children }: { children: JSX.Element }) {
          }
       },
       dataFromGithub: {},
-      message: ''
+      message: []
    })
-
-   useEffect(() => {
-      getUnauthorizedDescription().then((data) => {
-         if (!data) setItemData((itemData) => ({ ...itemData, message: 'AdBlock Error' }))
-         setItemData((itemData) => ({ ...itemData, dataFromGithub: data }))
-      })
-      githubGet('getRateLimit').then(console.log)
-   }, [])
 
    return (
       <itemData_context.Provider value={itemDataTemplate}>

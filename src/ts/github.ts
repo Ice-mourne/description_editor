@@ -14,7 +14,7 @@ async function handleResponse(resp: Response): Promise<GithubData> {
    const respJson: RespJson = await resp.json()
    if (resp.status !== 200) {
       const message = respJson.message
-      console.error(`Error: ${resp.status} - ${message}`) // temporally disabled error success messages
+      console.error(`Error: ${resp.status} - ${message}`)
       // useErrorSuccessMessage(`${message} 😒`)
    } else {
       // useErrorSuccessMessage(` 🍕`)

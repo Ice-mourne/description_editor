@@ -1,15 +1,15 @@
-import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
+import { setItemData_context } from '@components/provider/dataProvider'
 
-import style from '@styles/sideBar/ItemId.module.scss'
+import style from './ItemId.module.scss'
 import { useContext } from 'react'
 
 export function ItemId() {
-   const itemData = { ...useContext(itemData_context) }
    const setItemData = useContext(setItemData_context)
 
    const setItemId = (event: React.ChangeEvent<HTMLInputElement>) => {
-      itemData.inputData.id = event.target.value
-      return setItemData(itemData)
+      setItemData((draft) => {
+         draft.input.id = Number(event.target.value)
+      })
    }
    return (
       <div className={style.id_input}>

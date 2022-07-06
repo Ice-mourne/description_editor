@@ -11,7 +11,7 @@ body {
    display: flex;
 }
 .editor-container {
-   height: 80vh;
+   height: 95vh;
    width: 100%;
    margin-left: -350px;
    margin-right: -330px;
@@ -20,14 +20,9 @@ body {
    #diffEditor-1,
    #diffEditor-2 {
       border: 3px solid hsl(47, 69%, 5%);
-      height: 70%;
       min-width: 10%;
       margin-left: 355px;
       margin-right: 335px;
-   }
-   #editor-2,
-   #diffEditor-2 {
-      height: 30%;
    }
    .hidden {
       display: none;
@@ -38,9 +33,6 @@ body {
          background-color: hsla(0, 0%, 100%, 0) !important;
       }
    }
-   // .margin-view-overlays {
-   //    padding-left: 10px;
-   // }
 }
 //----------------------------------------------------------------------------------------------------------------------
 // Side bar

@@ -1,41 +1,35 @@
-import React, { useContext } from 'react'
-import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
+import React, { useContext, useEffect } from 'react'
+import { itemData_context, SelectableType, setItemData_context } from '@components/provider/dataProvider'
 
-import { SelectableType } from 'src/interfaces_2'
-import styles from '@styles/sideBar/Selection.module.scss'
+import styles from './Selection.module.scss'
 
-export function Selection() {
+export function PerkSelection() {
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
 
    const typeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      // saves selected item type to itemData.inputData.type
-      setItemData((itemData) => ({
-         ...itemData,
-         inputData: {
-            ...itemData.inputData,
-            type: e.target.value as SelectableType
-         }
-      }))
+      setItemData((draft) => {
+         draft.input.type = e.target.value as SelectableType
+      })
    }
    const randomEmoji = () => {
       // generates random emoji
+      // prettier-ignore
       const emojis = [
-         '🍉', '🍊', '🍌', '🍍', '🍎', '🍏', '🍑', '🍒', '🍓', '🍔',
-         '🍕', '🍖', '🍗', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍞',
-         '🍟', '🍠', '🍡', '🍢', '🍣', '🍤', '🍥', '🍦', '🍧', '🍨',
-         '🍩', '🍪', '🍫', '🍬', '🍭', '🍮', '🍯', '🍰', '🍱', '🍲',
-         '🍵', '🍶', '🍷', '🍸', '🍹', '🍺', '🍻', '🍾', '🍿', '🎂'
+         '🍉','🍊','🍌','🍍','🍎','🍏','🍑','🍒','🍓','🍔','🍕','🍖',
+         '🍗','🍘','🍙','🍚','🍛','🍜','🍝','🍞','🍟','🍠','🍡','🍢',
+         '🍣','🍤','🍥','🍦','🍧','🍨','🍩','🍪','🍫','🍬','🍭','🍮',
+         '🍯','🍰','🍱','🍲','🍵','🍶','🍷','🍸','🍹','🍺','🍻','🍾','🍿','🎂'
       ]
-      return emojis[Math.floor(Math.random()*emojis.length)]
+      return emojis[Math.floor(Math.random() * emojis.length)]
    }
 
    const items = () => {
       // filters items in githubData and then sorts them then returns items from selected type as JSX.Element array
-      // runs after typeChange()
-      if (!itemData.dataFromGithub) return
-      const selectedTypeItems = Object.values(itemData.dataFromGithub).flatMap((item) => {
-         if (item.type === itemData.inputData.type) return item
+      const modifiedDescription = itemData.description.modified
+      if (!modifiedDescription) return
+      const selectedTypeItems = Object.values(modifiedDescription).flatMap((item) => {
+         if (item?.type === itemData.input.type) return item
          return []
       })
       const sortedItems = selectedTypeItems.sort((a, b) =>
@@ -52,28 +46,16 @@ export function Selection() {
 
    const itemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       // after item is selected saves item data // that also triggers display update
-      const selectedItem = itemData.dataFromGithub?.[e.target.value]
+      const selectedItem = itemData.description.modified?.[e.target.value]?.id
       if (!selectedItem) return
-      setItemData((itemData) => ({
-         ...itemData,
-         ItemData: {
-            id: selectedItem.id,
-            name: selectedItem.name,
-            itemId: selectedItem.itemId,
-            itemName: selectedItem.itemName,
-            lastUpdate: new Date(selectedItem.lastUpdate).toLocaleString(),
-            updatedBy: selectedItem.updatedBy,
-            stats: selectedItem.stats
-         },
-         dataFromEditor: {
-            converted: {
-               mainEditor: selectedItem.description,
-               secondaryEditor: selectedItem.simpleDescription
-            },
-            original: selectedItem.editor
-         }
-      }))
+      setItemData((draft) => {
+         draft.selectedPerkHash = selectedItem
+      })
    }
+
+   useEffect(() => {
+
+   }, [itemData.input.id])
 
    return (
       <div className={styles.selection_list}>

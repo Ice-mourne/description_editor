@@ -1,45 +1,136 @@
-// import { ClarityDescription } from '@interfaces'
+import { createContext } from 'react'
 
-import React, { useEffect, useState } from 'react'
-import { getUnauthorizedDescription, githubGet } from '@ts/github'
+import { getDescriptionClovis } from '@utils/fetchDescriptions'
+import { Updater, useImmer } from 'use-immer'
 
-import { ItemDataTemplate } from 'src/interfaces_2'
+export interface LinesContent {
+   text?: string
+   classNames?: (string | null)[]
+   link?: string
+   formula?: string
+   title?: string
+}
 
-export const itemData_context = React.createContext({} as ItemDataTemplate)
-export const setItemData_context = React.createContext({} as React.Dispatch<React.SetStateAction<ItemDataTemplate>>)
+export interface Description {
+   classNames?: (string | null)[]
+   linesContent?: LinesContent[]
+   isFormula?: boolean | null
+   table?: { linesContent?: LinesContent[] }[]
+}
+
+export type SelectableType =
+   | 'armorExotic'
+   | 'armorMod'
+   //---------
+   | 'weaponPerkExotic'
+   | 'weaponFrameExotic'
+   | 'weaponPerk'
+   | 'weaponPerkEnhanced'
+   | 'weaponFrame'
+   | 'weaponMod'
+   | 'weaponCatalystExotic'
+   //---------
+   | 'ghostMod'
+   //---------
+   | 'none'
+
+export interface Item {
+   id: number
+   name: string
+
+   itemId?: number
+   itemName?: string
+
+   type: SelectableType
+
+   description: Description[]
+   simpleDescription?: Description[]
+
+   stats?: { [key: string]: any }
+
+   lastUpdate: number
+   updatedBy: string
+}
+
+export interface ItemWithEditor extends Item {
+   editor?: {
+      mainEditor: string
+      secondaryEditor: string
+   }
+   inLiveDatabase?: boolean
+}
+
+export interface DescriptionWithEditor {
+   [key: string]: ItemWithEditor
+}
+
+type PerkHash = number
+type ExportName = string
+type VariableName = string
+
+export interface ItemDataTemplate {
+   input: {
+      id: number
+      type: string
+   }
+   selectedPerkHash: PerkHash
+   description: {
+      original: DescriptionWithEditor
+      modified: DescriptionWithEditor
+   }
+   markedForLive: PerkHash[]
+   saved: {
+      perks: {
+         [key: PerkHash]: {
+            [key: ExportName]: string
+         }
+      }
+      variables: {
+         [key: PerkHash]: {
+            [key: VariableName]: string
+         }
+      }
+   }
+}
+
+export const itemData_context = createContext({} as ItemDataTemplate)
+export const setItemData_context = createContext({} as Updater<ItemDataTemplate>)
+
+const {descriptions, saved} = await getDescriptionClovis()
+const {perks, variables} = saved
 
 export function DataProvider({ children }: { children: JSX.Element }) {
-   const [itemDataTemplate, setItemData] = useState<ItemDataTemplate>({
-      inputData: {
-         id: '',
-         type: undefined
-      },
-      ItemData: {
+   const defaultPerk = {
+      id: 0,
+      name: '',
+      type: 'none' as const,
+      description: [] as Description[],
+      lastUpdate: 0,
+      updatedBy: '',
+      editor: {
+         mainEditor: '',
+         secondaryEditor: ''
+      }
+   }
+   const [itemDataTemplate, setItemData] = useImmer<ItemDataTemplate>({
+      input: {
          id: 0,
-         name: '',
-         lastUpdate: ''
+         type: ''
       },
-      dataFromEditor: {
-         converted: {
-            mainEditor: [],
-            secondaryEditor: []
-         },
-         original: {
-            mainEditor: '',
-            secondaryEditor: ''
+      selectedPerkHash: 0,
+      description: {
+         original: descriptions,
+         modified: {
+            ...descriptions,
+            0: defaultPerk
          }
       },
-      dataFromGithub: {},
-      message: []
+      markedForLive: [],
+      saved: {
+         perks: perks || {},
+         variables: variables || {}
+      }
    })
-
-   useEffect(() => {
-      getUnauthorizedDescription().then((data) => {
-         // if (!data) setItemData((itemData) => ({ ...itemData, message: 'AdBlock Error' }))
-         setItemData((itemData) => ({ ...itemData, dataFromGithub: data }))
-      })
-      // githubGet('getRateLimit').then(console.log)
-   }, [])
 
    return (
       <itemData_context.Provider value={itemDataTemplate}>

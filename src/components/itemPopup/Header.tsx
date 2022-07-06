@@ -16,7 +16,7 @@ interface ItemPreview {
 }
 
 import specialAmmo from '@assets/specialAmmo.png'
-import styles from '@styles/itemPopup/Header.module.scss'
+import styles from './Header.module.scss'
 
 export function Header(itemPreview: ItemPreview) {
    const left = (

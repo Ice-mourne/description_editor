@@ -1,11 +1,11 @@
+import { ItemDataTemplate, itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import * as monaco from 'monaco-editor'
-
-import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import { useContext, useEffect, useState } from 'react'
+import diffEditorChange from './diffEditorChange'
+import { setDataToMainEditor, setDataToSecondaryEditor } from './setData'
+import setNewDescription from './setNewDescription'
 
-import convertDescription from '@ts/convertDescription'
-
-interface Editors {
+export interface Editors {
    normal: {
       main: monaco.editor.IStandaloneCodeEditor
       secondary: monaco.editor.IStandaloneCodeEditor
@@ -16,91 +16,52 @@ interface Editors {
    }
 }
 
-export default function Editor({ onMount }: { onMount: () => Editors }) {
+export default function Editor({ onMount }: { onMount: (itemData: ItemDataTemplate) => Editors | null}) {
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
 
    const [editor, setEditor] = useState<Editors | null>(null)
-   const [activated, setActivated] = useState(false)
+   const [active, setActive] = useState(false)
 
    useEffect(() => {
-      if (!editor) {
-         setEditor(onMount())
-         setActivated(true)
-         return
-      }
-      const setData = (editorType: string) => {
-         const editorValue = {
-            normal: {
-               main: editor.normal.main.getValue(),
-               secondary: editor.normal.secondary.getValue()
-            },
-            diff: {
-               main: editor.diff.main.getModifiedEditor().getValue(),
-               secondary: editor.diff.secondary.getModifiedEditor().getValue()
-            }
-         }
-         setItemData((itemData) => ({
-            ...itemData,
-            dataFromEditor: {
-               converted: {
-                  mainEditor: convertDescription(editorValue.normal.main),
-                  secondaryEditor: convertDescription(editorValue.normal.secondary)
-               },
-               original: {
-                  mainEditor: editorValue.normal.main,
-                  secondaryEditor: editorValue.normal.secondary
-               }
-            }
-         }))
-
-         if (editorType === 'normal') {
-            if (editorValue.normal.main != editorValue.diff.main) {
-               editor.diff.main.getModifiedEditor().setValue(editorValue.normal.main)
-            }
-            if (editorValue.normal.secondary != editorValue.diff.secondary) {
-               editor.diff.secondary.getModifiedEditor().setValue(editorValue.normal.secondary)
-            }
-         }
-         if (editorType === 'diff') {
-            if (editorValue.normal.main != editorValue.diff.main) {
-               editor.normal.main.setValue(editorValue.diff.main)
-            }
-            if (editorValue.normal.secondary != editorValue.diff.secondary) {
-               editor.normal.secondary.setValue(editorValue.diff.secondary)
-            }
-         }
-      }
-      // copy data to normal editor and back to diff editor as necessary
-      editor.normal.main.getModel()?.onDidChangeContent(() => setData('normal'))
-      editor.normal.secondary.getModel()?.onDidChangeContent(() => setData('normal'))
-      editor.diff.main
-         .getModifiedEditor()
-         .getModel()
-         ?.onDidChangeContent(() => setData('diff'))
-      editor.diff.secondary
-         .getModifiedEditor()
-         .getModel()
-         ?.onDidChangeContent(() => setData('diff'))
-   }, [activated])
+      const newEditor = onMount(itemData)
+      if (newEditor !== null) setEditor(newEditor)
+      if (editor) setActive(true)
+   }, [active])
 
    useEffect(() => {
-      // set new descriptions on perk change to editor
-      if (!editor) return
-      const id = itemData.ItemData.id,
-         selectedPerk = itemData.dataFromGithub?.[id]
+      if (editor === null) return
+      setNewDescription(editor, itemData)
+   }, [itemData.selectedPerkHash])
 
-      const description = selectedPerk?.editor?.mainEditor || '',
-         simpleDescription = selectedPerk?.editor?.secondaryEditor || ''
+   useEffect(() => {
+      if (editor === null) return
 
-      editor.normal.main.setValue(description)
-      editor.diff.main.getModifiedEditor().setValue(description)
-      editor.diff.main.getOriginalEditor().setValue(description)
+      const editorHeight = (editor: monaco.editor.IStandaloneCodeEditor, minHeight: number) => {
+         const lineCount = editor.getModel()?.getLineCount()
+         if (lineCount === undefined) return editor.getLayoutInfo().height
+         return Math.max(lineCount * 19 + 19, minHeight)
+      }
 
-      editor.normal.secondary.setValue(simpleDescription)
-      editor.diff.secondary.getModifiedEditor().setValue(simpleDescription)
-      editor.diff.secondary.getOriginalEditor().setValue(simpleDescription)
-   }, [itemData.ItemData.id])
+      editor.normal.main.layout({
+         height: editorHeight(editor.normal.main, window.innerHeight / 2),
+         width: editor.normal.main.getLayoutInfo().width,
+      })
+      editor.normal.secondary.layout({
+         height: editorHeight(editor.normal.secondary, window.innerHeight / 3),
+         width: editor.normal.secondary.getLayoutInfo().width,
+      })
+
+      const mainEditorEvent: monaco.IDisposable | undefined = editor.normal.main
+         .getModel()
+         ?.onDidChangeContent(() => setDataToMainEditor(editor, mainEditorEvent, setItemData))
+
+      const secondaryEditorEvent: monaco.IDisposable | undefined = editor.normal.secondary
+         .getModel()
+         ?.onDidChangeContent(() => setDataToSecondaryEditor(editor, secondaryEditorEvent, setItemData))
+
+      diffEditorChange(editor)
+   }, [itemData])
 
    return (
       <div className="editor-container">

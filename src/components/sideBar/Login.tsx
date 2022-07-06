@@ -1,5 +1,6 @@
+import styles from './Login.module.scss'
 import { useState } from 'react'
-import styles from '@styles/sideBar/Login.module.scss'
+
 export function Login() {
    const [credentials, setCredentials] = useState({
       username: '',
@@ -40,7 +41,7 @@ export function Login() {
             <span>Username</span>
             <input onChange={(e) => setUsername(e)} />
             <span>Password</span>
-            <input onChange={(e) => setPassword(e)} type="password"/>
+            <input onChange={(e) => setPassword(e)} type="password" />
          </div>
          <button onClick={login} className={styles.login_btn}>
             Login

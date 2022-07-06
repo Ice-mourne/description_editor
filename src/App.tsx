@@ -1,17 +1,31 @@
 import './App.scss'
 
-import { BasicInfo, Button, ItemId, Login, Selection, StatSelection } from '@SideBar'
-import { Header, Note, Perks, Sockets, Stats } from '@ItemPopup'
-
-import { DataProvider } from '@components/provider/dataProvider'
 import Editor from '@components/editor/Editor'
-import { HotKeys } from '@components/extra/HotKeys'
+import { Note } from '@components/itemPopup/Extra'
+import { Header } from '@components/itemPopup/Header'
+import { Perks } from '@components/itemPopup/Perks'
+import { Sockets } from '@components/itemPopup/Sockets'
+import { Stats } from '@components/itemPopup/Stats'
+import { DataProvider } from '@components/provider/dataProvider'
+import { BasicInfo } from '@components/sideBar/BasicItemInfo'
+import {
+   Button,
+   ButtonAddBungieData,
+   ButtonDeletePerk,
+   ButtonMarkForLive,
+   ButtonUploadClovis,
+   ButtonUploadIce
+} from '@components/sideBar/Buttons'
+import { ItemId } from '@components/sideBar/ItemId'
+import { Login } from '@components/sideBar/Login'
 import { Message } from '@components/sideBar/Message'
-import { PerkLinking } from '@components/sideBar/PerkLinking'
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { createEditor } from './ts/editor'
+import { PerkSelection } from '@components/sideBar/Selection'
+import { StatSelection } from '@components/sideBar/StatSelection'
+
+import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
 import { item_preview } from './testData'
+import { createEditor } from './ts/editor'
 
 function App() {
    return (
@@ -27,29 +41,29 @@ function App() {
          <div className="side_bar">
             <div className="id_button">
                <ItemId />
-               <Button labelText="Get data from bungie" fnName="addBungieData" />
+               <ButtonAddBungieData labelText="Get data from bungie" />
             </div>
-            <Selection />
+            <PerkSelection />
             <BasicInfo />
-            <PerkLinking />
+            {/* <PerkLinking /> */}
             <Button labelText="Change Editor" />
-            <Button labelText="Get updated data" fnName="download" />
             <StatSelection />
-            <Button labelText="Add / Update - Database" fnName="uploadClovis" />
-            <Button labelText="Add / Update - Live database" fnName="uploadIce" />
+            <ButtonUploadClovis labelText="Upload - Database" />
+            <ButtonMarkForLive labelText="Mark as ready for live" />
+            <ButtonUploadIce labelText="Upload - Live database" />
+            <ButtonDeletePerk labelText="Delete perk" />
             <Message />
             <Login />
          </div>
-         <HotKeys />
+         {/* <HotKeys /> */}
       </>
    )
 }
 
-ReactDOM.render(
-   <React.StrictMode>
+ReactDOM.createRoot(document.getElementById('app')!).render(
+   <StrictMode>
       <DataProvider>
          <App />
       </DataProvider>
-   </React.StrictMode>,
-   document.getElementById('app')
+   </StrictMode>
 )

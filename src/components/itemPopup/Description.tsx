@@ -1,49 +1,58 @@
-import styles from '@styles/itemPopup/Description.module.scss'
-import { Description as descriptionInterface, LineText } from 'src/interfaces_2'
+import { Description, LinesContent } from '@components/provider/dataProvider'
+import styles from './Description.module.scss'
 
 const calculateStat = (formula?: string) => {
-   if (formula) return `${Math.round(Math.random() * 1000)}ms`
+   if (formula) {
+      if (/range/i.test(formula)) {
+         return `${Math.round(Math.random() * 100)}m`
+      }
+      return `${Math.round(Math.random() * 1000)}ms`
+   }
 }
 
-const otherOptions = (options: LineText) => {
-   if (options.linkUrl) return <a href={options.linkUrl}>{options.linkText}</a>
-   if (options.formula || options.formulaText)
+const otherOptions = (linesContent: LinesContent) => {
+   if (linesContent?.link) return <a href={linesContent.link}>{linesContent.text}</a>
+   if (linesContent?.formula)
       return (
          <span>
-            {options.formulaText} {calculateStat(options.formula)}
+            {linesContent.text} {calculateStat(linesContent.formula)}
          </span>
       )
+   return null
 }
 
-const joinClassNames = (classNames?: string) => {
+const joinClassNames = (classNames: (string | null)[] | undefined) => {
    return classNames
-      ?.split(' ')
-      .map((className: string) => styles[className])
+      ?.flatMap((className: string | null) => {
+         if (className === null) return []
+         return styles[className]
+      })
       .join(' ')
 }
-export function Description({ description }: { description: descriptionInterface[] }): JSX.Element {
-   const descriptionLine = (line: descriptionInterface, i: number) => (
-      <div className={joinClassNames(line.className)} key={i}>
-         {line.lineText?.map((text, i) => (
-            <span className={joinClassNames(text.className)} title={text.title} key={i}>
-               {text.text || otherOptions(text)}
+export function DescriptionBuilder({ description }: { description: Description[] }): JSX.Element {
+   const descriptionLine = (description: Description, i: number) => (
+      <div className={joinClassNames(description.classNames)} key={i}>
+         {description?.linesContent?.map((linesContent, i) => (
+            <span className={joinClassNames(linesContent?.classNames)} title={linesContent?.title} key={i}>
+               {otherOptions(linesContent) || linesContent?.text}
             </span>
          ))}
       </div>
    )
 
-   const descriptionTable = <T extends object[]>(table: T, i: number) => (
-      <div className={styles.table} key={i}>
-         {table.map((line, i) => descriptionLine(line, i))}
+   const descriptionTable = (description: Description, i: number) => (
+      <div className={joinClassNames(description?.classNames)} key={i}>
+         {description?.table?.map((linesContent, i) => descriptionLine(linesContent, i))}
       </div>
    )
 
-   const completeDescription = (description: descriptionInterface[]) => {
-      if (!description || Object.keys(description).length === 0) return
+   const buildDescription = (description: Description[]) => {
+      if (!description || description.length === 0) return
 
-      return description?.map((description: descriptionInterface, i: number) =>
-         description?.table ? descriptionTable(description.table, i) : descriptionLine(description, i)
+      return description.map((descriptionObj: Description, i: number) =>
+         descriptionObj?.table ? descriptionTable(descriptionObj, i) : descriptionLine(descriptionObj, i)
       )
    }
-   return <div>{completeDescription(description)}</div>
+
+   return <div className={styles.description}>{buildDescription(description)}</div>
 }

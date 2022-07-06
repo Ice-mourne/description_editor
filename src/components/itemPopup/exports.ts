@@ -1,6 +1,0 @@
-export * from './Description'
-export * from './Extra'
-export * from './Header'
-export * from './Perks'
-export * from './Sockets'
-export * from './Stats'

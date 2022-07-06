@@ -1,13 +1,34 @@
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
 
-import { ItemDataTemplate } from 'src/interfaces_2'
-import styles from '@styles/sideBar/StatSelection.module.scss'
+import styles from './StatSelection.module.scss'
+import { createNestedObject } from '@utils/createNestedObject'
+import { statsArrayToString, statsStringToArray } from '@utils/statsToStringAndBack'
+import { useImmer } from 'use-immer'
+
+type StatMulti = 'stat' | 'multiplier'
+type ActivePassive = 'active' | 'passive'
+
+type ShowHideStats = {
+   [key: string]: {
+      [key in ActivePassive]: boolean
+   }
+}
+
+type StatsString = {
+   [key: string]: {
+      [key in ActivePassive]: {
+         [key in StatMulti]: string
+      }
+   }
+}
 
 export function StatSelection() {
-   const [selectedStats, setSelectedStats] = useState<{ [key: string]: { [key: string]: boolean } }>({})
+   const [showHideStats, setShowHideStats] = useImmer({} as ShowHideStats)
+   const [statsString, setStatsString] = useImmer({} as StatsString)
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
+   const selectedPerkHash = itemData.selectedPerkHash
    const statList = [
       'range',
       'reload',
@@ -21,72 +42,71 @@ export function StatSelection() {
       'damage'
    ]
 
-   const addRemoveStatInput = (index: number, type: string) =>
-      setSelectedStats((stat) => ({
-         ...stat,
-         [index]: {
-            ...stat[index],
-            [type]: stat[index]?.[type] ? false : true
-         }
-      }))
+   const onShowHideStats = (statIndex: number, activeOrPassiveStat: ActivePassive) =>
+      setShowHideStats((draft) => {
+         createNestedObject(draft, [statIndex, activeOrPassiveStat], !draft[statIndex]?.[activeOrPassiveStat])
+      })
 
    const filterInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      // console.log(e)
-
       if (e.key.match(/[0-9]|[ ,.-]|Backspace|Delete|Arrow(Left|Right)/)) return
       if (e.key.match(/[axv]|[zy]/i) && e.ctrlKey) return
       e.preventDefault()
    }
 
-   type activePassive = 'active' | 'passive'
-   const addStatInput = (
+   const onStatChange = (
       e: React.ChangeEvent<HTMLInputElement>,
-      activePassive: activePassive,
-      multiStat: string,
-      nameIndex: number
+      activeOrPassiveStat: ActivePassive,
+      statMultiplayerOrValue: StatMulti,
+      indexOfStatName: number,
    ) => {
-      const statValues = (itemData: ItemDataTemplate) => ({
-         ...itemData.ItemData.stats?.[statList[nameIndex]],
-         [activePassive]: {
-            ...itemData.ItemData.stats?.[statList[nameIndex]]?.[activePassive],
-            [multiStat]: e.target.value
-         }
+      setItemData((draft) => {
+         createNestedObject(
+            draft.description.modified,
+            [draft.input.id, 'stats', statList[indexOfStatName], activeOrPassiveStat, statMultiplayerOrValue],
+            statsStringToArray(e.target.value)
+         )
       })
 
-      setItemData((itemData) => ({
-         ...itemData,
-         ItemData: {
-            ...itemData.ItemData,
-            stats: {
-               ...itemData.ItemData.stats,
-               [statList[nameIndex]]: statValues(itemData)
-            }
-         }
-      }))
+      setStatsString((draft) => {
+         createNestedObject(
+            draft,
+            [indexOfStatName, activeOrPassiveStat, statMultiplayerOrValue],
+            e.target.value
+         )
+      })
    }
 
+   // open, close stats on item selection
    useEffect(() => {
-      setSelectedStats(() => ({}))
-      if (!itemData.ItemData.stats) return
-      Object.entries(itemData.ItemData.stats).forEach(([stat, statValue]) => {
-         const statIndex = statList.indexOf(stat)
-         setSelectedStats((stat) => ({
-            ...stat,
-            [statIndex]: {
-               active: statValue.active ? true : false,
-               passive: statValue.passive ? true : false
-            }
-         }))
-      })
-   }, [itemData.ItemData.id])
+      // remove selected stats
+      setShowHideStats({})
 
-   type statMulti = 'stat' | 'multiplier'
-   const newValue = (statName: string, passiveActive: activePassive, statMulti: statMulti) => {
-      const stat = itemData.ItemData.stats?.[statName]?.[passiveActive]?.[statMulti]
-      if (typeof stat == 'string') return stat
-      if (stat) return stat.join(', ')
-      return ''
-   }
+      const stats = itemData.description.modified[selectedPerkHash]?.stats
+      if (!stats) return
+
+      Object.entries(stats).forEach(([stat, statValue]) => {
+         const statIndex = statList.indexOf(stat)
+         setShowHideStats((draft) => {
+            draft[statIndex] = {
+               active: Boolean(statValue.active),
+               passive: Boolean(statValue.passive)
+            }
+         })
+
+         setStatsString((draft) => {
+            draft[statIndex] = {
+               active: {
+                  stat: statsArrayToString(statValue.active?.stat),
+                  multiplier: statsArrayToString(statValue.active?.multiplier)
+               },
+               passive: {
+                  stat: statsArrayToString(statValue.passive?.stat),
+                  multiplier: statsArrayToString(statValue.passive?.multiplier)
+               }
+            }
+         })
+      })
+   }, [itemData.selectedPerkHash])
 
    const fixStatName = (statName: string) => statName.match(/([A-Z][a-z]+)|([a-z]+)/g)?.join(' ')
 
@@ -94,55 +114,55 @@ export function StatSelection() {
       <div className={styles.stat_container} key={i}>
          <div className={styles.buttons}>
             <button
-               onClick={() => addRemoveStatInput(i, 'active')}
-               className={selectedStats[i]?.active ? styles.active_button : styles.default_button}
+               onClick={() => onShowHideStats(i, 'active')}
+               className={showHideStats[i]?.active ? styles.active_button : styles.default_button}
             >
                Active
             </button>
             <span className={styles.stat_name}>{fixStatName(stat)}</span>
             <button
-               onClick={() => addRemoveStatInput(i, 'passive')}
-               className={selectedStats[i]?.passive ? styles.active_button : styles.default_button}
+               onClick={() => onShowHideStats(i, 'passive')}
+               className={showHideStats[i]?.passive ? styles.active_button : styles.default_button}
             >
                Passive
             </button>
          </div>
 
-         {selectedStats[i]?.active ? (
+         {showHideStats[i]?.active ? (
             <>
                <div className={styles.stat_name}>Active</div>
                <div className={styles.stat_input}>
                   <span>Stat</span>
                   <input
                      onKeyDown={filterInput}
-                     onChange={(e) => addStatInput(e, 'active', 'stat', i)}
-                     value={newValue(statList[i], 'active', 'stat')}
+                     onChange={(e) => onStatChange(e, 'active', 'stat', i)}
+                     value={statsString[i]?.active?.stat || ''}
                   />
                   <span>Multiplier</span>
                   <input
                      onKeyDown={filterInput}
-                     onChange={(e) => addStatInput(e, 'active', 'multiplier', i)}
-                     value={newValue(statList[i], 'active', 'multiplier')}
+                     onChange={(e) => onStatChange(e, 'active', 'multiplier', i)}
+                     value={statsString[i]?.active?.multiplier || ''}
                   />
                </div>
             </>
          ) : null}
 
-         {selectedStats[i]?.passive ? (
+         {showHideStats[i]?.passive ? (
             <>
                <div className={styles.stat_name}>Passive</div>
                <div className={styles.stat_input}>
                   <span>Stat</span>
                   <input
                      onKeyDown={filterInput}
-                     onChange={(e) => addStatInput(e, 'passive', 'stat', i)}
-                     value={newValue(statList[i], 'passive', 'stat')}
+                     onChange={(e) => onStatChange(e, 'passive', 'stat', i)}
+                     value={statsString[i]?.passive?.stat || ''}
                   />
                   <span>Multiplier</span>
                   <input
                      onKeyDown={filterInput}
-                     onChange={(e) => addStatInput(e, 'passive', 'multiplier', i)}
-                     value={newValue(statList[i], 'passive', 'multiplier')}
+                     onChange={(e) => onStatChange(e, 'passive', 'multiplier', i)}
+                     value={statsString[i]?.passive?.multiplier || ''}
                   />
                </div>
             </>

@@ -1,4 +1,4 @@
-import styles from '@styles/itemPopup/Sockets.module.scss'
+import styles from './Sockets.module.scss'
 
 export function Sockets() {
    return (

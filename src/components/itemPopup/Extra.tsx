@@ -1,4 +1,4 @@
-import styles from '@styles/itemPopup/Note.module.scss'
+import styles from './Note.module.scss'
 
 export function Note() {
    return (

@@ -1,45 +1,133 @@
+import { ItemDataTemplate } from '@components/provider/dataProvider'
 import * as monaco from 'monaco-editor'
+import { imports, selfContained, tableSettings } from './autoCompletion'
 
-export function createEditor() {
+export interface ConditionalSuggestions {
+   range: {
+      startLineNumber: number
+      endLineNumber: number
+      startColumn: number
+      endColumn: number
+   }
+   kind: monaco.languages.CompletionItemKind
+   insertTextRules: monaco.languages.CompletionItemInsertTextRule
+   label: string
+   insertText: string
+}
+
+export function createEditor(itemData: ItemDataTemplate) {
+   const containers = {
+      normal: {
+         main: document.querySelector('#editor-1') as HTMLDivElement,
+         secondary: document.querySelector('#editor-2') as HTMLDivElement
+      },
+      diff: {
+         main: document.querySelector('#diffEditor-1') as HTMLDivElement,
+         secondary: document.querySelector('#diffEditor-2') as HTMLDivElement
+      }
+   }
+   // if container not ready return
+   if (containers.normal.main === null) return null
+
+   // if editor was created don't make new one
+   if (containers.normal.main.firstElementChild?.classList.contains('monaco-editor')) {
+      return null
+   }
+
    monaco.languages.register({ id: 'clarityLangue' })
    monaco.languages.setMonarchTokensProvider('clarityLangue', {
+      selfContained: ['stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy', 'background', 'center']
+         .map((w) => `<${w}/>`)
+         .join('|'),
+
+      weapons: [
+         'auto rifle',
+         'scout rifle',
+         'pulse rifle',
+         'sniper rifle',
+         'trace rifle',
+         'fusion rifle',
+         'linear fusion rifle',
+         'rocket launcher',
+         'grenade launcher',
+         'heavy grenade launcher',
+         'submachine gun',
+         'machine gun',
+         'hand cannon',
+         'shotgun',
+         'sidearm',
+         'bow',
+         'sword',
+         'glaive'
+      ]
+         .map((w) => ` ${w}(, )?`)
+         .join('|'),
+
+      highlightRegex: /<(green|blue|purple|yellow|bold|pve|pvp)/,
+
+      // prettier-ignore
       tokenizer: {
          root: [
-            // table stuff
-            [/< table >/, 'table', '@table'],
-            // self contained stuff
-            [/<(stasis|arc|solar|void|primary|special|heavy|background|center)/, 'selfContained', '@selfContained'], // stasis|arc|solar|void|primary|special|heavy|background|center
-            // highlight stuff
-            [/<(highlight_[1-4]|pve|pvp|bold)/, 'highlight', '@highlight'],
-            // extra stuff
-            [/<(formula|link)/, 'extra', '@extra'],
-            [/<title /, 'title', '@title']
+            [/^import [A-z0-9 ]+? from (\d+?|self)/, { token: '@rematch', next: '@import' }], //--- done
+            [/^export [A-z0-9 ]+? \(/              , { token: '@rematch', next: '@export' }],
+
+            [/< table( wide| center| formula){0,3}? >/, { token: 'blue', next: '@table' }], // table start
+
+            [/< +?weapon type +?\(@weapons{0,20}?\) +?>/, { token: 'blue' }],
+            [/<\$\$>/,                                    { token: 'blue' }],
+
+            [/@selfContained/,  { token: 'green' }],
+            [/@highlightRegex/, { token: 'blue', next: '@highlight'}],
+
+            [/<(formula |link |title )/, { token: 'green', next: '@extra' }],
+            [/\${.*?/, 'yellow', '@math'],
          ],
+
+         import: [ //--- done
+            [/(^import | from )/,    { token: 'purple'    }],
+            [/[A-z0-9 ]+?(?= from)/, { token: 'lightBlue' }],
+            [/([0-9]+|self)/,        { token: 'lightBlue', next: '@pop' }],
+         ],
+         export: [
+            [/^export /,           { token: 'purple'    }], // word export
+            [/[A-z0-9 ]+?(?= \()/, { token: 'lightBlue' }], // exports name
+            [/\( *?$/,             { token: 'purple'    }], // (
+
+            [/< table( wide| center| formula){0,3}? >/, { token: 'blue', next: '@table' }], // table start
+
+            [/< +?weapon type +?\(@weapons{0,20}?\) +?>/, { token: 'blue' }],
+            [/<\$\$>/,                                    { token: 'blue' }],
+
+            [/@selfContained/,  { token: 'green' }],
+            [/@highlightRegex/, { token: 'blue', next: '@highlight'}],
+
+            [/<(formula |link |title )/, { token: 'green', next: '@extra' }],
+            [/\${.*?/, 'yellow', '@math'],
+
+            [/^\)/, { token: 'purple', next: '@pop' }], // end of export
+         ],
+
          table: [
-            [/<\$>/, 'tableEnd', '@pop'],
-            [/\|b|\|/, 'tableSeparator'],
-            [/<(stasis|arc|void|solar|background|center)/, 'selfContained', '@selfContained'],
-            [/<(highlight_[1-4]|bold|primary|special|heavy|pve|pvp)/, 'highlight', '@highlight'],
-            [/<(formula|link)/, 'extra', '@extra'],
-            [/<title /, 'title', '@title']
+            [/<\$>/, 'blue', '@pop'], // table end
+            [/\|[bchr]{0,4}/, 'blue'], // table only content
+
+            [/@selfContained/, 'green'],
+            [/@highlightRegex/, 'blue', '@highlight'],
+            [/<(formula |link |title )/, 'green', '@extra'],
+            [/\${.*?/, 'yellow', '@math']
          ],
-         selfContained: [
-            [/\/>/, 'selfContained', '@pop'],
-            [/./, 'selfContained.text']
-         ],
+
          highlight: [
-            [/\/>/, 'highlight', '@pop'],
-            [/./, 'highlight.text']
+            [/\/>/, 'blue', '@pop'],
+            [/\${.*?/, 'yellow', '@math']
          ],
          extra: [
-            [/\/>/, 'extra', '@pop'],
-            [/(ready|stow|range|reload)_\d+/, 'extra.content'],
-            [/https:.+? /, 'extra.content'],
-            [/./, 'extra.text']
+            [/\/>/, 'green', '@pop'],
+            [/\[.+?\]/, 'blue'],
+            [/\${.*?/, 'yellow', '@math']
          ],
-         title: [
-            [/\/>/, 'title', '@pop'],
-            [/\[.*\]/, 'title.text']
+         math: [
+            [/}/, 'yellow', '@pop'],
          ]
       }
    })
@@ -47,27 +135,12 @@ export function createEditor() {
       base: 'vs',
       inherit: false,
       rules: [
-         // table stuff
-         { token: 'table', foreground: '4fc1ff' }, // const blue
-         { token: 'tableSeparator', foreground: '4fc1ff' }, // const blue
-         { token: 'tableEnd', foreground: '4fc1ff' }, // const blue
-         // self contained stuff
-         { token: 'selfContained', foreground: '9cdcfe' }, // let blue
-         { token: 'selfContained.text', foreground: 'd16969' }, // regex red
-         // highlight stuff
-         { token: 'highlight', foreground: '4fc1ff' }, // const blue
-         { token: 'highlight.text', foreground: 'ffffff' }, // white
-         // formula stuff
-         { token: 'extra', foreground: '4ec9b0' }, // class green
-         { token: 'extra.text', foreground: 'ffffff' }, // white
-         { token: 'extra.content', foreground: '4fc1ff' }, // const blue
-         // exceptions
-         { token: 'bold.selfContained', foreground: '9cdcfe' }, // let blue
-         { token: 'bold', foreground: '4fc1ff' }, // const blue
-         { token: 'bold.text', foreground: 'ffffff' }, // const blue
-         // title stuff
-         { token: 'title', foreground: '4ec9b0' }, // class green
-         { token: 'title.text', foreground: '4fc1ff' } // const blue
+         { token: 'green', foreground: '4ec9b0' }, // class green
+         { token: 'blue', foreground: '4fc1ff' }, // const blue
+         { token: 'purple', foreground: 'c586c0' }, // export purple
+         { token: 'lightBlue', foreground: '9cdcfe' }, // let blue
+         { token: 'yellow', foreground: 'dcdcaa' }, // function yellow
+         { token: 'test', foreground: 'dcdcaa' } // function yellow
       ],
       colors: {
          'editor.foreground': '#ffffff', // normal text | white
@@ -80,158 +153,161 @@ export function createEditor() {
          'editorSuggestWidget.background': '#252526', // suggestion background
          'editorSuggestWidget.border': '#454545', // suggestion border
          'list.hoverBackground': '#2a2d2e', // dropdown hover over
+         'foreground': '#78a8f6', // image color in dropdown
          // split view
          'diffEditor.removedTextBackground': '#ff000070', // removed text background
-         'diffEditor.insertedTextBackground': '#a0bf5652' // inserted text background
+         'diffEditor.insertedTextBackground': '#a0bf5652', // inserted text background
       }
    })
 
    monaco.languages.registerCompletionItemProvider('clarityLangue', {
-      provideCompletionItems: () => {
-         const keywordsSettings = {
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-         }
+      provideCompletionItems: (model, position, context, provider) => {
+         const lineContent = model.getLineContent(position.lineNumber)
+
+         let conditionalSuggestions: ConditionalSuggestions[] = []
+
+         if (/< table /.test(lineContent)) conditionalSuggestions = tableSettings(position, lineContent)
+         if (/^import .+? from.*?/.test(lineContent)) conditionalSuggestions = imports(position, lineContent, itemData)
+
          const suggestions = [
-            //--- table stuff
             {
                label: 'table',
-               insertText: ['< table > ', '$0', '<$>'].join('\n'),
-               ...keywordsSettings
-            },
-            //--- self contained
+               insertText: ['< table >', '$0', '<$>'].join('\n'),
+               documentation: `< table > optionally can have center, formula, wide ex < table wide formula >\n |\tnormal text\n |b\tbold text\n |c\tcentered text\n |r\tmoves text to right side\n |h\tadd background\n\tall of them can be combined for example\n |bc\tmakes bold centered text\n<$>`,
+               kind: monaco.languages.CompletionItemKind.Folder,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
-               label: 'background',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<background/>'
-            },
+               label: 'import',
+               insertText: 'import ${1:main} from $0',
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
-               label: 'center',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<center/>'
-            },
-            {
-               label: 'bold line',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<bold/>'
-            },
-            {
-               label: 'stasis',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<stasis/>'
-            },
-            {
-               label: 'arc',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<arc/>'
-            },
-            {
-               label: 'void',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<void/>'
-            },
-            {
-               label: 'solar',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<solar/>'
-            },
-            {
-               label: 'primary',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<primary/>'
-            },
-            {
-               label: 'special',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<special/>'
-            },
-            {
-               label: 'heavy',
-               kind: monaco.languages.CompletionItemKind.Text,
-               insertText: '<heavy/>'
-            },
+               label: 'export',
+               insertText: ['export ${1:name} (', '$0', ')'].join('\n'),
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
 
-            //--- highlight stuff
-            {
-               label: 'highlight',
-               insertText: '<highlight_${1:1} ${2: } />',
-               ...keywordsSettings
-            },
+
             {
                label: 'bold text',
                insertText: '<bold ${1: } />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'pve',
                insertText: '<pve ${1: } />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'pvp',
                insertText: '<pvp ${1: } />',
-               ...keywordsSettings
-            },
-            //--- extra stuff
-            {
-               label: 'link',
-               insertText: '<link ${1: } ${2: }>',
-               ...keywordsSettings
-            },
-            {
-               label: 'combatant',
-               insertText: '<link https://d2clarity.page.link/combatant ${1:Combatant}/>',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+
+
             {
                label: 'formula_ready',
                insertText: '<formula ${2:Ready Speed:} ready_${1:0} />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'formula_stow',
                insertText: '<formula ${2:Stow Speed:} stow_${1:0} />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range',
                insertText: '<formula ${2:In-Game Range:} range_${1:0} />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'formula_reload',
                insertText: '<formula ${2:Reload Time:} reload_${1:0} />',
-               ...keywordsSettings
-            },
-            //--- unnamed formula stuff
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+
             {
                label: 'formula_ready_empty',
                insertText: '<formula ready_${1:0} />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'formula_stow_empty',
                insertText: '<formula stow_${1:0} />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range_empty',
                insertText: '<formula range_${1:0} />',
-               ...keywordsSettings
-            },
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
             {
                label: 'formula_reload_empty',
                insertText: '<formula reload_${1:0} />',
-               ...keywordsSettings
-            },
-            //--- title stuff
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+
+
             {
-               label: 'title',
-               insertText: '<title ${1: } [${2: }] />',
-               ...keywordsSettings
-            }
+               label: 'link',
+               insertText: '<link ${1: } ${2: }>',
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'combatant',
+               insertText: '<link https://d2clarity.page.link/combatant ${1:Combatant}/>',
+               kind: monaco.languages.CompletionItemKind.Class,
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+
+            {
+               label: 'highlight green',
+               insertText: '<green ${1: } />',
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'highlight yellow',
+               insertText: '<yellow ${1: } />',
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'highlight blue',
+               insertText: '<blue ${1: } />',
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'highlight purple',
+               insertText: '<purple ${1: } />',
+               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            } as unknown as ConditionalSuggestions,
+
+
+            ...selfContained(),
          ]
-         return { suggestions }
+         const selfContained_ = [
+            // //--- title stuff
+            // {
+            //    label: 'title',
+            //    insertText: '<title ${1: } [${2: }] />',
+            //    ...keywordsSettings
+            // }
+         ]
+         return { suggestions: [...suggestions, ...conditionalSuggestions] }
       }
    })
    const defaultSettings = {
@@ -240,7 +316,7 @@ export function createEditor() {
       minimap: {
          enabled: false
       },
-      automaticLayout: true,
+      automaticLayout: false,
       wordWrap: 'on' as const,
       mouseWheelZoom: true
    }
@@ -257,16 +333,6 @@ export function createEditor() {
       renderIndicators: false
    }
 
-   const containers = {
-      normal: {
-         main: document.querySelector('#editor-1') as HTMLDivElement,
-         secondary: document.querySelector('#editor-2') as HTMLDivElement
-      },
-      diff: {
-         main: document.querySelector('#diffEditor-1') as HTMLDivElement,
-         secondary: document.querySelector('#diffEditor-2') as HTMLDivElement
-      }
-   }
    const models = {
       main: {
          original: monaco.editor.createModel('', 'clarityLangue'),

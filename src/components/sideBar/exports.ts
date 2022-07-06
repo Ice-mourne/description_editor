@@ -1,7 +1,0 @@
-export * from './BasicInfo'
-export * from './Selection'
-export * from './Button'
-export * from './ItemId'
-export * from './Message'
-export * from './StatSelection'
-export * from './Login'

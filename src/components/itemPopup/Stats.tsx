@@ -183,7 +183,7 @@ const testData = {
 }
 
 import Recoil from '@assets/svg/Recoil'
-import styles from '@styles/itemPopup/Stats.module.scss'
+import styles from './Stats.module.scss'
 
 export function Stats() {
    const statInfo = {

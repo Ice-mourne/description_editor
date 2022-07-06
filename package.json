@@ -1,27 +1,28 @@
 {
-  "name": "description_editor_v69",
-  "version": "0.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.1.1",
-    "@fortawesome/free-solid-svg-icons": "^6.1.1",
-    "@fortawesome/react-fontawesome": "^0.1.18",
-    "monaco-editor": "^0.31.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "sass": "^1.49.0"
-  },
-  "devDependencies": {
-    "@types/node": "^17.0.12",
-    "@types/react": "^17.0.33",
-    "@types/react-dom": "^17.0.10",
-    "@types/to-json-schema": "^0.2.1",
-    "@vitejs/plugin-react": "^1.0.7",
-    "typescript": "^4.4.4",
-    "vite": "^2.7.2"
-  }
+   "name": "editor",
+   "private": true,
+   "version": "0.0.0",
+   "scripts": {
+      "dev": "vite",
+      "build": "tsc && vite build",
+      "preview": "vite preview"
+   },
+   "dependencies": {
+      "immer": "^9.0.15",
+      "lodash": "^4.17.21",
+      "monaco-editor": "^0.33.0",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0",
+      "sass": "^1.53.0",
+      "use-immer": "^0.7.0"
+   },
+   "devDependencies": {
+      "@types/lodash": "^4.14.182",
+      "@types/node": "^18.0.0",
+      "@types/react": "^18.0.0",
+      "@types/react-dom": "^18.0.0",
+      "@vitejs/plugin-react": "^1.3.0",
+      "typescript": "^4.6.3",
+      "vite": "^2.9.9"
+   }
 }

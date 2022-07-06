@@ -1,188 +1,182 @@
-const separateLinesAndTables_new = (description: string): string[] =>
-   description
-      .replace(/\r/g, '')
-      .split(/(< table (?:formula )?>[^]*?<\$>)/g) // separate tables and lines in arrays
-      .flatMap((text) => {
-         // remove empty lines not including spacers
-         if (!text) return []
-         // can't use trim because it removes more that one line break
-         const cleanerText = text.startsWith('\n') ? text.slice(1) : text
-         return cleanerText.endsWith('\n') ? cleanerText.slice(0, -1) : cleanerText
-      })
+import { Description, ItemDataTemplate, LinesContent } from '@components/provider/dataProvider'
+import { Updater } from 'use-immer'
+import { descriptionExport, descriptionImport } from './descriptionImportExport'
+import { doMath } from './doMath'
+import { loadVariables, saveVariables } from './variableSaveLoad'
 
-type SplitLines = {
-   lines?: string[]
-   tableLines?: string[]
-}
-const splitLines_new = (description: string[]): SplitLines[] =>
-   description.map((text) => {
-      const isTable = text.startsWith('< table ')
-      if (isTable) return { tableLines: text.split(/\n/) }
-      return { lines: text.split(/\n/) }
-   })
+const convertLinesContent = (line: string) => {
+   const regexStart = '<(?:'
+   const selfContained = ['stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy']
+   const simpleWrappers = [
+      'bold',
+      'pve',
+      'pvp',
+      'background',
+      'green',
+      'blue',
+      'purple',
+      'yellow'
+   ]
+   const complexWrappers = ['link', 'title', 'formula']
+   const regexEnd = ').*?/>'
 
-interface LinesWithClassNames {
-   lineText?: string
-   className?: string
-   isFormulaTable?: boolean
-   table?: Array<{
-      lineText?: string
-      className?: string
-   }>
-}
-const assignLineClassNames = (description: SplitLines[]): LinesWithClassNames[] => {
-   const assignToLines = (lines: string[]) =>
-      lines.map((line) => {
-         const regex = new RegExp(/(<center\/>)|(<bold\/>)|(<background\/>)/g),
-            className = line.match(regex)?.join(' ').replace(/<|\/>/g, ''),
-            cleanText = line.replace(regex, '')
-         return {
-            lineText: cleanText === '' ? undefined : cleanText,
-            className: cleanText == '' ? 'spacer' : className
+   const fullRegex = new RegExp(
+      `(${regexStart}${[...selfContained, ...simpleWrappers, ...complexWrappers].join('|')}${regexEnd})`,
+      'g'
+   )
+
+   const splittedLine = line.split(fullRegex).filter((line) => line.trim() !== '')
+   return splittedLine.reduce((acc, text) => {
+      if (/\|/.test(text)) {
+         const classes: { [key: string]: string } = {
+            b: 'bold',
+            c: 'center',
+            h: 'background',
+            r: 'right'
          }
-      })
 
-   const assignToTable = (table: string[]) => {
-      const isFormulaTable = table[0].match(/formula/) ? true : false // I'm to lazy to make formulaTable as separate object
-      const newTable = table.flatMap((line) => {
-         if (line.match(/(< table (?:formula )?>|<\$>)/)) return []
-         return assignToLines([line])
-      })
-      return { table: newTable, className: 'table', formula: isFormulaTable } // I'm to lazy to make formulaTable as separate object
-   }
+         const classNames = text
+            .match(/\|[bchr]+/)?.[0]
+            .split('')
+            .map((c) => classes[c])
 
-   // using reduce seems to bug out and set acc to undefined
-   const newDescription: any = []
-   description.forEach((text) => {
-      if (text.lines) assignToLines(text.lines).forEach((line) => newDescription.push(line))
-      if (text.tableLines) newDescription.push(assignToTable(text.tableLines))
-   })
-   return newDescription
-}
-
-interface SplitTableColumns {
-   lineText?: string
-   className?: string
-   isFormulaTable?: boolean
-   table?: Array<{
-      lineText?: string[] | null
-      className?: string
-   }>
-}
-const splitTableColumns_new = (description: LinesWithClassNames[]): SplitTableColumns[] =>
-   description.map((linesTable) => {
-      if (!linesTable.table) return linesTable as SplitTableColumns // TS complains because i changed table line text from string to string[]
-      const newRows = linesTable.table.map((row) => {
-         const reg1 = '(\\|)(?!.*\\|).*', // match from | till end of line
-            reg2 = '\\|?.*?(?=\\|)' // match from | till |
-         return {
-            ...row,
-            lineText: row.lineText?.match(new RegExp(`(${reg1})|(${reg2})`, 'g'))
+         const test = {
+            text: text.replace(/\|([bchr]+)?/g, '').trim(),
+            classNames
          }
-      })
-      return {
-         ...linesTable,
-         table: newRows
+
+         acc.push(test)
+         return acc
       }
-   })
 
-import { Description } from 'src/interfaces_2'
-
-const assignTextClassNames = (description: SplitTableColumns[]): Description[] => {
-   const convertText = (text: string) => {
-      const regStart = [
-            text.startsWith('|') ? '(\\||\\|b)\\s*<(?:bold' : '<(?:bold', // this is for table
-            'highlight_[1-4]',
-            'pve|pvp',
-            'link|title|formula',
-            'stasis|arc|solar|void',
-            'primary|special|heavy',
-            'background|center)'
-         ].join('|'),
-         regEnd = '/>'
-      const textArr = text.split(new RegExp(`(${regStart}.*?${regEnd})`, 'g'))
-
-      return textArr.flatMap((text, i, arr) => {
-         if (text.trim() === '' || (arr.length > 1 && (text.trim() === '|' || text.trim() === '|b'))) return []
-         if (!text.match(/^(<|\|)/)) return { text: text } // check if text starts with < or |
-         if (text.trim() === '|') return { text: ' ' } // check if text is empty table cell
-         const isFormula = text.includes('<formula')
-         const isTitle = text.includes('<title')
-
-         let className = text.match(new RegExp(regStart, 'g'))?.join(' ').replaceAll('<', '') || ''
-         let cleanText = text.replace(new RegExp(`${regStart}|${regEnd}`, 'g'), '')
-
-         if (text.startsWith('|')) {
-            className = `${className} ${text.startsWith('|b') ? 'bold' : ''}`.replace('|', '').trim()
-            cleanText = cleanText.replace(/\|b|\|/g, '').trim()
-         }
-
-         const link = text.match(/(https:.+? )|((?<=https:.+? ).*(?=\/>))/g)
-         if (link)
-            return {
-               linkUrl: link?.[0]?.trim(),
-               linkText: link?.[1].trim(),
-               className: className
-            }
-
-         const title = text.match(/\[.*\]/g)
-         if (title && isTitle)
-            return {
-               title: title[0].replace(/[[\]]/g, ''),
-               text: cleanText.replace(/\[.*\]/g, '').trim(),
-               className: className
-            }
-
-         if (isFormula) {
-            const formula = cleanText.match(/(ready|stow|range|reload)_\d+/g)?.[0],
-               formulaText = cleanText.replace(formula || '', '')
-            return {
-               formulaText: formulaText.trim(),
-               formula: formula?.trim(),
-               className: className
-            }
-         }
-
-         if (!cleanText.trim() && !className.trim()) return []
-         return {
-            text: cleanText,
-            className: className
-         }
-      })
-   }
-
-   const convertTable = (table: Array<{ lineText?: string[] | null; className?: string }>) =>
-      table.map((row) => {
-         const newRow = row.lineText?.flatMap((text) => {
-            return convertText(text)
+      // if there are no special stuff return text
+      if (!fullRegex.test(text)) {
+         acc.push({
+            text: text
          })
-
-         return {
-            ...row,
-            lineText: newRow
-         }
-      })
-
-   return description.map((lineTable) => {
-      if (lineTable.table)
-         return {
-            ...lineTable,
-            table: convertTable(lineTable.table)
-         }
-
-      if (!lineTable.lineText) return lineTable // if line has no text, return it
-      return {
-         ...lineTable,
-         lineText: convertText(lineTable.lineText)
+         return acc
       }
-   }) as Description[] // Because TS complains about lineText conversion
+
+      // if only self contained return relevant class name
+      if (new RegExp(`${regexStart}${selfContained.join('|')}${regexEnd}`).test(text)) {
+         acc.push({
+            classNames: [text.match(new RegExp(selfContained.join('|')))![0]]
+         })
+         return acc
+      }
+
+      if (new RegExp(`${regexStart}${simpleWrappers.join('|')}${regexEnd}`).test(text)) {
+         acc.push({
+            text: text.replace(new RegExp(`<(${simpleWrappers.join('|')}) | />`, 'g'), ''),
+            classNames: [text.match(new RegExp(simpleWrappers.join('|')))![0]]
+         })
+         return acc
+      }
+
+      if (new RegExp(`${regexStart}${complexWrappers.join('|')}${regexEnd}`).test(text)) {
+         const type = text.match(new RegExp(complexWrappers.join('|')))![0].trim()
+
+         acc.push({
+            text: text.replace(new RegExp(`<(${complexWrappers.join('|')}) | />|\\[.*?\\]`, 'g'), ''),
+            [type]: text.match(/\[.*?]/)?.[0].replace(/^\[|]$/g, ''),
+            classNames: [type]
+         })
+         return acc
+      }
+      return acc
+   }, [] as LinesContent[])
 }
 
-export default function convertDescription(description: string) {
-   const step1 = separateLinesAndTables_new(description)
-   const step2 = splitLines_new(step1)
-   const step3 = assignLineClassNames(step2)
-   const step4 = splitTableColumns_new(step3)
-   const step5 = assignTextClassNames(step4)
-   return step5
+function splitTable(line: string) {
+   const center = /<center\/>/.test(line) ? 'center' : null
+   const bold = /<bold\/>/.test(line) ? 'bold' : null
+   const background = /<background\/>/.test(line) ? 'background' : null
+
+   const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
+   const splittedLine = cleanLine.split(/(\|.+?(?=\|)|\|.+?$)/).filter((line) => line.trim() !== '')
+
+   return {
+      classNames: [center, bold, background],
+      linesContent: splittedLine.flatMap((text) => {
+         const convertLines = convertLinesContent(text)
+         if (convertLines.length === 1) return convertLines
+         return convertLines.filter((line) => line.text?.trim() !== '')
+      })
+   }
+}
+
+export default function convertDescription(
+   description: string,
+   itemData: ItemDataTemplate,
+   setItemData: Updater<ItemDataTemplate>,
+   editorType: string
+) {
+   // remove \r
+   let cleanText = description.replace(/\r/g, '')
+
+   if (editorType === 'main') {
+      const text = descriptionExport(cleanText, setItemData)
+      if (text) cleanText = text
+      const text2 = saveVariables(cleanText, setItemData)
+      if (text2) cleanText = text2
+   }
+   cleanText = descriptionImport(cleanText, itemData)
+   cleanText = loadVariables(cleanText, itemData)
+   cleanText = doMath(cleanText)
+
+   // split lines in to array of lines
+   const lineArr = cleanText.split('\n')
+
+   let tableIndex: number | null = null
+   const parsedDescription = lineArr.reduce((acc, line, lineIndex) => {
+      //--- start of table code
+      // if line starts with < table // start table stuff
+      if (tableIndex === null && /^\s*< table /.test(line)) {
+         tableIndex = lineIndex
+         const wide = / wide /.test(line) ? 'wide' : null
+         const centered = / center /.test(line) ? 'centerTable' : null
+         const formula = / formula /.test(line) ? 'formula' : null
+         const backgroundOdd = / background_2 /.test(line) ? 'bgOdd' : null
+         const backgroundEven = / background_1 /.test(line) ? 'bgEven' : null
+         acc[tableIndex] = {
+            classNames: ['table', wide, centered, backgroundOdd, backgroundEven],
+            isFormula: formula ? true : null,
+            table: []
+         }
+         return acc
+      }
+
+      // if line starts with <$> exit table stuff
+      if (tableIndex !== null && /^\s*<\$>/.test(line)) {
+         tableIndex = null
+         return acc
+      }
+
+      // while in table
+      if (tableIndex !== null) {
+         acc[tableIndex].table!.push(splitTable(line))
+         return acc
+      }
+      //--- end of table code
+
+      if (line.trim() === '') {
+         acc.push({
+            classNames: ['spacer']
+         })
+         return acc
+      }
+
+      const center = /<center\/>/.test(line) ? 'center' : null
+      const bold = /<bold\/>/.test(line) ? 'bold' : null
+      const background = /<background\/>/.test(line) ? 'background' : null
+
+      const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
+      acc.push({
+         classNames: [center, bold, background],
+         linesContent: convertLinesContent(cleanLine)
+      })
+      return acc
+   }, [] as Description[])
+
+   return parsedDescription
 }

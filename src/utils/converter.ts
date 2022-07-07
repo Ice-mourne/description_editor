@@ -9,7 +9,7 @@ export function converter(data: DescriptionWithEditor) {
          id: Number(item.id),
          itemId: item.itemId ? Number(item.itemId) : undefined,
          inLiveDatabase: item.inLiveDatabase ? true : false,
-         lastUpdate: item.lastUpdate ? Number(item.lastUpdate) : Date.now(),
+         lastUpdate: typeof item.lastUpdate === 'number' ? Number(item.lastUpdate) : Date.now(),
          updatedBy: item.updatedBy ? item.updatedBy : 'Icemourne'
       }
 

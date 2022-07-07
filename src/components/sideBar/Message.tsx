@@ -16,7 +16,7 @@ export function Message() {
             draft.pop()
          })
          clearTimeout(timeOut)
-      }, 15000)
+      }, 30000)
    }, [messageEvent])
 
    return (

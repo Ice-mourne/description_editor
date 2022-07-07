@@ -1,5 +1,5 @@
 import { ItemDataTemplate } from '@components/provider/dataProvider'
-import * as monaco from 'monaco-editor'
+import { editor, languages } from 'monaco-editor'
 import { imports, selfContained, tableSettings } from './autoCompletion'
 
 export interface ConditionalSuggestions {
@@ -9,8 +9,8 @@ export interface ConditionalSuggestions {
       startColumn: number
       endColumn: number
    }
-   kind: monaco.languages.CompletionItemKind
-   insertTextRules: monaco.languages.CompletionItemInsertTextRule
+   kind: languages.CompletionItemKind
+   insertTextRules: languages.CompletionItemInsertTextRule
    label: string
    insertText: string
 }
@@ -34,8 +34,8 @@ export function createEditor(itemData: ItemDataTemplate) {
       return null
    }
 
-   monaco.languages.register({ id: 'clarityLangue' })
-   monaco.languages.setMonarchTokensProvider('clarityLangue', {
+   languages.register({ id: 'clarityLangue' })
+   languages.setMonarchTokensProvider('clarityLangue', {
       selfContained: ['stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy', 'background', 'center']
          .map((w) => `<${w}/>`)
          .join('|'),
@@ -131,7 +131,7 @@ export function createEditor(itemData: ItemDataTemplate) {
          ]
       }
    })
-   monaco.editor.defineTheme('myCoolTheme', {
+   editor.defineTheme('myCoolTheme', {
       base: 'vs',
       inherit: false,
       rules: [
@@ -160,7 +160,7 @@ export function createEditor(itemData: ItemDataTemplate) {
       }
    })
 
-   monaco.languages.registerCompletionItemProvider('clarityLangue', {
+   languages.registerCompletionItemProvider('clarityLangue', {
       provideCompletionItems: (model, position, context, provider) => {
          const lineContent = model.getLineContent(position.lineNumber)
 
@@ -174,126 +174,126 @@ export function createEditor(itemData: ItemDataTemplate) {
                label: 'table',
                insertText: ['< table >', '$0', '<$>'].join('\n'),
                documentation: `< table > optionally can have center, formula, wide ex < table wide formula >\n |\tnormal text\n |b\tbold text\n |c\tcentered text\n |r\tmoves text to right side\n |h\tadd background\n\tall of them can be combined for example\n |bc\tmakes bold centered text\n<$>`,
-               kind: monaco.languages.CompletionItemKind.Folder,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Folder,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'import',
                insertText: 'import ${1:main} from $0',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'export',
                insertText: ['export ${1:name} (', '$0', ')'].join('\n'),
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
 
 
             {
                label: 'bold text',
                insertText: '<bold ${1: } />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'pve',
                insertText: '<pve ${1: } />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'pvp',
                insertText: '<pvp ${1: } />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
 
 
             {
                label: 'formula_ready',
                insertText: '<formula ${2:Ready Speed:} ready_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_stow',
                insertText: '<formula ${2:Stow Speed:} stow_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range',
                insertText: '<formula ${2:In-Game Range:} range_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_reload',
                insertText: '<formula ${2:Reload Time:} reload_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
 
             {
                label: 'formula_ready_empty',
                insertText: '<formula ready_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_stow_empty',
                insertText: '<formula stow_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range_empty',
                insertText: '<formula range_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_reload_empty',
                insertText: '<formula reload_${1:0} />',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
 
 
             {
                label: 'link',
                insertText: '<link ${1: } ${2: }>',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'combatant',
                insertText: '<link https://d2clarity.page.link/combatant ${1:Combatant}/>',
-               kind: monaco.languages.CompletionItemKind.Class,
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
 
             {
                label: 'highlight green',
                insertText: '<green ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'highlight yellow',
                insertText: '<yellow ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'highlight blue',
                insertText: '<blue ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
             {
                label: 'highlight purple',
                insertText: '<purple ${1: } />',
-               insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
             } as unknown as ConditionalSuggestions,
 
 
@@ -335,22 +335,22 @@ export function createEditor(itemData: ItemDataTemplate) {
 
    const models = {
       main: {
-         original: monaco.editor.createModel('', 'clarityLangue'),
-         modified: monaco.editor.createModel('', 'clarityLangue')
+         original: editor.createModel('', 'clarityLangue'),
+         modified: editor.createModel('', 'clarityLangue')
       },
       secondary: {
-         original: monaco.editor.createModel('', 'clarityLangue'),
-         modified: monaco.editor.createModel('', 'clarityLangue')
+         original: editor.createModel('', 'clarityLangue'),
+         modified: editor.createModel('', 'clarityLangue')
       }
    }
    const editors = {
       normal: {
-         main: monaco.editor.create(containers.normal.main, normalSettings),
-         secondary: monaco.editor.create(containers.normal.secondary, normalSettings)
+         main: editor.create(containers.normal.main, normalSettings),
+         secondary: editor.create(containers.normal.secondary, normalSettings)
       },
       diff: {
-         main: monaco.editor.createDiffEditor(containers.diff.main, diffSettings),
-         secondary: monaco.editor.createDiffEditor(containers.diff.secondary, diffSettings)
+         main: editor.createDiffEditor(containers.diff.main, diffSettings),
+         secondary: editor.createDiffEditor(containers.diff.secondary, diffSettings)
       }
    }
    editors.diff.main.setModel({

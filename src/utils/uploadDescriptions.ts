@@ -1,4 +1,5 @@
 import { DescriptionWithEditor, ItemDataTemplate } from '@components/provider/dataProvider'
+import _ from 'lodash'
 import { compareDescriptions } from './compareDescriptions'
 import { ClovisGithubDataJson } from './fetchDescriptions'
 import { getLoginDetails } from './getLogin'
@@ -47,8 +48,8 @@ export async function uploadDescriptionClovis(
       return
    }
 
-   const cleanItemData = cleanItemData_ || removeEmptyFromObj(itemData)
-   const cleanPerks = cleanItemData.description.modified
+   const cleanItemData = cleanItemData_ || itemData
+   const cleanPerks = JSON.parse(JSON.stringify(removeEmptyFromObj(cleanItemData.description.modified)))
    const changedPerkHashes = changedPerkHashes_ || compareDescriptions(githubData.content.descriptions, cleanPerks)
 
    if (changedPerkHashes.length === 0 && !inLiveDatabase) {
@@ -95,57 +96,60 @@ interface IceGithubData {
 }
 
 export async function uploadDescriptionIce(itemData: ItemDataTemplate, marked: number[]) {
-   const githubData = await githubGet('getIce') as IceGithubData
-   if (!githubData) return null
+   sendMessage('Disabled for now')
+   if (itemData.input.id === 69) return 'Success' // remove this line
 
-   const login = getLoginDetails()
-   if (login === null) {
-      sendMessage('Login details missing')
-      return
-   }
+   // const githubData = await githubGet('getIce') as IceGithubData
+   // if (!githubData) return null
 
-   const cleanItemData = removeEmptyFromObj(itemData)
-   const cleanPerks = cleanItemData.description.modified
-   const changedPerkHashes = compareDescriptions(githubData.content, cleanPerks)
+   // const login = getLoginDetails()
+   // if (login === null) {
+   //    sendMessage('Login details missing')
+   //    return
+   // }
 
-   if (changedPerkHashes.length === 0) {
-      sendMessage('No changes where found')
-      return
-   }
+   // const cleanItemData = removeEmptyFromObj(itemData)
+   // const cleanPerks = cleanItemData.description.modified
+   // const changedPerkHashes = compareDescriptions(githubData.content, cleanPerks)
 
-   const markedForLive = changedPerkHashes.filter((hash) => marked.includes(Number(hash)))
+   // if (changedPerkHashes.length === 0) {
+   //    sendMessage('No changes where found')
+   //    return
+   // }
 
-   if (markedForLive.length === 0) {
-      sendMessage('No perks were marked for live')
-      return
-   }
+   // const markedForLive = changedPerkHashes.filter((hash) => marked.includes(Number(hash)))
 
-   const updatedDescriptions = markedForLive.reduce((acc, hash) => {
-      if (hash === null) return acc
-      acc[hash] = {
-         ...acc[hash],
-         lastUpdate: Date.now(),
-         updatedBy: login.username
-      }
-      delete acc[hash].inLiveDatabase
-      delete acc[hash].editor
+   // if (markedForLive.length === 0) {
+   //    sendMessage('No perks were marked for live')
+   //    return
+   // }
 
-      return acc
-   }, cleanPerks)
+   // const updatedDescriptions = markedForLive.reduce((acc, hash) => {
+   //    if (hash === null) return acc
+   //    acc[hash] = {
+   //       ...acc[hash],
+   //       lastUpdate: Date.now(),
+   //       updatedBy: login.username
+   //    }
+   //    delete acc[hash].inLiveDatabase
+   //    delete acc[hash].editor
 
-   const resp = await githubPut(
-      'putIce',
-      {
-         sha: githubData.sha,
-         content: JSON.stringify(updatedDescriptions)
-      },
-      login
-   )
+   //    return acc
+   // }, cleanPerks)
 
-   if (resp?.status === 200) {
-      sendUpdateMessage(cleanPerks, changedPerkHashes)
-      return 'Success'
-   }
+   // const resp = await githubPut(
+   //    'putIce',
+   //    {
+   //       sha: githubData.sha,
+   //       content: JSON.stringify(updatedDescriptions)
+   //    },
+   //    login
+   // )
 
-   uploadDescriptionClovis(itemData, true, cleanItemData, changedPerkHashes)
+   // if (resp?.status === 200) {
+   //    sendUpdateMessage(cleanPerks, changedPerkHashes)
+   //    return 'Success'
+   // }
+
+   // uploadDescriptionClovis(itemData, true, cleanItemData, changedPerkHashes)
 }

@@ -15,8 +15,9 @@ export const compareDescriptions = (
 
    const differences = keys
       .map((key) => {
-         const originalValue = original[key]
-         const modifiedValue = modified[key]
+         const lastUpdate = original[key]?.lastUpdate || 0
+         const originalValue = { ...original[key], lastUpdate }
+         const modifiedValue = { ...modified[key], lastUpdate }
 
          if (_.isEqual(originalValue, modifiedValue)) return null
          return key

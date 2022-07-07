@@ -47,7 +47,7 @@ export interface DataToSend {
    content: string
 }
 export async function githubPut(option: FetchOptionsPut, data: DataToSend, login: LoginDetails) {
-
+   sendMessage('Uploading...')
    const fetchUrl = {
       putClovis: apiUrlClovis,
       putIce: ApiUrlIce

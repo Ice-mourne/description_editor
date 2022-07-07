@@ -7,16 +7,7 @@ import { loadVariables, saveVariables } from './variableSaveLoad'
 const convertLinesContent = (line: string) => {
    const regexStart = '<(?:'
    const selfContained = ['stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy']
-   const simpleWrappers = [
-      'bold',
-      'pve',
-      'pvp',
-      'background',
-      'green',
-      'blue',
-      'purple',
-      'yellow'
-   ]
+   const simpleWrappers = ['bold', 'pve', 'pvp', 'background', 'green', 'blue', 'purple', 'yellow']
    const complexWrappers = ['link', 'title', 'formula']
    const regexEnd = ').*?/>'
 
@@ -25,7 +16,7 @@ const convertLinesContent = (line: string) => {
       'g'
    )
 
-   const splittedLine = line.split(fullRegex).filter((line) => line.trim() !== '')
+   const splittedLine = line.split(fullRegex).filter((line) => line !== '') // line.trim() !== '')
    return splittedLine.reduce((acc, text) => {
       if (/\|/.test(text)) {
          const classes: { [key: string]: string } = {
@@ -50,9 +41,9 @@ const convertLinesContent = (line: string) => {
       }
 
       // if there are no special stuff return text
-      if (!fullRegex.test(text)) {
+      if (text.match(fullRegex) === null) {
          acc.push({
-            text: text
+            text
          })
          return acc
       }
@@ -100,7 +91,12 @@ function splitTable(line: string) {
       linesContent: splittedLine.flatMap((text) => {
          const convertLines = convertLinesContent(text)
          if (convertLines.length === 1) return convertLines
-         return convertLines.filter((line) => line.text?.trim() !== '')
+         return convertLines.filter((line) => {
+            return !(
+               (line.text === undefined || line.text.trim() === '') &&
+               (line.formula === undefined || line.formula.trim() === '')
+            )
+         })
       })
    }
 }

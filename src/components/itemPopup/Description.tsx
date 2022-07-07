@@ -14,9 +14,9 @@ const otherOptions = (linesContent: LinesContent) => {
    if (linesContent?.link) return <a href={linesContent.link}>{linesContent.text}</a>
    if (linesContent?.formula)
       return (
-         <span>
+         <>
             {linesContent.text} {calculateStat(linesContent.formula)}
-         </span>
+         </>
       )
    return null
 }

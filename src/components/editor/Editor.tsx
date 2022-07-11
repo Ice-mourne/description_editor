@@ -1,6 +1,6 @@
 import { ItemDataTemplate, itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import * as monaco from 'monaco-editor'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import diffEditorChange from './diffEditorChange'
 import { editorHotkeys } from './editorHotkeys'
 import { setDataToMainEditor, setDataToSecondaryEditor } from './setData'
@@ -17,22 +17,22 @@ export interface Editors {
    }
 }
 
-export default function Editor({ onMount }: { onMount: (itemData: ItemDataTemplate) => Editors | null}) {
+export default function Editor({ onMount }: { onMount: (itemData: ItemDataTemplate) => Editors | null }) {
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
 
    const [editor, setEditor] = useState<Editors | null>(null)
-   const [active, setActive] = useState(false)
 
+   // start editor this will run after first rended and never again
    useEffect(() => {
       const newEditor = onMount(itemData)
-      if (newEditor !== null) {
-         setEditor(newEditor)
-         editorHotkeys(newEditor.normal.main)
-      }
-      if (editor) setActive(true)
-   }, [active])
+      if (newEditor === null) return
 
+      setEditor(newEditor)
+      editorHotkeys(newEditor.normal.main)
+   }, [])
+
+   // set new description to editor then selected perk changes
    useEffect(() => {
       if (editor === null) return
       setNewDescription(editor, itemData)

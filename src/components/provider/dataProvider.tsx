@@ -1,5 +1,4 @@
 import { createContext } from 'react'
-
 import { getDescriptionClovis, getDescriptionIce } from '@utils/fetchDescriptions'
 import { Updater, useImmer } from 'use-immer'
 
@@ -79,7 +78,21 @@ export interface ItemDataTemplate {
    description: {
       original: DescriptionWithEditor
       modified: DescriptionWithEditor
-      descriptionsIce: DescriptionWithEditor
+      descriptionsIce: {
+         descriptions: DescriptionWithEditor
+         saved: {
+            perks: {
+               [key: PerkHash]: {
+                  [key: ExportName]: string
+               }
+            }
+            variables: {
+               [key: PerkHash]: {
+                  [key: VariableName]: string
+               }
+            }
+         }
+      }
    }
    markedForLive: PerkHash[]
    saved: {

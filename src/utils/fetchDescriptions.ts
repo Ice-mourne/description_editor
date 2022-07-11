@@ -46,10 +46,24 @@ export async function getDescriptionClovis() {
 }
 
 export const getDescriptionIce = async () => {
-   const response = await fetch('https://ice-mourne.github.io/database-clarity/descriptions.json', {
+   const response = await fetch('https://ice-mourne.github.io/database-clarity/descriptionsWithEditor.json', {
       method: 'GET',
       mode: 'cors'
    })
-   const json: DescriptionWithEditor = await response.json()
+   const json: {
+      descriptions: DescriptionWithEditor
+      saved: {
+         perks: {
+            [key: number]: {
+               [key: string ]: string
+            }
+         }
+         variables: {
+            [key: number]: {
+               [key: string]: string
+            }
+         }
+      }
+   } = await response.json()
    return json
 }

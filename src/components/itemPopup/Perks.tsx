@@ -16,7 +16,7 @@ export function Perks() {
          <div className={styles.perk_list} key={i}>
             {description && (
                <div className={styles.description}>
-                  <DescriptionBuilder description={description} />
+                  <DescriptionBuilder description={description} perk={perk} />
                </div>
             )}
             <div className={`${styles.perk} ${styles.perk_active}`}>

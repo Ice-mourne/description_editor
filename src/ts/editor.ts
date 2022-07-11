@@ -34,9 +34,24 @@ export function createEditor(itemData: ItemDataTemplate) {
       return null
    }
 
+   const selfContainedKeywords = [
+      'stasis',
+      'arc',
+      'solar',
+      'void',
+      'primary',
+      'special',
+      'heavy',
+      'background',
+      'center',
+      'barrier',
+      'overload',
+      'unstoppable'
+   ]
+
    languages.register({ id: 'clarityLangue' })
    languages.setMonarchTokensProvider('clarityLangue', {
-      selfContained: ['stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy', 'background', 'center']
+      selfContained: selfContainedKeywords
          .map((w) => `<${w}/>`)
          .join('|'),
 
@@ -69,7 +84,7 @@ export function createEditor(itemData: ItemDataTemplate) {
       tokenizer: {
          root: [
             [/^import [A-z0-9 ]+? from (\d+?|self)/, { token: '@rematch', next: '@import' }], //--- done
-            [/^export [A-z0-9 ]+? \(/              , { token: '@rematch', next: '@export' }],
+            [/^(export|title) [A-z0-9 ]+? \(/      , { token: '@rematch', next: '@export' }],
 
             [/< table( wide| center| formula){0,3}? >/, { token: 'blue', next: '@table' }], // table start
 
@@ -89,7 +104,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/([0-9]+|self)/,        { token: 'lightBlue', next: '@pop' }],
          ],
          export: [
-            [/^export /,           { token: 'purple'    }], // word export
+            [/^(export|title) /,   { token: 'purple'    }], // word export
             [/[A-z0-9 ]+?(?= \()/, { token: 'lightBlue' }], // exports name
             [/\( *?$/,             { token: 'purple'    }], // (
 
@@ -156,7 +171,7 @@ export function createEditor(itemData: ItemDataTemplate) {
          'foreground': '#78a8f6', // image color in dropdown
          // split view
          'diffEditor.removedTextBackground': '#ff000070', // removed text background
-         'diffEditor.insertedTextBackground': '#a0bf5652', // inserted text background
+         'diffEditor.insertedTextBackground': '#a0bf5652' // inserted text background
       }
    })
 
@@ -175,129 +190,125 @@ export function createEditor(itemData: ItemDataTemplate) {
                insertText: ['< table >', '$0', '<$>'].join('\n'),
                documentation: `< table > optionally can have center, formula, wide ex < table wide formula >\n |\tnormal text\n |b\tbold text\n |c\tcentered text\n |r\tmoves text to right side\n |h\tadd background\n\tall of them can be combined for example\n |bc\tmakes bold centered text\n<$>`,
                kind: languages.CompletionItemKind.Folder,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'import',
                insertText: 'import ${1:main} from $0',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'export',
                insertText: ['export ${1:name} (', '$0', ')'].join('\n'),
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
-
 
             {
                label: 'bold text',
                insertText: '<bold ${1: } />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'pve',
                insertText: '<pve ${1: } />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'pvp',
                insertText: '<pvp ${1: } />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
-
 
             {
                label: 'formula_ready',
                insertText: '<formula ${2:Ready Speed:} ready_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_stow',
                insertText: '<formula ${2:Stow Speed:} stow_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range',
                insertText: '<formula ${2:In-Game Range:} range_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_reload',
                insertText: '<formula ${2:Reload Time:} reload_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
 
             {
                label: 'formula_ready_empty',
                insertText: '<formula ready_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_stow_empty',
                insertText: '<formula stow_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range_empty',
                insertText: '<formula range_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_reload_empty',
                insertText: '<formula reload_${1:0} />',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
-
 
             {
                label: 'link',
                insertText: '<link ${1: } ${2: }>',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'combatant',
                insertText: '<link https://d2clarity.page.link/combatant ${1:Combatant}/>',
                kind: languages.CompletionItemKind.Class,
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
 
             {
                label: 'highlight green',
                insertText: '<green ${1: } />',
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'highlight yellow',
                insertText: '<yellow ${1: } />',
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'highlight blue',
                insertText: '<blue ${1: } />',
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'highlight purple',
                insertText: '<purple ${1: } />',
-               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
 
-
-            ...selfContained(),
+            ...selfContained(selfContainedKeywords)
          ]
          const selfContained_ = [
             // //--- title stuff
@@ -310,13 +321,14 @@ export function createEditor(itemData: ItemDataTemplate) {
          return { suggestions: [...suggestions, ...conditionalSuggestions] }
       }
    })
+   
    const defaultSettings = {
       theme: 'myCoolTheme',
       language: 'clarityLangue',
       minimap: {
          enabled: false
       },
-      automaticLayout: false,
+      automaticLayout: true,
       wordWrap: 'on' as const,
       mouseWheelZoom: true
    }

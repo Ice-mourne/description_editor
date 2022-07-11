@@ -90,14 +90,71 @@ export async function uploadDescriptionClovis(
    }
 }
 
+async function uploadDescriptionIceWithEditor(
+   itemData: ItemDataTemplate,
+   inLiveDatabase = false,
+   cleanItemData_?: ItemDataTemplate,
+   changedPerkHashes_?: (string | null)[]
+) {
+   const githubData = await githubGet('getIceWithEditor') as ClovisGithubData
+   if (!githubData) return
+
+   const login = getLoginDetails()
+   if (login === null) {
+      if (!inLiveDatabase) sendMessage('Login details missing')
+      return
+   }
+
+   const cleanItemData = cleanItemData_ || itemData
+   const cleanPerks = JSON.parse(JSON.stringify(removeEmptyFromObj(cleanItemData.description.modified)))
+   const changedPerkHashes = changedPerkHashes_ || compareDescriptions(githubData.content.descriptions, cleanPerks)
+
+   if (changedPerkHashes.length === 0 && !inLiveDatabase) {
+      sendMessage('No changes where found')
+      return
+   }
+
+   const updatedDescriptions = changedPerkHashes.reduce((acc, hash) => {
+      if (hash === null) return acc
+      if (!cleanPerks[hash].id) return acc // then perk was removed don't add anything
+      acc[hash] = {
+         ...acc[hash],
+         inLiveDatabase,
+         lastUpdate: Date.now(),
+         updatedBy: login.username
+      }
+
+      return acc
+   }, cleanPerks)
+
+   const updatedData: ClovisGithubDataJson = {
+      descriptions: updatedDescriptions,
+      saved: cleanItemData.saved
+   }
+
+   const resp = await githubPut(
+      'putIceWithEditor',
+      {
+         sha: githubData.sha,
+         content: JSON.stringify(updatedData, null, 2)
+      },
+      login
+   )
+
+   if (resp?.status === 200 && !inLiveDatabase) {
+      sendUpdateMessage(cleanPerks, changedPerkHashes)
+      return 'Success'
+   }
+}
+
 interface IceGithubData {
    content: DescriptionWithEditor
    sha: string
 }
 
 export async function uploadDescriptionIce(itemData: ItemDataTemplate, marked: number[]) {
-   sendMessage('Disabled for now')
-   if (itemData.input.id === 69) return 'Success' // remove this line
+   sendMessage('Disabled for now') // todo: remove this line
+   return 'Success' // todo: remove this line
 
    // const githubData = await githubGet('getIce') as IceGithubData
    // if (!githubData) return null
@@ -145,11 +202,11 @@ export async function uploadDescriptionIce(itemData: ItemDataTemplate, marked: n
    //    },
    //    login
    // )
+   // uploadDescriptionIceWithEditor(itemData, true, cleanItemData, changedPerkHashes)
+   // uploadDescriptionClovis(itemData, true, cleanItemData, changedPerkHashes)
 
    // if (resp?.status === 200) {
    //    sendUpdateMessage(cleanPerks, changedPerkHashes)
    //    return 'Success'
    // }
-
-   // uploadDescriptionClovis(itemData, true, cleanItemData, changedPerkHashes)
 }

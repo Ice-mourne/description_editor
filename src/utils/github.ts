@@ -1,5 +1,5 @@
 import { DescriptionWithEditor } from '@components/provider/dataProvider'
-import { apiUrlClovis, ApiUrlIce } from '@data/urls'
+import { apiUrlClovis, ApiUrlIce, ApiUrlIceWithEditor } from '@data/urls'
 
 import { getLoginDetails, LoginDetails } from './getLogin'
 import { sendMessage } from './sendMessage'
@@ -9,7 +9,7 @@ interface RespJson {
    sha: string
 }
 
-type FetchOptionsGet = 'getClovis' | 'getIce'
+type FetchOptionsGet = 'getClovis' | 'getIce' | 'getIceWithEditor'
 export async function githubGet(option: FetchOptionsGet): Promise<unknown | null> {
    const login = getLoginDetails()
    if (login === null) {
@@ -18,7 +18,8 @@ export async function githubGet(option: FetchOptionsGet): Promise<unknown | null
    }
    const fetchUrl = {
       getClovis: apiUrlClovis,
-      getIce: ApiUrlIce
+      getIce: ApiUrlIce,
+      getIceWithEditor: ApiUrlIceWithEditor
    }
 
    const resp = await fetch(fetchUrl[option], {
@@ -41,7 +42,7 @@ export async function githubGet(option: FetchOptionsGet): Promise<unknown | null
    }
 }
 
-type FetchOptionsPut = 'putClovis' | 'putIce'
+type FetchOptionsPut = 'putClovis' | 'putIce' | 'putIceWithEditor'
 export interface DataToSend {
    sha: string
    content: string
@@ -50,7 +51,8 @@ export async function githubPut(option: FetchOptionsPut, data: DataToSend, login
    sendMessage('Uploading...')
    const fetchUrl = {
       putClovis: apiUrlClovis,
-      putIce: ApiUrlIce
+      putIce: ApiUrlIce,
+      putIceWithEditor: ApiUrlIceWithEditor
    }
    const resp = await fetch(fetchUrl[option], {
       method: 'PUT',

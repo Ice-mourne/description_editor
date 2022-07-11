@@ -2,11 +2,23 @@ import { Description, ItemDataTemplate, LinesContent } from '@components/provide
 import { Updater } from 'use-immer'
 import { descriptionExport, descriptionImport } from './descriptionImportExport'
 import { doMath } from './doMath'
+import { setTitle } from './title'
 import { loadVariables, saveVariables } from './variableSaveLoad'
 
 const convertLinesContent = (line: string) => {
    const regexStart = '<(?:'
-   const selfContained = ['stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy']
+   const selfContained = [
+      'stasis',
+      'arc',
+      'solar',
+      'void',
+      'primary',
+      'special',
+      'heavy',
+      'barrier',
+      'overload',
+      'unstoppable'
+   ]
    const simpleWrappers = ['bold', 'pve', 'pvp', 'background', 'green', 'blue', 'purple', 'yellow']
    const complexWrappers = ['link', 'title', 'formula']
    const regexEnd = ').*?/>'
@@ -111,10 +123,14 @@ export default function convertDescription(
    let cleanText = description.replace(/\r/g, '')
 
    if (editorType === 'main') {
-      const text = descriptionExport(cleanText, setItemData)
+      const text = setTitle(cleanText, itemData, setItemData, editorType)
       if (text) cleanText = text
-      const text2 = saveVariables(cleanText, setItemData)
+
+      const text2 = descriptionExport(cleanText, setItemData)
       if (text2) cleanText = text2
+
+      const text3 = saveVariables(cleanText, setItemData)
+      if (text3) cleanText = text3
    }
    cleanText = descriptionImport(cleanText, itemData)
    cleanText = loadVariables(cleanText, itemData)

@@ -30,7 +30,10 @@
 .arc::before,
 .solar::before,
 .void::before,
-.stasis::before {
+.stasis::before,
+.barrier::before,
+.overload::before,
+.unstoppable::before {
    background-size: 10px 10px;
    width: 10px;
 }
@@ -70,6 +73,21 @@
    background-image: url(https://www.bungie.net/common/destiny2_content/icons/9fa60d5a99c9ff9cea0fb6dd690f26ec.png);
    @include img_before;
 }
+//--- breaker
+.barrier::before {
+   background-image: url(https://www.bungie.net/common/destiny2_content/icons/DestinyBreakerTypeDefinition_07b9ba0194e85e46b258b04783e93d5d.png);
+   @include img_before;
+}
+.overload::before {
+   background-image: url(https://www.bungie.net/common/destiny2_content/icons/DestinyBreakerTypeDefinition_da558352b624d799cf50de14d7cb9565.png);
+   @include img_before;
+}
+.unstoppable::before {
+   background-image: url(https://www.bungie.net/common/destiny2_content/icons/DestinyBreakerTypeDefinition_825a438c85404efd6472ff9e97fc7251.png);
+   @include img_before;
+}
+
+// https://www.bungie.net/common/destiny2_content/icons/DestinyBreakerTypeDefinition_07b9ba0194e85e46b258b04783e93d5d.png
 
 //--- random stilling
 .center {
@@ -86,6 +104,7 @@
 }
 .title {
    text-decoration: underline;
+   display: inline-block;
 }
 .link {
    a:link {
@@ -96,7 +115,7 @@
    }
 }
 .wide {
-   width: unset !important;
+   width: max-content !important;
 }
 .centerTable {
    align-self: center;
@@ -121,4 +140,16 @@
          padding: 1px 3px;
       }
    }
+}
+
+.titleContainer {
+   z-index: 2;
+   padding: 2px;
+   display: flex;
+   flex-direction: column;
+   position: absolute;
+   background-color: black;
+   max-width: 300px;
+   transform: translate(0px, 16px);
+   border: 2px solid #696969;
 }

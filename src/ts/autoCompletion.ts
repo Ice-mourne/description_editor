@@ -39,8 +39,8 @@ export function tableSettings(position: monaco.Position, line: string) {
    return suggestions
 }
 
-export function selfContained() {
-   const labels = ['background', 'center', 'bold line', 'stasis', 'arc', 'solar', 'void', 'primary', 'special', 'heavy']
+export function selfContained(selfContainedKeywords: string[]) {
+   const labels = selfContainedKeywords
    const suggestions = labels.map(
       (label) =>
          ({

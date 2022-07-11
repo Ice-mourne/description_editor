@@ -2,6 +2,7 @@ import { ItemDataTemplate, itemData_context, setItemData_context } from '@compon
 import * as monaco from 'monaco-editor'
 import { useContext, useEffect, useState } from 'react'
 import diffEditorChange from './diffEditorChange'
+import { editorHotkeys } from './editorHotkeys'
 import { setDataToMainEditor, setDataToSecondaryEditor } from './setData'
 import setNewDescription from './setNewDescription'
 
@@ -25,7 +26,10 @@ export default function Editor({ onMount }: { onMount: (itemData: ItemDataTempla
 
    useEffect(() => {
       const newEditor = onMount(itemData)
-      if (newEditor !== null) setEditor(newEditor)
+      if (newEditor !== null) {
+         setEditor(newEditor)
+         editorHotkeys(newEditor.normal.main)
+      }
       if (editor) setActive(true)
    }, [active])
 
@@ -36,22 +40,6 @@ export default function Editor({ onMount }: { onMount: (itemData: ItemDataTempla
 
    useEffect(() => {
       if (editor === null) return
-
-      const editorHeight = (editor: monaco.editor.IStandaloneCodeEditor, minHeight: number) => {
-         const lineCount = editor.getModel()?.getLineCount()
-         if (lineCount === undefined) return editor.getLayoutInfo().height
-         return Math.max(lineCount * 19 + 19, minHeight)
-      }
-
-      editor.normal.main.layout({
-         height: editorHeight(editor.normal.main, window.innerHeight / 2),
-         width: editor.normal.main.getLayoutInfo().width,
-      })
-      editor.normal.secondary.layout({
-         height: editorHeight(editor.normal.secondary, window.innerHeight / 3),
-         width: editor.normal.secondary.getLayoutInfo().width,
-      })
-
       const mainEditorEvent: monaco.IDisposable | undefined = editor.normal.main
          .getModel()
          ?.onDidChangeContent(() => setDataToMainEditor(editor, mainEditorEvent, setItemData))

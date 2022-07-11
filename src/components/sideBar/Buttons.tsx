@@ -23,7 +23,7 @@ export function ButtonUploadIce({ labelText }: { labelText: string }) {
 
    const uploadIce = () => {
       uploadDescriptionIce(itemData, itemData.markedForLive).then((message) => {
-         if (message === 'Success') setUpdateOriginal(!message)
+         if (message === 'Success') setUpdateOriginal(!updateOriginal)
       })
       setItemData((draft) => {
          draft.markedForLive = []

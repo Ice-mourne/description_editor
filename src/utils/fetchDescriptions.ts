@@ -1,30 +1,28 @@
 import { DescriptionWithEditor, ItemDataTemplate } from '@components/provider/dataProvider'
+import { apiUrls, descriptionUrls } from '@data/urls'
+import { decode } from 'js-base64'
 import { getLoginDetails, LoginDetails } from './getLogin'
-
 export interface ClovisGithubDataJson {
    descriptions: DescriptionWithEditor
    saved: ItemDataTemplate['saved']
 }
 
 const authorized = async (login: LoginDetails) => {
-   const response = await fetch(
-      'https://api.github.com/repos/Clovis-Breh/database-clarity/contents/descriptions.json',
-      {
-         method: 'GET',
-         mode: 'cors',
-         headers: {
-            authorization: `token ${atob(login.password)}`,
-            accept: 'application/vnd.github.v3+json'
-         }
+   const response = await fetch(apiUrls.clovis, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+         authorization: `token ${decode(login.password)}`,
+         accept: 'application/vnd.github.v3+json'
       }
-   )
+   })
    const json = await response.json()
-   const description: ClovisGithubDataJson = JSON.parse(atob(json.content))
+   const description: ClovisGithubDataJson = JSON.parse(decode(json.content))
    return description
 }
 
 const unauthorized = async () => {
-   const response = await fetch('https://clovis-breh.github.io/database-clarity/descriptions.json', {
+   const response = await fetch(descriptionUrls.clovis, {
       method: 'GET',
       mode: 'cors'
    })
@@ -46,24 +44,10 @@ export async function getDescriptionClovis() {
 }
 
 export const getDescriptionIce = async () => {
-   const response = await fetch('https://ice-mourne.github.io/database-clarity/descriptionsWithEditor.json', {
+   const response = await fetch(descriptionUrls.iceWithEditor, {
       method: 'GET',
       mode: 'cors'
    })
-   const json: {
-      descriptions: DescriptionWithEditor
-      saved: {
-         perks: {
-            [key: number]: {
-               [key: string ]: string
-            }
-         }
-         variables: {
-            [key: number]: {
-               [key: string]: string
-            }
-         }
-      }
-   } = await response.json()
+   const json: DescriptionWithEditor = await response.json()
    return json
 }

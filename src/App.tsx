@@ -49,7 +49,7 @@ function App() {
             <Button labelText="Change Editor" />
             <StatSelection />
             <ButtonUploadClovis labelText="Upload - Database" />
-            <ButtonMarkForLive labelText="Mark as ready for live" />
+            <ButtonMarkForLive />
             <ButtonUploadIce labelText="Upload - Live database" />
             <ButtonDeletePerk labelText="Delete perk" />
             <Message />

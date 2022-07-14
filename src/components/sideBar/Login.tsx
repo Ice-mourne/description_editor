@@ -1,6 +1,6 @@
-import styles from './Login.module.scss'
+import { encode } from 'js-base64'
 import { useState } from 'react'
-
+import styles from './Login.module.scss'
 export function Login() {
    const [credentials, setCredentials] = useState({
       username: '',
@@ -17,7 +17,7 @@ export function Login() {
    const setPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
       setCredentials({
          ...credentials,
-         password: btoa(event.target.value)
+         password: encode(event.target.value)
       })
    }
    const login = () => {

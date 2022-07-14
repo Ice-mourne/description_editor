@@ -57,7 +57,7 @@ export function StatSelection() {
       e: React.ChangeEvent<HTMLInputElement>,
       activeOrPassiveStat: ActivePassive,
       statMultiplayerOrValue: StatMulti,
-      indexOfStatName: number,
+      indexOfStatName: number
    ) => {
       setItemData((draft) => {
          createNestedObject(
@@ -68,11 +68,7 @@ export function StatSelection() {
       })
 
       setStatsString((draft) => {
-         createNestedObject(
-            draft,
-            [indexOfStatName, activeOrPassiveStat, statMultiplayerOrValue],
-            e.target.value
-         )
+         createNestedObject(draft, [indexOfStatName, activeOrPassiveStat, statMultiplayerOrValue], e.target.value)
       })
    }
 

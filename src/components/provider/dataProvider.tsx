@@ -59,6 +59,7 @@ export interface ItemWithEditor extends Item {
       secondaryEditor: string
    }
    inLiveDatabase?: boolean
+   uploadToLive: boolean
 }
 
 export interface DescriptionWithEditor {
@@ -78,23 +79,8 @@ export interface ItemDataTemplate {
    description: {
       original: DescriptionWithEditor
       modified: DescriptionWithEditor
-      descriptionsIce: {
-         descriptions: DescriptionWithEditor
-         saved: {
-            perks: {
-               [key: PerkHash]: {
-                  [key: ExportName]: string
-               }
-            }
-            variables: {
-               [key: PerkHash]: {
-                  [key: VariableName]: string
-               }
-            }
-         }
-      }
+      descriptionsIce: DescriptionWithEditor
    }
-   markedForLive: PerkHash[]
    saved: {
       perks: {
          [key: PerkHash]: {
@@ -127,7 +113,9 @@ export function DataProvider({ children }: { children: JSX.Element }) {
       editor: {
          mainEditor: '',
          secondaryEditor: ''
-      }
+      },
+      uploadToLive: false,
+
    }
    const [itemDataTemplate, setItemData] = useImmer<ItemDataTemplate>({
       input: {
@@ -141,9 +129,8 @@ export function DataProvider({ children }: { children: JSX.Element }) {
             ...descriptions,
             0: defaultPerk
          },
-         descriptionsIce
+         descriptionsIce: descriptionsIce
       },
-      markedForLive: [],
       saved: {
          perks: perks || {},
          variables: variables || {}

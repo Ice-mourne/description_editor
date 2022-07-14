@@ -1,8 +1,9 @@
 import { ItemWithEditor } from '@components/provider/dataProvider'
+import { bungieManifest } from '@data/urls'
 
 const fetchBungie = async (id: number): Promise<any> => {
    return new Promise((resolve, reject) => {
-      fetch(`https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/${id}`, {
+      fetch(`${bungieManifest}${id}`, {
          method: 'GET',
          mode: 'cors',
          headers: {

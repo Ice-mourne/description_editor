@@ -35,6 +35,12 @@ export function PerkSelection() {
       const sortedItems = selectedTypeItems.sort((a, b) =>
          a.itemName && b.itemName ? a.itemName.localeCompare(b.itemName) : a.name.localeCompare(b.name)
       )
+
+      // select first item on type change
+      // setItemData((draft) => {
+      //    if (sortedItems[0] === undefined) return draft
+      //    draft.selectedPerkHash = sortedItems[0].id
+      // })
       return sortedItems.map((item, i) => {
          return (
             <option key={i} value={item.id}>
@@ -52,10 +58,6 @@ export function PerkSelection() {
          draft.selectedPerkHash = selectedItem
       })
    }
-
-   useEffect(() => {
-
-   }, [itemData.input.id])
 
    return (
       <div className={styles.selection_list}>
@@ -83,6 +85,7 @@ export function PerkSelection() {
 
             <optgroup label="Other">
                <option value="ghostMod">Ghost Mod</option>
+               <option value="artifactMod">Artifact Mod</option>
             </optgroup>
          </select>
          <select onChange={(e) => itemChange(e)}>{items()}</select>

@@ -2,7 +2,8 @@ import { itemData_context, SelectableType, setItemData_context } from '@componen
 
 import { getDataFromBungie } from '@ts/getDataFromBungie'
 import { sendMessage } from '@utils/sendMessage'
-import { uploadDescriptionClovis, uploadDescriptionIce } from '@utils/uploadDescriptions'
+import { uploadDescriptions } from '@utils/uploadDescriptions'
+import _ from 'lodash'
 import { useContext, useEffect, useState } from 'react'
 import styles from './Buttons.module.scss'
 
@@ -22,18 +23,18 @@ export function ButtonUploadIce({ labelText }: { labelText: string }) {
    const [updateOriginal, setUpdateOriginal] = useState(false)
 
    const uploadIce = () => {
-      uploadDescriptionIce(itemData, itemData.markedForLive).then((message) => {
-         if (message === 'Success') setUpdateOriginal(!updateOriginal)
-      })
-      setItemData((draft) => {
-         draft.markedForLive = []
+      uploadDescriptions(itemData, true).then((message) => {
+         if (message === 'Upload complete') setUpdateOriginal(true)
       })
    }
 
    useEffect(() => {
-      setItemData((draft) => {
-         draft.description.original = itemData.description.modified
-      })
+      if (updateOriginal) {
+         setItemData((draft) => {
+            draft.description.original = itemData.description.modified
+         })
+         setUpdateOriginal(false)
+      }
    }, [updateOriginal])
 
    return (
@@ -50,15 +51,18 @@ export function ButtonUploadClovis({ labelText }: { labelText: string }) {
    const [updateOriginal, setUpdateOriginal] = useState(false)
 
    const uploadClovis = () => {
-      uploadDescriptionClovis(itemData).then((message) => {
-         if (message === 'Success') setUpdateOriginal(!message)
+      uploadDescriptions(itemData, false).then((message) => {
+         if (message === 'Upload complete') setUpdateOriginal(true)
       })
    }
 
    useEffect(() => {
-      setItemData((draft) => {
-         draft.description.original = itemData.description.modified
-      })
+      if (updateOriginal) {
+         setItemData((draft) => {
+            draft.description.original = itemData.description.modified
+         })
+         setUpdateOriginal(false)
+      }
    }, [updateOriginal])
 
    return (
@@ -68,19 +72,24 @@ export function ButtonUploadClovis({ labelText }: { labelText: string }) {
    )
 }
 
-export function ButtonMarkForLive({ labelText }: { labelText: string }) {
+export function ButtonMarkForLive() {
    const itemData = useContext(itemData_context)
    const setItemData = useContext(setItemData_context)
 
+   const currentUploadToLiveState = itemData.description.modified[itemData.selectedPerkHash].uploadToLive
+
    const markForLive = () => {
       setItemData((draft) => {
-         draft.markedForLive.push(itemData.selectedPerkHash)
+         const selected = draft.selectedPerkHash
+         draft.description.modified[selected].uploadToLive = !currentUploadToLiveState
       })
    }
 
+   const label = currentUploadToLiveState ? `Don't upload to Live` : 'Select for upload to Live'
+
    return (
       <button className={styles.button} onClick={markForLive}>
-         {labelText}
+         {label}
       </button>
    )
 }

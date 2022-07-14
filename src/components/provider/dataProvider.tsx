@@ -51,6 +51,7 @@ export interface Item {
 
    lastUpdate: number
    updatedBy: string
+   investmentStatOnly?: boolean
 }
 
 export interface ItemWithEditor extends Item {

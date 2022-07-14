@@ -191,3 +191,26 @@ export function ButtonToggleHiddenPerks() {
       </button>
    )
 }
+
+export function ButtonInvestmentStatOnly() {
+   const itemData = useContext(itemData_context)
+   const setItemData = useContext(setItemData_context)
+
+   const investmentStatOnly = itemData.description.modified[itemData.selectedPerkHash].investmentStatOnly
+   const togglePerkDisplay = () => {
+      setItemData((draft) => {
+         draft.description.modified[itemData.selectedPerkHash].investmentStatOnly = !investmentStatOnly
+      })
+   }
+
+   const labelText = investmentStatOnly ? 'Normal perk' : 'Set as stats only'
+
+   return (
+      <button
+         className={`${styles.button} ${investmentStatOnly ? styles.active : undefined}`}
+         onClick={togglePerkDisplay}
+      >
+         {labelText}
+      </button>
+   )
+}

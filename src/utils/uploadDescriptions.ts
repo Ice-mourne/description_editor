@@ -89,7 +89,8 @@ export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive
             itemName: perk.itemName,
             lastUpdate: Date.now(),
             updatedBy: login.username,
-            type: perk.type
+            type: perk.type,
+            investmentStatOnly: perk.investmentStatOnly
          })
 
          const cleanData = cleanObject({

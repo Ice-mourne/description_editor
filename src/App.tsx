@@ -13,6 +13,7 @@ import {
    ButtonAddBungieData,
    ButtonDeletePerk,
    ButtonHidePerk,
+   ButtonInvestmentStatOnly,
    ButtonMarkForLive,
    ButtonToggleHiddenPerks,
    ButtonUploadClovis,
@@ -51,6 +52,7 @@ function App() {
             <Button labelText="Change Editor" />
             <ButtonHidePerk />
             <ButtonToggleHiddenPerks />
+            <ButtonInvestmentStatOnly />
             <StatSelection />
             <ButtonUploadClovis labelText="Upload - Database" />
             <ButtonMarkForLive />

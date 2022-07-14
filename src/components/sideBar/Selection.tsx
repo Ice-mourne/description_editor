@@ -1,5 +1,10 @@
-import React, { useContext, useEffect } from 'react'
-import { itemData_context, SelectableType, setItemData_context } from '@components/provider/dataProvider'
+import {
+   itemData_context,
+   ItemWithEditor,
+   SelectableType,
+   setItemData_context
+} from '@components/provider/dataProvider'
+import React, { useContext, useEffect, useState } from 'react'
 
 import styles from './Selection.module.scss'
 
@@ -24,7 +29,9 @@ export function PerkSelection() {
       return emojis[Math.floor(Math.random() * emojis.length)]
    }
 
-   const items = () => {
+   const [perks, setPerks] = useState<ItemWithEditor[]>([])
+
+   useEffect(() => {
       // filters items in githubData and then sorts them then returns items from selected type as JSX.Element array
       const modifiedDescription = itemData.description.modified
       if (!modifiedDescription) return
@@ -32,27 +39,16 @@ export function PerkSelection() {
          if (item?.type === itemData.input.type) return item
          return []
       })
-      const sortedItems = selectedTypeItems.sort((a, b) =>
+
+      const sortedPerks = selectedTypeItems.sort((a, b) =>
          a.itemName && b.itemName ? a.itemName.localeCompare(b.itemName) : a.name.localeCompare(b.name)
       )
+      setPerks(sortedPerks)
 
-      // select first item on type change
-      // setItemData((draft) => {
-      //    if (sortedItems[0] === undefined) return draft
-      //    draft.selectedPerkHash = sortedItems[0].id
-      // })
-      return sortedItems.map((item, i) => {
-         return (
-            <option
-               key={i}
-               value={item.id}
-               className={item.visible || itemData.displayHiddenPerks ? undefined : styles.hidden}
-            >
-               {`${item.itemName || item.name}${item.inLiveDatabase ? `` : ` ${randomEmoji()}`}`}
-            </option>
-         )
+      setItemData((draft) => {
+         draft.selectedPerkHash = sortedPerks[0]?.id || 0
       })
-   }
+   }, [itemData.input.type])
 
    const itemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       // after item is selected saves item data // that also triggers display update
@@ -92,7 +88,19 @@ export function PerkSelection() {
                <option value="artifactMod">Artifact Mod</option>
             </optgroup>
          </select>
-         <select onChange={(e) => itemChange(e)}>{items()}</select>
+         <select onChange={(e) => itemChange(e)}>
+            {perks.map((item, i) => {
+               return (
+                  <option
+                     key={i}
+                     value={item.id}
+                     className={item.visible || itemData.displayHiddenPerks ? undefined : styles.hidden}
+                  >
+                     {`${item.itemName || item.name}${item.inLiveDatabase ? `` : ` ${randomEmoji()}`}`}
+                  </option>
+               )
+            })}
+         </select>
       </div>
    )
 }

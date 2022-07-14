@@ -12,7 +12,9 @@ import {
    Button,
    ButtonAddBungieData,
    ButtonDeletePerk,
+   ButtonHidePerk,
    ButtonMarkForLive,
+   ButtonToggleHiddenPerks,
    ButtonUploadClovis,
    ButtonUploadIce
 } from '@components/sideBar/Buttons'
@@ -47,6 +49,8 @@ function App() {
             <BasicInfo />
             {/* <PerkLinking /> */}
             <Button labelText="Change Editor" />
+            <ButtonHidePerk />
+            <ButtonToggleHiddenPerks />
             <StatSelection />
             <ButtonUploadClovis labelText="Upload - Database" />
             <ButtonMarkForLive />

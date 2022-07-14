@@ -12,7 +12,7 @@ export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive
    const login = getLoginDetails()
    if (login === null) {
       sendMessage(`Login details missing`)
-      return null
+      return
    }
    sendMessage('Uploading...')
 
@@ -40,7 +40,10 @@ export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive
    // if failed stop completely
    if (clovisResp === null) return
    // if we are not uploading to live this is it stop
-   if (uploadToLive === false) return
+   if (uploadToLive === false) {
+      sendMessage('Upload complete')
+      return
+   }
 
    //--- code bellow is for live database
 

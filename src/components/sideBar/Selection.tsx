@@ -43,7 +43,11 @@ export function PerkSelection() {
       // })
       return sortedItems.map((item, i) => {
          return (
-            <option key={i} value={item.id}>
+            <option
+               key={i}
+               value={item.id}
+               className={item.visible || itemData.displayHiddenPerks ? undefined : styles.hidden}
+            >
                {`${item.itemName || item.name}${item.inLiveDatabase ? `` : ` ${randomEmoji()}`}`}
             </option>
          )

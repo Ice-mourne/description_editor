@@ -60,6 +60,7 @@ export interface ItemWithEditor extends Item {
    }
    inLiveDatabase?: boolean
    uploadToLive: boolean
+   visible: boolean
 }
 
 export interface DescriptionWithEditor {
@@ -93,6 +94,7 @@ export interface ItemDataTemplate {
          }
       }
    }
+   displayHiddenPerks: boolean
 }
 
 export const itemData_context = createContext({} as ItemDataTemplate)
@@ -115,7 +117,7 @@ export function DataProvider({ children }: { children: JSX.Element }) {
          secondaryEditor: ''
       },
       uploadToLive: false,
-
+      visible: false
    }
    const [itemDataTemplate, setItemData] = useImmer<ItemDataTemplate>({
       input: {
@@ -134,7 +136,8 @@ export function DataProvider({ children }: { children: JSX.Element }) {
       saved: {
          perks: perks || {},
          variables: variables || {}
-      }
+      },
+      displayHiddenPerks: false
    })
 
    return (

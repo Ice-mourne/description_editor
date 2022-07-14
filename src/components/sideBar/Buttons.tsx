@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react'
 import styles from './Buttons.module.scss'
 
 export function Button({ labelText }: { labelText: string }) {
-   const buttonId = labelText == 'Change Editor' ? 'toggleEditor' : undefined
+   const buttonId = labelText === 'Change Editor' ? 'toggleEditor' : undefined
    return (
       <button className={styles.button} id={buttonId}>
          {labelText}
@@ -88,7 +88,10 @@ export function ButtonMarkForLive() {
    const label = currentUploadToLiveState ? `Don't upload to Live` : 'Select for upload to Live'
 
    return (
-      <button className={styles.button} onClick={markForLive}>
+      <button
+         className={`${styles.button} ${currentUploadToLiveState ? styles.active : undefined}`}
+         onClick={markForLive}
+      >
          {label}
       </button>
    )
@@ -141,6 +144,49 @@ export function ButtonDeletePerk({ labelText }: { labelText: string }) {
 
    return (
       <button className={styles.button} onClick={deletePerk}>
+         {labelText}
+      </button>
+   )
+}
+
+export function ButtonHidePerk() {
+   const itemData = useContext(itemData_context)
+   const setItemData = useContext(setItemData_context)
+
+   const perkVisible = itemData.description.modified[itemData.selectedPerkHash].visible
+   const togglePerkDisplay = () => {
+      setItemData((draft) => {
+         draft.description.modified[itemData.selectedPerkHash].visible = !perkVisible
+      })
+   }
+
+   const labelText = perkVisible ? 'Hide Perk' : 'Show Perk'
+
+   return (
+      <button className={`${styles.button} ${perkVisible ? undefined : styles.active}`} onClick={togglePerkDisplay}>
+         {labelText}
+      </button>
+   )
+}
+
+export function ButtonToggleHiddenPerks() {
+   const itemData = useContext(itemData_context)
+   const setItemData = useContext(setItemData_context)
+
+   const displayHiddenPerks = itemData.displayHiddenPerks
+   const toggleHiddenPerks = () => {
+      setItemData((draft) => {
+         draft.displayHiddenPerks = !displayHiddenPerks
+      })
+   }
+
+   const labelText = displayHiddenPerks ? 'Hide Hidden Perks' : 'Show Hidden Perks'
+
+   return (
+      <button
+         className={`${styles.button} ${displayHiddenPerks ? styles.active : undefined}`}
+         onClick={toggleHiddenPerks}
+      >
          {labelText}
       </button>
    )

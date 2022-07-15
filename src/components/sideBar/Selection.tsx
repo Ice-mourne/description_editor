@@ -5,6 +5,7 @@ import {
    setItemData_context
 } from '@components/provider/dataProvider'
 import React, { useContext, useEffect, useState } from 'react'
+import { useImmer } from 'use-immer'
 
 import styles from './Selection.module.scss'
 
@@ -29,7 +30,7 @@ export function PerkSelection() {
       return emojis[Math.floor(Math.random() * emojis.length)]
    }
 
-   const [perks, setPerks] = useState<ItemWithEditor[]>([])
+   const [perks, setPerks] = useImmer<ItemWithEditor[]>([])
 
    useEffect(() => {
       // filters items in githubData and then sorts them then returns items from selected type as JSX.Element array
@@ -49,6 +50,14 @@ export function PerkSelection() {
          draft.selectedPerkHash = sortedPerks[0]?.id || 0
       })
    }, [itemData.input.type])
+
+   // on visibility change update perk
+   useEffect(() => {
+      const selectedPerkIndex = perks.findIndex((perk) => perk.id === itemData.selectedPerkHash)
+      setPerks((draft) => {
+         draft[selectedPerkIndex] = itemData.description.modified?.[itemData.selectedPerkHash]
+      })
+   }, [itemData.description.modified?.[itemData.selectedPerkHash].visible])
 
    const itemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       // after item is selected saves item data // that also triggers display update
@@ -96,7 +105,7 @@ export function PerkSelection() {
                      value={item.id}
                      className={item.visible || itemData.displayHiddenPerks ? undefined : styles.hidden}
                   >
-                     {`${item.itemName || item.name}${item.inLiveDatabase ? `` : ` ${randomEmoji()}`}`}
+                     {`${item.itemName || item.name}${item.inLiveDatabase ? '' : ` ${randomEmoji()}`}`}
                   </option>
                )
             })}

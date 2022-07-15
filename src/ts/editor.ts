@@ -290,7 +290,7 @@ export function createEditor(itemData: ItemDataTemplate) {
 
             {
                label: 'link',
-               insertText: '<link ${1: } [${2: }] />',
+               insertText: '<link ${1:Name} [${2:URL}] />',
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,

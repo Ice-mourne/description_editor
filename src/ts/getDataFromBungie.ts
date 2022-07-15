@@ -31,7 +31,11 @@ export function getDataFromBungie(id: number) {
    const extractFromEverythingElse = (item: any): ItemWithEditor => {
       return {
          id: Number(item.hash),
-         name: String(item.displayProperties.name)
+         name: String(item.displayProperties.name),
+         editor: {
+            mainEditor: item.displayProperties?.description || '',
+            secondaryEditor: item.displayProperties?.description || ''
+         },
       } as ItemWithEditor
    }
    const extractFromWeapon = (item: any): ItemWithEditor => {

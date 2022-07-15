@@ -54,7 +54,7 @@ function App() {
             <ButtonToggleHiddenPerks />
             <ButtonInvestmentStatOnly />
             <StatSelection />
-            <ButtonUploadClovis labelText="Upload - Database" />
+            <ButtonUploadClovis labelText="Upload - Secondary Database" />
             <ButtonMarkForLive />
             <ButtonUploadIce labelText="Upload - Live database" />
             <ButtonDeletePerk labelText="Delete perk" />

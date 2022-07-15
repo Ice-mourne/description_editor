@@ -48,6 +48,6 @@ export const getDescriptionIce = async () => {
       method: 'GET',
       mode: 'cors'
    })
-   const json: DescriptionWithEditor = await response.json()
-   return json
+   const json = await response.json()
+   return json.descriptions as DescriptionWithEditor
 }

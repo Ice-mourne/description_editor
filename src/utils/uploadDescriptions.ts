@@ -1,6 +1,7 @@
-import { ItemDataTemplate } from '@components/provider/dataProvider'
+import { DescriptionWithEditor, ItemDataTemplate } from '@components/provider/dataProvider'
 import { apiUrls } from '@data/urls'
 import _ from 'lodash'
+import { compareDescriptions } from './compareDescriptions'
 import { getLoginDetails } from './getLogin'
 import { githubGet, githubPut } from './github'
 import { cleanObject } from './removeEmptyFromObj'
@@ -22,13 +23,24 @@ export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive
       return
    }
 
+   // compare description
+   // compare only how it was then editor was opened (or last time button was pressed) vs then upload button pressed
+   const dataClovisJson = JSON.parse(dataClovis.content)
+   const differences = compareDescriptions(newData.description.original, newData.description.modified)
+
+   // update only parts that were changed this will allow multiple people work on this
+   const updatedDataClovis = differences.reduce((acc, key) => {
+      acc[key] = newData.description.modified[key]
+      return acc
+   }, dataClovisJson as DescriptionWithEditor)
+
    const clovisResp = await githubPut(
       apiUrls.clovis,
       {
          sha: dataClovis.sha,
          content: JSON.stringify(
             {
-               descriptions: newData.description.modified,
+               descriptions: updatedDataClovis,
                saved: newData.saved
             },
             null,

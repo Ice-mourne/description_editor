@@ -203,7 +203,7 @@ export function ButtonInvestmentStatOnly() {
       })
    }
 
-   const labelText = investmentStatOnly ? 'Normal perk' : 'Set as stats only'
+   const labelText = investmentStatOnly ? 'Revert to Normal Perk' : 'Set as stats only'
 
    return (
       <button

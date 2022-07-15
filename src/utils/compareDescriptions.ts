@@ -4,10 +4,7 @@ import _ from 'lodash'
 /**
  * Compares descriptions and returns hashes of perks where something was changed
  */
-export const compareDescriptions = (
-   original: DescriptionWithEditor = {},
-   modified: DescriptionWithEditor = {}
-) => {
+export const compareDescriptions = (original: DescriptionWithEditor = {}, modified: DescriptionWithEditor = {}) => {
    const originalKeys = Object.keys(original)
    const modifiedKeys = Object.keys(modified)
 

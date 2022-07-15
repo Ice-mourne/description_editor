@@ -51,9 +51,7 @@ export function createEditor(itemData: ItemDataTemplate) {
 
    languages.register({ id: 'clarityLangue' })
    languages.setMonarchTokensProvider('clarityLangue', {
-      selfContained: selfContainedKeywords
-         .map((w) => `<${w}/>`)
-         .join('|'),
+      selfContained: selfContainedKeywords.map((w) => `<${w}/>`).join('|'),
 
       weapons: [
          'auto rifle',
@@ -194,7 +192,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             } as unknown as ConditionalSuggestions,
             {
                label: 'titles contents',
-               insertText: ['title ${1:content name} (', '$0', ')'].join('\n') ,
+               insertText: ['title ${1:content name} (', '$0', ')'].join('\n'),
                documentation: `Content of title use anything you want inside`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
@@ -324,20 +322,10 @@ export function createEditor(itemData: ItemDataTemplate) {
 
             ...selfContained(selfContainedKeywords)
          ]
-         const selfContained_ = [
-            // //--- title stuff
-            // {
-            //    label: 'title',
-            //    insertText: '<title ${1: } [${2: }] />',
-            //    ...keywordsSettings
-            // }
-         ]
          return { suggestions: [...suggestions, ...conditionalSuggestions] }
       }
    })
 
-   
-   
    const defaultSettings = {
       theme: 'myCoolTheme',
       language: 'clarityLangue',

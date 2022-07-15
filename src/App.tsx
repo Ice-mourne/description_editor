@@ -11,6 +11,7 @@ import { BasicInfo } from '@components/sideBar/BasicItemInfo'
 import {
    Button,
    ButtonAddBungieData,
+   ButtonCopyOriginalDescriptionToNewDescription,
    ButtonDeletePerk,
    ButtonHidePerk,
    ButtonInvestmentStatOnly,
@@ -48,8 +49,8 @@ function App() {
             </div>
             <PerkSelection />
             <BasicInfo />
-            {/* <PerkLinking /> */}
             <Button labelText="Change Editor" />
+            <ButtonCopyOriginalDescriptionToNewDescription labelText="Copy Original Description To New Description" />
             <ButtonHidePerk />
             <ButtonToggleHiddenPerks />
             <ButtonInvestmentStatOnly />
@@ -61,7 +62,6 @@ function App() {
             <Message />
             <Login />
          </div>
-         {/* <HotKeys /> */}
       </>
    )
 }

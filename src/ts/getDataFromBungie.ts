@@ -16,43 +16,60 @@ const fetchBungie = async (id: number): Promise<any> => {
    })
 }
 
-export function getDataFromBungie(id: number) {
-   const extractFromArmor = async (item: any): Promise<ItemWithEditor> => {
+export function getDataFromBungie(perkHash: number, itemHash: number, type: string) {
+   const extractFromArmor = async () => {
+      const item = await fetchBungie(perkHash)
       const armorPerkId = item.sockets.socketEntries[11].singleInitialItemHash
       const perk = await fetchBungie(armorPerkId)
       let itemData = {
          id: Number(perk.hash),
          name: String(perk.displayProperties.name),
          itemId: Number(item.hash),
-         itemName: String(item.displayProperties.name)
+         itemName: String(item.displayProperties.name),
+         editor: {
+            mainEditor: perk.displayProperties?.description || '',
+            secondaryEditor: perk.displayProperties?.description || ''
+         }
       }
       return itemData as ItemWithEditor
    }
-   const extractFromEverythingElse = (item: any): ItemWithEditor => {
+
+   const extractFromWeapon = async () => {
+      const item = await fetchBungie(itemHash)
+      const perk = await fetchBungie(perkHash)
       return {
-         id: Number(item.hash),
-         name: String(item.displayProperties.name),
-         editor: {
-            mainEditor: item.displayProperties?.description || '',
-            secondaryEditor: item.displayProperties?.description || ''
-         },
-      } as ItemWithEditor
-   }
-   const extractFromWeapon = (item: any): ItemWithEditor => {
-      return {
-         id: 69420,
-         name: 'add perk now',
+         id: Number(perk.hash),
+         name: String(perk.displayProperties.name),
          itemId: Number(item.hash),
-         itemName: String(item.displayProperties.name)
+         itemName: String(item.displayProperties.name),
+         editor: {
+            mainEditor: perk.displayProperties?.description || '',
+            secondaryEditor: perk.displayProperties?.description || ''
+         }
       } as ItemWithEditor
    }
-   return fetchBungie(id)
-      .then((item) =>
-         item.itemType == 2
-            ? extractFromArmor(item)
-            : item.itemType == 3
-            ? extractFromWeapon(item)
-            : extractFromEverythingElse(item)
-      )
-      .catch(console.error)
+
+   const extractFromEverythingElse = async () => {
+      const perk = await fetchBungie(perkHash)
+      return {
+         id: Number(perk.hash),
+         name: String(perk.displayProperties.name),
+         editor: {
+            mainEditor: perk.displayProperties?.description || '',
+            secondaryEditor: perk.displayProperties?.description || ''
+         }
+      } as ItemWithEditor
+   }
+   switch (type) {
+      case 'weaponPerkExotic':
+      case 'weaponFrameExotic':
+      case 'weaponCatalystExotic':
+         return extractFromWeapon()
+
+      case 'armorExotic':
+         return extractFromArmor()
+
+      default:
+         return extractFromEverythingElse()
+   }
 }

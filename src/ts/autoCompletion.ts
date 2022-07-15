@@ -49,7 +49,8 @@ export function selfContained(selfContainedKeywords: string[]) {
             kind: monaco.languages.CompletionItemKind.Property,
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
          } as {
-            range: { // its stupid but if i provide range it will not work // why stupid because you have to provide range
+            range: {
+               // its stupid but if i provide range it will not work // why stupid because you have to provide range
                startLineNumber: number
                endLineNumber: number
                startColumn: number
@@ -74,7 +75,9 @@ export function imports(position: monaco.Position, line: string, itemData: ItemD
       // i don't need to run this on every input
       startColumnRegex = /import .+? from /
       perkSuggestions = Object.values(itemData.description.modified).reduce((acc, perk) => {
-         const label = `${perk.name} > ${perk.type}`
+         if (!perk.name) return acc
+         const perkName = `${perk.name}${' '.repeat(Math.max(20 - perk.name.length, 0))}`
+         const label = `${perkName} > ${perk.type} > ${perk.id}`
          acc.push({
             label,
             name: perk.id

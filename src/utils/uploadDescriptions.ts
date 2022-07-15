@@ -1,13 +1,19 @@
 import { DescriptionWithEditor, ItemDataTemplate } from '@components/provider/dataProvider'
 import { apiUrls } from '@data/urls'
+import convertDescription from '@ts/convertDescription'
 import _ from 'lodash'
+import { Updater } from 'use-immer'
 import { compareDescriptions } from './compareDescriptions'
 import { getLoginDetails } from './getLogin'
 import { githubGet, githubPut } from './github'
 import { cleanObject } from './removeEmptyFromObj'
 import { sendMessage } from './sendMessage'
 
-export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive: boolean = false) {
+export async function uploadDescriptions(
+   newData: ItemDataTemplate,
+   uploadToLive: boolean = false,
+   setItemData?: Updater<ItemDataTemplate>
+) {
    const abortMessage = ['Something went wrong while', 'getting old descriptions aborting'].join('\n')
 
    const login = getLoginDetails()
@@ -30,9 +36,14 @@ export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive
 
    // update only parts that were changed this will allow multiple people work on this
    const updatedDataClovis = differences.reduce((acc, key) => {
-      acc[key] = newData.description.modified[key]
+      acc.descriptions[key] = {
+         ...newData.description.modified[key],
+         inLiveDatabase: uploadToLive,
+         lastUpdate: Date.now(),
+         updatedBy: login.username
+      }
       return acc
-   }, dataClovisJson as DescriptionWithEditor)
+   }, dataClovisJson as { descriptions: DescriptionWithEditor })
 
    const clovisResp = await githubPut(
       apiUrls.clovis,
@@ -106,8 +117,8 @@ export async function uploadDescriptions(newData: ItemDataTemplate, uploadToLive
          })
 
          const cleanData = cleanObject({
-            description: perk.description,
-            simpleDescription: perk.simpleDescription,
+            description: convertDescription(perk.editor!.mainEditor, newData, setItemData!, 'main'),
+            simpleDescription: convertDescription(perk.editor!.secondaryEditor, newData, setItemData!, 'main'),
             stats: perk.stats
          })
 

@@ -4,7 +4,7 @@ import {
    SelectableType,
    setItemData_context
 } from '@components/provider/dataProvider'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useImmer } from 'use-immer'
 
 import styles from './Selection.module.scss'
@@ -105,7 +105,9 @@ export function PerkSelection() {
                      value={item.id}
                      className={item.visible || itemData.displayHiddenPerks ? undefined : styles.hidden}
                   >
-                     {`${item.itemName || item.name}${item.inLiveDatabase ? '' : ` ${randomEmoji()}`}`}
+                     {`${item.itemName || item.name}${item.inLiveDatabase ? '' : ` ${randomEmoji()}`} ${
+                        item.visible ? '' : '(hidden)'
+                     }`}
                   </option>
                )
             })}

@@ -3,7 +3,6 @@ import { itemData_context, SelectableType, setItemData_context } from '@componen
 import { getDataFromBungie } from '@ts/getDataFromBungie'
 import { sendMessage } from '@utils/sendMessage'
 import { uploadDescriptions } from '@utils/uploadDescriptions'
-import _ from 'lodash'
 import { useContext, useEffect, useState } from 'react'
 import styles from './Buttons.module.scss'
 
@@ -23,7 +22,7 @@ export function ButtonUploadIce({ labelText }: { labelText: string }) {
    const [updateOriginal, setUpdateOriginal] = useState(false)
 
    const uploadIce = () => {
-      uploadDescriptions(itemData, true).then((message) => {
+      uploadDescriptions(itemData, true, setItemData).then((message) => {
          if (message === 'Upload complete') setUpdateOriginal(true)
       })
    }
@@ -106,7 +105,7 @@ export function ButtonAddBungieData({ labelText }: { labelText: string }) {
          sendMessage('Please select a type first.')
          return
       }
-      getDataFromBungie(itemData.input.id).then((data) => {
+      getDataFromBungie(itemData.input.perkHash, itemData.input.itemHash, itemData.input.type).then((data) => {
          if (!data) return
          const { lastUpdate, updatedBy } = itemData.description.modified?.[data.id] || {
             lastUpdate: 0,
@@ -119,8 +118,10 @@ export function ButtonAddBungieData({ labelText }: { labelText: string }) {
                lastUpdate,
                updatedBy,
                type: draft.input.type as SelectableType,
-               description: []
+               description: [],
+               visible: true
             }
+            draft.selectedPerkHash = data.id
          })
       })
    }
@@ -203,13 +204,39 @@ export function ButtonInvestmentStatOnly() {
       })
    }
 
-   const labelText = investmentStatOnly ? 'Revert to Normal Perk' : 'Set as stats only'
+   const labelText = investmentStatOnly ? 'Revert to Normal Description' : 'Set as Optional'
 
    return (
       <button
          className={`${styles.button} ${investmentStatOnly ? styles.active : undefined}`}
          onClick={togglePerkDisplay}
       >
+         {labelText}
+      </button>
+   )
+}
+
+export function ButtonCopyOriginalDescriptionToNewDescription({ labelText }: { labelText: string }) {
+   const itemData = useContext(itemData_context)
+   const setItemData = useContext(setItemData_context)
+
+   const selectedPerkHash = itemData.selectedPerkHash
+
+   // changing selected perk to trigger editor update
+   const moveDescription = () => {
+      setItemData((draft) => {
+         draft.description.modified[selectedPerkHash] = draft.description.descriptionsIce[selectedPerkHash]
+         draft.selectedPerkHash = 0
+      })
+      setTimeout(() => {
+         setItemData((draft) => {
+            draft.selectedPerkHash = selectedPerkHash
+         })
+      }, 1)
+   }
+
+   return (
+      <button className={styles.button} onClick={moveDescription}>
          {labelText}
       </button>
    )

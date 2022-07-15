@@ -1,12 +1,13 @@
 .id_input {
    display: flex;
    flex-direction: row;
-   justify-content: space-evenly;
+   justify-content: space-between;;
    align-items: center;
+   padding-bottom: 3px;
    input {
       background-color: hsla(0, 0%, 100%, 0);
       color: hsl(0, 0%, 100%);
-      width: 70%;
+      width: 75%;
    }
    input::-webkit-outer-spin-button,
    input::-webkit-inner-spin-button {

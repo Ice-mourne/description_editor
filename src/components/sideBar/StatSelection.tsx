@@ -1,10 +1,10 @@
 import { itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import { useContext, useEffect } from 'react'
 
-import styles from './StatSelection.module.scss'
 import { createNestedObject } from '@utils/createNestedObject'
 import { statsArrayToString, statsStringToArray } from '@utils/statsToStringAndBack'
 import { useImmer } from 'use-immer'
+import styles from './StatSelection.module.scss'
 
 type StatMulti = 'stat' | 'multiplier'
 type ActivePassive = 'active' | 'passive'
@@ -37,8 +37,8 @@ export function StatSelection() {
       'zoom',
       'aimAssist',
       'chargeDraw',
+      'ready',
       'stow',
-      'draw',
       'damage'
    ]
 
@@ -62,7 +62,7 @@ export function StatSelection() {
       setItemData((draft) => {
          createNestedObject(
             draft.description.modified,
-            [draft.input.id, 'stats', statList[indexOfStatName], activeOrPassiveStat, statMultiplayerOrValue],
+            [draft.input.perkHash, 'stats', statList[indexOfStatName], activeOrPassiveStat, statMultiplayerOrValue],
             statsStringToArray(e.target.value)
          )
       })

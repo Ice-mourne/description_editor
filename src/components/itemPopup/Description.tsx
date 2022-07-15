@@ -31,8 +31,6 @@ const joinClassNames = (classNames: (string | null)[] | undefined) => {
       .join(' ')
 }
 
-
-
 export function DescriptionBuilder({
    description,
    perk

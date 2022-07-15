@@ -1,5 +1,5 @@
 export function doMath(description: string) {
-      /*
+   /*
    (
       -?\d+       = one or more positive / negative digit
       (\.\d+)?    = .one or more digit
@@ -25,7 +25,7 @@ export function doMath(description: string) {
       const mathStuff = description.match(/\${.+?}/g)
       if (!mathStuff) return description
 
-      mathStuff.forEach(math => {
+      mathStuff.forEach((math) => {
          const string = math.match(mathRegex)?.[0]
          if (!string) return
          description = description.replace(math, devil(string))

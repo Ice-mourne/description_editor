@@ -1,6 +1,6 @@
 import { itemData_context } from '@components/provider/dataProvider'
-import styles from './BasicItemInfo.module.scss'
 import { useContext, useEffect, useState } from 'react'
+import styles from './BasicItemInfo.module.scss'
 
 export function BasicInfo() {
    const itemData = useContext(itemData_context)
@@ -10,11 +10,10 @@ export function BasicInfo() {
       setCurrentHash(itemData.selectedPerkHash)
    }, [itemData.selectedPerkHash])
    useEffect(() => {
-      setCurrentHash(itemData.input.id)
-   }, [itemData.input.id])
+      setCurrentHash(itemData.input.perkHash)
+   }, [itemData.input.perkHash])
 
-   const currentItem =
-      itemData.description.modified[currentHash] || itemData.description.modified[currentHash]
+   const currentItem = itemData.description.modified[currentHash] || itemData.description.modified[currentHash]
    const itemType = itemData.input.type
 
    function option(): JSX.Element {

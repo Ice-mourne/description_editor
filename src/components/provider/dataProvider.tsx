@@ -1,5 +1,5 @@
-import { createContext } from 'react'
 import { getDescriptionClovis, getDescriptionIce } from '@utils/fetchDescriptions'
+import { createContext } from 'react'
 import { Updater, useImmer } from 'use-immer'
 
 export interface LinesContent {
@@ -74,7 +74,8 @@ type VariableName = string
 
 export interface ItemDataTemplate {
    input: {
-      id: number
+      perkHash: number
+      itemHash: number
       type: string
    }
    selectedPerkHash: PerkHash
@@ -122,7 +123,8 @@ export function DataProvider({ children }: { children: JSX.Element }) {
    }
    const [itemDataTemplate, setItemData] = useImmer<ItemDataTemplate>({
       input: {
-         id: 0,
+         perkHash: 0,
+         itemHash: 0,
          type: ''
       },
       selectedPerkHash: 0,

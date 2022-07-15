@@ -1,6 +1,6 @@
 import { ItemDataTemplate, itemData_context, setItemData_context } from '@components/provider/dataProvider'
 import * as monaco from 'monaco-editor'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import diffEditorChange from './diffEditorChange'
 import { editorHotkeys } from './editorHotkeys'
 import { setDataToMainEditor, setDataToSecondaryEditor } from './setData'

@@ -209,8 +209,22 @@ export function createEditor(itemData: ItemDataTemplate) {
             } as unknown as ConditionalSuggestions,
             {
                label: 'import',
-               insertText: 'import ${1:main} from $0',
+               insertText: 'import ${1:unique name} from $0',
                documentation: `Allows importing full description or part of description if it was exported\nimport main from self can be used to import whole description from main editor if used in secondary editor`,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'import from top editor',
+               insertText: 'import main from self',
+               documentation: `Imports everything from top editor from same perk as current`,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'import main',
+               insertText: 'import main from $0',
+               documentation: `Imports everything from main editor of selected perk`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
@@ -223,7 +237,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             } as unknown as ConditionalSuggestions,
             {
                label: 'export',
-               insertText: ['export ${1:name} (', '$0', ')'].join('\n'),
+               insertText: ['export ${1:unique name} (', '$0', ')'].join('\n'),
                documentation: `Exports text inside allowing reusability of text in other descriptions\nText in other descriptions will always match exported text`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet

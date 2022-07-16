@@ -2,6 +2,7 @@ import { Description, ItemDataTemplate, LinesContent } from '@components/provide
 import { Updater } from 'use-immer'
 import { descriptionExport, descriptionImport } from './descriptionImportExport'
 import { doMath } from './doMath'
+import { statImport } from './statImport'
 import { setTitle } from './title'
 import { loadVariables, saveVariables } from './variableSaveLoad'
 
@@ -132,6 +133,7 @@ export default function convertDescription(
       const text3 = saveVariables(cleanText, setItemData)
       if (text3) cleanText = text3
    }
+   cleanText = statImport(cleanText, setItemData)
    cleanText = descriptionImport(cleanText, itemData)
    cleanText = loadVariables(cleanText, itemData)
    cleanText = doMath(cleanText)

@@ -44,6 +44,7 @@ export function createEditor(itemData: ItemDataTemplate) {
       'heavy',
       'background',
       'center',
+      'bold',
       'barrier',
       'overload',
       'unstoppable'
@@ -81,10 +82,10 @@ export function createEditor(itemData: ItemDataTemplate) {
       // prettier-ignore
       tokenizer: {
          root: [
-            [/^import [A-z0-9 ]+? from (\d+?|self)/, { token: '@rematch', next: '@import' }], //--- done
-            [/^(export|title) [A-z0-9 ]+? \(/      , { token: '@rematch', next: '@export' }],
+            [/^import [A-z0-9 ]+? from (\d+?|self|none)/, { token: '@rematch', next: '@import' }], //--- done
+            [/^(export|title) [A-z0-9 ]+? \(/,            { token: '@rematch', next: '@export' }],
 
-            [/< table( wide| center| formula){0,3}? >/, { token: 'blue', next: '@table' }], // table start
+            [/< table( wide| center| formula){0,3}? >/,   { token: 'blue', next: '@table' }], // table start
 
             [/< +?weapon type +?\(@weapons{0,20}?\) +?>/, { token: 'blue' }],
             [/<\$\$>/,                                    { token: 'blue' }],
@@ -93,13 +94,13 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/@highlightRegex/, { token: 'blue', next: '@highlight'}],
 
             [/<(formula |link |title )/, { token: 'green', next: '@extra' }],
-            [/\${.*?/, 'yellow', '@math'],
+            [/\${.*?/,                   { token: 'yellow', next: '@math' }],
          ],
 
          import: [ //--- done
             [/(^import | from )/,    { token: 'purple'    }],
             [/[A-z0-9 ]+?(?= from)/, { token: 'lightBlue' }],
-            [/([0-9]+|self)/,        { token: 'lightBlue', next: '@pop' }],
+            [/([0-9]+|self|none)/,   { token: 'lightBlue', next: '@pop' }],
          ],
          export: [
             [/^(export|title) /,   { token: 'purple'    }], // word export
@@ -114,62 +115,64 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/@selfContained/,  { token: 'green' }],
             [/@highlightRegex/, { token: 'blue', next: '@highlight'}],
 
-            [/<(formula |link |title )/, { token: 'green', next: '@extra' }],
-            [/\${.*?/, 'yellow', '@math'],
+            [/<(formula |link |title )/, { token: 'green',  next: '@extra' }],
+            [/\${.*?/,                   { token: 'yellow', next: '@math' }],
 
             [/^\)/, { token: 'purple', next: '@pop' }], // end of export
          ],
 
          table: [
-            [/<\$>/, 'blue', '@pop'], // table end
-            [/\|[bchr]{0,4}/, 'blue'], // table only content
+            [/<\$>/,          { token: 'blue', next: '@pop' }], // table end
+            [/\|[bchr]{0,4}/, { token: 'blue' }], // table only content
 
-            [/@selfContained/, 'green'],
-            [/@highlightRegex/, 'blue', '@highlight'],
-            [/<(formula |link |title )/, 'green', '@extra'],
-            [/\${.*?/, 'yellow', '@math']
+            [/@selfContained/,           { token: 'green' }],
+            [/@highlightRegex/,          { token: 'blue',   next: '@highlight' }],
+            [/<(formula |link |title )/, { token: 'green',  next: '@extra' }],
+            [/\${.*?/,                   { token: 'yellow', next: '@math' }]
          ],
 
          highlight: [
-            [/\/>/, 'blue', '@pop'],
-            [/\${.*?/, 'yellow', '@math']
+            [/\/>/,    { token: 'blue',   next: '@pop' }],
+            [/\${.*?/, { token: 'yellow', next: '@math' }]
          ],
          extra: [
-            [/\/>/, 'green', '@pop'],
-            [/\[.+?\]/, 'blue'],
-            [/\${.*?/, 'yellow', '@math']
+            [/ \/>/,     { token: 'green',  next: '@pop' }],
+            [/\[.+?\]/, { token: 'blue' }],
+            [/\${.*?/,  { token: 'yellow', next: '@math' }]
          ],
          math: [
-            [/}/, 'yellow', '@pop'],
+            [/}/, { token: 'yellow', next: '@pop' }],
          ]
       }
    })
    editor.defineTheme('myCoolTheme', {
       base: 'vs',
       inherit: false,
+      // prettier-ignore
       rules: [
-         { token: 'green', foreground: '4ec9b0' }, // class green
-         { token: 'blue', foreground: '4fc1ff' }, // const blue
-         { token: 'purple', foreground: 'c586c0' }, // export purple
+         { token: 'green',     foreground: '4ec9b0' }, // class green
+         { token: 'blue',      foreground: '4fc1ff' }, // const blue
+         { token: 'purple',    foreground: 'c586c0' }, // export purple
          { token: 'lightBlue', foreground: '9cdcfe' }, // let blue
-         { token: 'yellow', foreground: 'dcdcaa' }, // function yellow
-         { token: 'test', foreground: 'dcdcaa' } // function yellow
+         { token: 'yellow',    foreground: 'dcdcaa' }, // function yellow
+         { token: 'test',      foreground: 'dcdcaa' }  // function yellow
       ],
+      // prettier-ignore
       colors: {
-         'editor.foreground': '#ffffff', // normal text | white
-         'editor.background': '#1e1e1e', // editor background | dark grey
-         'editorLineNumber.foreground': '#858585', // line number | grey
-         'editorLineNumber.activeForeground': '#c6c6c6', // active line number | light grey
-         'editorCursor.foreground': '#ffffff', // blinking thing | white
-         'editor.lineHighlightBorder': '#fff0', // active line border | transparent
-         'editor.selectionBackground': '#004972b8', // selected text background | blue // todo: color needs some work
-         'editorSuggestWidget.background': '#252526', // suggestion background
-         'editorSuggestWidget.border': '#454545', // suggestion border
-         'list.hoverBackground': '#2a2d2e', // dropdown hover over
-         'foreground': '#78a8f6', // image color in dropdown
+         'editor.foreground':                 '#ffffff',   // normal text | white
+         'editor.background':                 '#1e1e1e',   // editor background | dark grey
+         'editorLineNumber.foreground':       '#858585',   // line number | grey
+         'editorLineNumber.activeForeground': '#c6c6c6',   // active line number | light grey
+         'editorCursor.foreground':           '#ffffff',   // blinking thing | white
+         'editor.lineHighlightBorder':        '#fff0',     // active line border | transparent
+         'editor.selectionBackground':        '#004972b8', // selected text background | blue // todo: color needs some work
+         'editorSuggestWidget.background':    '#252526',   // suggestion background
+         'editorSuggestWidget.border':        '#454545',   // suggestion border
+         'list.hoverBackground':              '#2a2d2e',   // dropdown hover over
+         'foreground':                        '#78a8f6',   // image color in dropdown
          // split view
-         'diffEditor.removedTextBackground': '#ff000070', // removed text background
-         'diffEditor.insertedTextBackground': '#a0bf5652' // inserted text background
+         'diffEditor.removedTextBackground':  '#ff000070', // removed text background
+         'diffEditor.insertedTextBackground': '#a0bf5652'  // inserted text background
       }
    })
 
@@ -192,8 +195,8 @@ export function createEditor(itemData: ItemDataTemplate) {
             } as unknown as ConditionalSuggestions,
             {
                label: 'titles contents',
-               insertText: ['title ${1:content name} (', '$0', ')'].join('\n'),
-               documentation: `Content of title use anything you want inside`,
+               insertText: ['title ${1:unique name} (', '$0', ')'].join('\n'),
+               documentation: `Content of title use anything you want inside\nName has to be unique and can be reused in other descriptions.`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
@@ -207,12 +210,21 @@ export function createEditor(itemData: ItemDataTemplate) {
             {
                label: 'import',
                insertText: 'import ${1:main} from $0',
+               documentation: `Allows importing full description or part of description if it was exported\nimport main from self can be used to import whole description from main editor if used in secondary editor`,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'import stats',
+               insertText: 'import stats from $0',
+               documentation: `Allows importing stats from other descriptions\nimport stats from none can be used to clear stats`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'export',
                insertText: ['export ${1:name} (', '$0', ')'].join('\n'),
+               documentation: `Exports text inside allowing reusability of text in other descriptions\nText in other descriptions will always match exported text`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
@@ -220,6 +232,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             {
                label: 'bold text',
                insertText: '<bold ${1: } />',
+               documentation: `Makes text inside bold`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,

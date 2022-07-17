@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-
 export const item_preview = {
    ammo: {
       img: 'https://bungie.net/common/destiny2_content/icons/b6d3805ca8400272b7ee7935b0b75c79.png',
@@ -15,15 +13,4 @@ export const item_preview = {
    },
    power: 69420,
    name: `FADING SHADOW'S BURDEN`
-}
-
-function externalEventHandler(handler: Function, targetName: string, eventType: keyof HTMLElementEventMap) {
-   useEffect(() => {
-      const listener = <T>(e: T) => handler(e)
-
-      const target = document.querySelector(targetName) as HTMLElement
-      target.addEventListener(eventType, listener)
-
-      return () => target.removeEventListener(eventType, listener)
-   }, [handler])
 }

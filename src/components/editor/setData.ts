@@ -1,5 +1,6 @@
 import { Description, ItemDataTemplate } from '@components/provider/dataProvider'
 import convertDescription from '@ts/convertDescription'
+import convertDescription_Crayon from '@ts/customConverters/crayon'
 import { current } from 'immer'
 import { WritableDraft } from 'immer/dist/internal'
 import * as monaco from 'monaco-editor'
@@ -18,6 +19,10 @@ export function setDataToMainEditor(
       const itemData = current(draft)
       const perkHash = itemData.selectedPerkHash || 0
       const convertedDescription = convertDescription(editorValue, itemData, setItemData, 'main')
+
+      // used only for debugging purposes
+      // @ts-ignore
+      if (window?.logCustom === 'crayon') convertDescription_Crayon(editorValue, itemData, setItemData, 'main')
 
       // add converted description
       draft.description.modified[perkHash].description = convertedDescription as WritableDraft<Description>[]

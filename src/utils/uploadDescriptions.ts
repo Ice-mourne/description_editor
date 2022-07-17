@@ -1,6 +1,7 @@
 import { DescriptionWithEditor, ItemDataTemplate } from '@components/provider/dataProvider'
 import { apiUrls } from '@data/urls'
 import convertDescription from '@ts/convertDescription'
+import convertDescription_Crayon from '@ts/customConverters/crayon'
 import _ from 'lodash'
 import { Updater } from 'use-immer'
 import { compareDescriptions } from './compareDescriptions'
@@ -51,11 +52,11 @@ export async function uploadDescriptions(
          sha: dataClovis.sha,
          content: JSON.stringify(
             {
-               descriptions: updatedDataClovis,
+               descriptions: updatedDataClovis.descriptions,
                saved: newData.saved
             },
             null,
-            2
+            1
          )
       },
       login
@@ -102,8 +103,14 @@ export async function uploadDescriptions(
    // modify data for live databases
    const updatedData = Object.entries(newData.description.modified).reduce(
       (acc, [hash, perk]) => {
+         if (perk.editor === undefined) {
+            console.log([hash, perk]);
+            sendMessage(`${hash} is broken perk remove that crap manually`)
+            return acc
+         }
+
          if (Number(hash) === 0) return acc
-         if (!perk.uploadToLive) return acc
+         // if (!perk.uploadToLive) return acc
 
          const baseInfo = cleanObject({
             hash: Number(hash),
@@ -118,7 +125,7 @@ export async function uploadDescriptions(
 
          const cleanData = cleanObject({
             description: convertDescription(perk.editor!.mainEditor, newData, setItemData!, 'main'),
-            simpleDescription: convertDescription(perk.editor!.secondaryEditor, newData, setItemData!, 'main'),
+            simpleDescription: convertDescription(perk.editor!.secondaryEditor, newData, setItemData!, 'secondary'),
             stats: perk.stats
          })
 
@@ -129,7 +136,7 @@ export async function uploadDescriptions(
          }
          acc.crayon[Number(hash)] = {
             ...baseInfo,
-            description: cleanData.description,
+            description: convertDescription_Crayon(perk.editor!.mainEditor, newData, setItemData!, 'main'),
             stats: cleanData.stats
          }
          acc.dim[Number(hash)] = {
@@ -223,7 +230,7 @@ export async function uploadDescriptions(
                saved: newData.saved
             },
             null,
-            2
+            1
          )
       },
       login

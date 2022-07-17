@@ -4,16 +4,16 @@ import { Updater, useImmer } from 'use-immer'
 
 export interface LinesContent {
    text?: string
-   classNames?: (string | null)[]
+   classNames?: (string | null | undefined)[]
    link?: string
    formula?: string
    title?: string
 }
 
 export interface Description {
-   classNames?: (string | null)[]
+   classNames?: (string | null | undefined)[]
    linesContent?: LinesContent[]
-   isFormula?: boolean | null
+   isFormula?: boolean | null | undefined
    table?: { linesContent?: LinesContent[] }[]
 }
 

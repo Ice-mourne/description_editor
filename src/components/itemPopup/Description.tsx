@@ -22,10 +22,10 @@ const otherOptions = (linesContent: LinesContent) => {
    return null
 }
 
-const joinClassNames = (classNames: (string | null)[] | undefined) => {
+const joinClassNames = (classNames: (string | null  | undefined)[] | undefined) => {
    return classNames
-      ?.flatMap((className: string | null) => {
-         if (className === null) return []
+      ?.flatMap((className: string | null | undefined) => {
+         if (className === null || className === undefined) return []
          return styles[className]
       })
       .join(' ')

@@ -92,9 +92,9 @@ const convertLinesContent = (line: string) => {
 }
 
 function splitTable(line: string) {
-   const center = /<center\/>/.test(line) ? 'center' : null
-   const bold = /<bold\/>/.test(line) ? 'bold' : null
-   const background = /<background\/>/.test(line) ? 'background' : null
+   const center = /<center\/>/.test(line) ? 'center' : undefined
+   const bold = /<bold\/>/.test(line) ? 'bold' : undefined
+   const background = /<background\/>/.test(line) ? 'background' : undefined
 
    const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
    const splittedLine = cleanLine.split(/(\|.+?(?=\|)|\|.+?$)/).filter((line) => line.trim() !== '')
@@ -139,7 +139,7 @@ export default function convertDescription(
    cleanText = doMath(cleanText)
 
    // split lines in to array of lines
-   const lineArr = cleanText.split('\n')
+   const lineArr = cleanText.trim().split('\n')
 
    let tableIndex: number | null = null
    const parsedDescription = lineArr.reduce((acc, line, lineIndex) => {
@@ -147,14 +147,14 @@ export default function convertDescription(
       // if line starts with < table // start table stuff
       if (tableIndex === null && /^\s*< table /.test(line)) {
          tableIndex = lineIndex
-         const wide = / wide /.test(line) ? 'wide' : null
-         const centered = / center /.test(line) ? 'centerTable' : null
-         const formula = / formula /.test(line) ? 'formula' : null
-         const backgroundOdd = / background_2 /.test(line) ? 'bgOdd' : null
-         const backgroundEven = / background_1 /.test(line) ? 'bgEven' : null
+         const wide = / wide /.test(line) ? 'wide' : undefined
+         const centered = / center /.test(line) ? 'centerTable' : undefined
+         const formula = / formula /.test(line) ? 'formula' : undefined
+         const backgroundOdd = / background_2 /.test(line) ? 'bgOdd' : undefined
+         const backgroundEven = / background_1 /.test(line) ? 'bgEven' : undefined
          acc[tableIndex] = {
             classNames: ['table', wide, centered, backgroundOdd, backgroundEven],
-            isFormula: formula ? true : null,
+            isFormula: formula ? true : undefined,
             table: []
          }
          return acc
@@ -180,9 +180,9 @@ export default function convertDescription(
          return acc
       }
 
-      const center = /<center\/>/.test(line) ? 'center' : null
-      const bold = /<bold\/>/.test(line) ? 'bold' : null
-      const background = /<background\/>/.test(line) ? 'background' : null
+      const center = /<center\/>/.test(line) ? 'center' : undefined
+      const bold = /<bold\/>/.test(line) ? 'bold' : undefined
+      const background = /<background\/>/.test(line) ? 'background' : undefined
 
       const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
       acc.push({

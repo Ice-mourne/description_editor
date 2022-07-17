@@ -188,15 +188,15 @@ export function createEditor(itemData: ItemDataTemplate) {
          const suggestions = [
             {
                label: 'title',
-               insertText: '<title ${1: } [${2:content name}] />',
+               insertText: '<title ${1: } [${2:name}] />',
                documentation: `Title witch will show up in description`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
                label: 'titles contents',
-               insertText: ['title ${1:unique name} (', '$0', ')'].join('\n'),
-               documentation: `Content of title use anything you want inside\nName has to be unique and can be reused in other descriptions.`,
+               insertText: ['title ${1:name} (', '$0', ')'].join('\n'),
+               documentation: `Content of title. Content can only be used on this perk`,
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,

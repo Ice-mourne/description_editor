@@ -133,9 +133,9 @@
 .table {
    width: fit-content;
    display: table;
-   div {
+   >div {
       display: table-row;
-      span {
+      >span {
          display: table-cell;
          padding: 1px 3px;
       }
@@ -144,12 +144,14 @@
 
 .titleContainer {
    z-index: 2;
-   padding: 2px;
+   padding: 2px 4px;
    display: flex;
    flex-direction: column;
    position: absolute;
    background-color: black;
    max-width: 300px;
+   width: max-content;
    transform: translate(0px, 16px);
    border: 2px solid #696969;
+   font-weight: normal;
 }

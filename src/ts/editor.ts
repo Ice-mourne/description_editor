@@ -103,7 +103,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/([0-9]+|self|none)/,   { token: 'lightBlue', next: '@pop' }],
          ],
          export: [
-            [/^(export|title) /,   { token: 'purple'    }], // word export
+            [/^(export|title) /,   { token: 'purple'    }], // word export/title
             [/[A-z0-9 ]+?(?= \()/, { token: 'lightBlue' }], // exports name
             [/\( *?$/,             { token: 'purple'    }], // (
 
@@ -136,7 +136,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/\${.*?/, { token: 'yellow', next: '@math' }]
          ],
          extra: [
-            [/ \/>/,     { token: 'green',  next: '@pop' }],
+            [/ \/>/,    { token: 'green',  next: '@pop' }],
             [/\[.+?\]/, { token: 'blue' }],
             [/\${.*?/,  { token: 'yellow', next: '@math' }]
          ],
@@ -277,7 +277,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             } as unknown as ConditionalSuggestions,
             {
                label: 'formula_range',
-               insertText: '<formula ${2:In-Game Range:} [range_${1:0}] />',
+               insertText: '<formula ${2:Effective Range:} [range_${1:0}] />',
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,

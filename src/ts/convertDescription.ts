@@ -6,7 +6,7 @@ import { statImport } from './statImport'
 import { setTitle } from './title'
 import { loadVariables, saveVariables } from './variableSaveLoad'
 
-const convertLinesContent = (line: string) => {
+const convertLinesContent = (line: string, table: boolean) => {
    const regexStart = '<(?:'
    const selfContained = [
       'stasis',
@@ -31,7 +31,7 @@ const convertLinesContent = (line: string) => {
 
    const splittedLine = line.split(fullRegex).filter((line) => line !== '') // line.trim() !== '')
    return splittedLine.reduce((acc, text) => {
-      if (/\|/.test(text)) {
+      if (table && /\|/.test(text)) {
          const classes: { [key: string]: string } = {
             b: 'bold',
             c: 'center',
@@ -64,7 +64,7 @@ const convertLinesContent = (line: string) => {
       // if only self contained return relevant class name
       if (new RegExp(`${regexStart}${selfContained.join('|')}${regexEnd}`).test(text)) {
          acc.push({
-            classNames: [text.match(new RegExp(selfContained.join('|')))![0]]
+            classNames: [text.match(new RegExp(selfContained.join('|')))![0].trim()]
          })
          return acc
       }
@@ -72,7 +72,7 @@ const convertLinesContent = (line: string) => {
       if (new RegExp(`${regexStart}${simpleWrappers.join('|')}${regexEnd}`).test(text)) {
          acc.push({
             text: text.replace(new RegExp(`<(${simpleWrappers.join('|')}) | />`, 'g'), ''),
-            classNames: [text.match(new RegExp(simpleWrappers.join('|')))![0]]
+            classNames: [text.match(new RegExp(simpleWrappers.join('|')))![0].trim()]
          })
          return acc
       }
@@ -81,8 +81,8 @@ const convertLinesContent = (line: string) => {
          const type = text.match(new RegExp(complexWrappers.join('|')))![0].trim()
 
          acc.push({
-            text: text.replace(new RegExp(`<(${complexWrappers.join('|')}) | />|\\[.*?\\]`, 'g'), ''),
-            [type]: text.match(/\[.*?]/)?.[0].replace(/^\[|]$/g, ''),
+            text: text.replace(new RegExp(`<(${complexWrappers.join('|')}) | />|\\[.*?\\]`, 'g'), '').trim(),
+            [type]: text.match(/\[.*?]/)?.[0].replace(/^\[|]$/g, '').trim(),
             classNames: [type]
          })
          return acc
@@ -102,12 +102,26 @@ function splitTable(line: string) {
    return {
       classNames: [center, bold, background],
       linesContent: splittedLine.flatMap((text) => {
-         const convertLines = convertLinesContent(text)
+         const convertLines = convertLinesContent(text, true)
          if (convertLines.length === 1) return convertLines
+
+         return convertLines.reduce<LinesContent>((acc, line) => {
+            if (line.classNames) acc.classNames!.push(...line.classNames)
+            if (line.text) acc.text = `${acc.text}${line.text}`
+            if (line.link) acc.link = line.link
+            if (line.formula) acc.text = line.formula
+            if (line.title) acc.text = line.title
+            return acc
+         }, {
+            text: '',
+            classNames: []
+         })
+
          return convertLines.filter((line) => {
             return !(
                (line.text === undefined || line.text.trim() === '') &&
-               (line.formula === undefined || line.formula.trim() === '')
+               (line.formula === undefined || line.formula.trim() === '') &&
+               (line.classNames?.some((className) => typeof className === 'string'))
             )
          })
       })
@@ -187,7 +201,7 @@ export default function convertDescription(
       const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
       acc.push({
          classNames: [center, bold, background],
-         linesContent: convertLinesContent(cleanLine)
+         linesContent: convertLinesContent(cleanLine, false)
       })
       return acc
    }, [] as Description[])

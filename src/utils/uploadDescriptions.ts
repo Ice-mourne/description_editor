@@ -110,7 +110,7 @@ export async function uploadDescriptions(
          }
 
          if (Number(hash) === 0) return acc
-         // if (!perk.uploadToLive) return acc
+         if (!perk.uploadToLive) return acc
 
          const baseInfo = cleanObject({
             hash: Number(hash),

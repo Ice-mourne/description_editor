@@ -1,8 +1,9 @@
-import { itemData_context, SelectableType, setItemData_context } from '@components/provider/dataProvider'
+import { ItemDataTemplate, itemData_context, SelectableType, setItemData_context } from '@components/provider/dataProvider'
 
 import { getDataFromBungie } from '@ts/getDataFromBungie'
 import { sendMessage } from '@utils/sendMessage'
 import { uploadDescriptions } from '@utils/uploadDescriptions'
+import { current } from 'immer'
 import { useContext, useEffect, useState } from 'react'
 import styles from './Buttons.module.scss'
 
@@ -138,9 +139,18 @@ export function ButtonDeletePerk({ labelText }: { labelText: string }) {
    const setItemData = useContext(setItemData_context)
 
    const deletePerk = () => {
+      let draftSnapshot: ItemDataTemplate
       setItemData((draft) => {
+         draftSnapshot = current(draft)
+         draft.selectedPerkHash = 0
          delete draft.description.modified[itemData.selectedPerkHash]
+         draft.input.type = 'none'
       })
+      setTimeout(() => {
+         setItemData((draft) => {
+            draft.input.type = draftSnapshot.input.type
+         })
+      }, 1);
    }
 
    return (

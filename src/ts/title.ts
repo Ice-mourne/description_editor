@@ -4,6 +4,7 @@ import convertDescription from './convertDescription'
 
 export function setTitle(
    description: string,
+   perkHash: number,
    itemData: ItemDataTemplate,
    setItemData: Updater<ItemDataTemplate>,
    editorType: string
@@ -11,8 +12,8 @@ export function setTitle(
    const exports = description.match(/^title [A-z0-9 ]+ \([\s\S]*?\n\) *?$/gm)
 
    setItemData((draft) => {
-      const selectedPerkHash = draft.selectedPerkHash || 0
-      delete draft.description.modified[selectedPerkHash]?.titles
+      // const selectedPerkHash = draft.selectedPerkHash || 0
+      delete draft.description.modified[perkHash]?.titles
    })
 
    const completeExports = exports?.reduce((acc, export_) => {
@@ -21,7 +22,7 @@ export function setTitle(
       lines.splice(0, 1)
       lines.splice(-1, 1)
 
-      acc[exportName] = convertDescription(lines.join('\n'), itemData, setItemData, editorType)
+      acc[exportName] = convertDescription(lines.join('\n'), perkHash, itemData, setItemData, editorType)
 
       return acc
    }, {} as { [key: string]: Description[] })

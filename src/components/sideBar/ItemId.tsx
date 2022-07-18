@@ -20,12 +20,12 @@ export function ItemId() {
    return (
       <>
          <div className={style.id_input}>
-            <span>ID:</span>
+            <span title="Perk ID">ID:</span>
             <input type="number" onChange={(e) => setPerkHash(e)} />
          </div>
          {/weapon.+Exotic/.test(itemData.input.type) && (
             <div className={style.id_input}>
-               <span>Item ID:</span>
+               <span title="Exotic weapon ID">Item ID:</span>
                <input type="number" onChange={(e) => setItemHash(e)} />
             </div>
          )}

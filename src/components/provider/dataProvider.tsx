@@ -30,6 +30,7 @@ export type SelectableType =
    | 'weaponCatalystExotic'
    //---------
    | 'ghostMod'
+   | 'artifactMod'
    //---------
    | 'none'
 

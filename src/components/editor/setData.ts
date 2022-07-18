@@ -18,7 +18,8 @@ export function setDataToMainEditor(
    setItemData((draft) => {
       const itemData = current(draft)
       const perkHash = itemData.selectedPerkHash || 0
-      const convertedDescription = convertDescription(editorValue, itemData, setItemData, 'main')
+
+      const convertedDescription = convertDescription(editorValue, perkHash, itemData, setItemData, 'main')
 
       // used only for debugging purposes
       // @ts-ignore
@@ -48,7 +49,7 @@ export function setDataToSecondaryEditor(
    setItemData((draft) => {
       const itemData = current(draft)
       const perkHash = itemData.selectedPerkHash || 0
-      const convertedDescription = convertDescription(editorValue, itemData, setItemData, 'secondary')
+      const convertedDescription = convertDescription(editorValue, perkHash, itemData, setItemData, 'secondary')
 
       // add converted description
       draft.description.modified[perkHash].simpleDescription = convertedDescription as WritableDraft<Description>[]

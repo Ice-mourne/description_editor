@@ -103,6 +103,7 @@ const convertLinesContent = (line: string) => {
 
 export default function convertDescription_Crayon(
    description: string,
+   hash: number,
    itemData: ItemDataTemplate,
    setItemData: Updater<ItemDataTemplate>,
    editorType: string
@@ -111,18 +112,18 @@ export default function convertDescription_Crayon(
    let cleanText = description.replace(/\r/g, '')
 
    if (editorType === 'main') {
-      const text = setTitle(cleanText, itemData, setItemData, editorType)
+      const text = setTitle(cleanText, hash, itemData, setItemData, editorType)
       if (text) cleanText = text
 
-      const text2 = descriptionExport(cleanText, setItemData)
+      const text2 = descriptionExport(cleanText, hash, setItemData)
       if (text2) cleanText = text2
 
-      const text3 = saveVariables(cleanText, setItemData)
+      const text3 = saveVariables(cleanText, hash, setItemData)
       if (text3) cleanText = text3
    }
-   cleanText = statImport(cleanText, setItemData)
-   cleanText = descriptionImport(cleanText, itemData)
-   cleanText = loadVariables(cleanText, itemData)
+   cleanText = statImport(cleanText, hash, setItemData)
+   cleanText = descriptionImport(cleanText, hash, itemData)
+   cleanText = loadVariables(cleanText, hash, itemData)
    cleanText = doMath(cleanText)
 
    // remove tables

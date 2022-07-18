@@ -124,8 +124,8 @@ export async function uploadDescriptions(
          })
 
          const cleanData = cleanObject({
-            description: convertDescription(perk.editor!.mainEditor, newData, setItemData!, 'main'),
-            simpleDescription: convertDescription(perk.editor!.secondaryEditor, newData, setItemData!, 'secondary'),
+            description: convertDescription(perk.editor!.mainEditor, Number(hash), newData, setItemData!, 'main'),
+            simpleDescription: convertDescription(perk.editor!.secondaryEditor, Number(hash), newData, setItemData!, 'secondary'),
             stats: perk.stats
          })
 
@@ -136,7 +136,7 @@ export async function uploadDescriptions(
          }
          acc.crayon[Number(hash)] = {
             ...baseInfo,
-            description: convertDescription_Crayon(perk.editor!.mainEditor, newData, setItemData!, 'main'),
+            description: convertDescription_Crayon(perk.editor!.mainEditor, Number(hash), newData, setItemData!, 'main'),
             stats: cleanData.stats
          }
          acc.dim[Number(hash)] = {

@@ -1,7 +1,7 @@
 import { ItemDataTemplate } from '@components/provider/dataProvider'
 import { Updater } from 'use-immer'
 
-export function descriptionImport(description: string, itemData: ItemDataTemplate) {
+export function descriptionImport(description: string, perkHash: number, itemData: ItemDataTemplate) {
    const lines = description.split('\n')
    const newDescription = lines.map((line) => {
       if (!/^import [A-z0-9 ]+? from (\d+?|self)/.test(line)) return line
@@ -12,13 +12,13 @@ export function descriptionImport(description: string, itemData: ItemDataTemplat
 
       if (/main/gi.test(importName)) {
          if (/self/gi.test(importFrom)) {
-            return itemData.description.modified?.[itemData.selectedPerkHash]?.editor?.mainEditor
+            return itemData.description.modified?.[perkHash]?.editor?.mainEditor
          }
          return itemData.description.modified?.[importFrom]?.editor?.mainEditor
       }
       if (/secondary/gi.test(importName)) {
          if (/self/gi.test(importFrom)) {
-            return itemData.description.modified?.[itemData.selectedPerkHash]?.editor?.secondaryEditor
+            return itemData.description.modified?.[perkHash]?.editor?.secondaryEditor
          }
          return itemData.description.modified?.[importFrom]?.editor?.secondaryEditor
       }
@@ -28,12 +28,12 @@ export function descriptionImport(description: string, itemData: ItemDataTemplat
    return newDescription.join('\n')
 }
 
-export function descriptionExport(description: string, setItemData: Updater<ItemDataTemplate>) {
+export function descriptionExport(description: string, perkHash : number, setItemData: Updater<ItemDataTemplate>) {
    const exports = description.match(/^export [A-z0-9 ]+ \([\s\S]*?\n\) *?$/gm)
 
    setItemData((draft) => {
-      const selectedPerkHash = draft.selectedPerkHash || 0
-      delete draft.saved.perks[selectedPerkHash]
+      // const selectedPerkHash = draft.selectedPerkHash || 0
+      delete draft.saved.perks[perkHash]
    })
 
    const completeExports = exports?.reduce((acc, export_) => {

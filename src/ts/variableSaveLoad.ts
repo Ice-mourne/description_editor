@@ -1,10 +1,10 @@
 import { ItemDataTemplate } from '@components/provider/dataProvider'
 import { Updater } from 'use-immer'
 
-export function saveVariables(description: string, setItemData: Updater<ItemDataTemplate>) {
+export function saveVariables(description: string, perkHash: number, setItemData: Updater<ItemDataTemplate>) {
    setItemData((draft) => {
       const selectedPerkHash = draft.selectedPerkHash || 0
-      delete draft.saved.variables[selectedPerkHash]
+      delete draft.saved.variables[perkHash]
    })
 
    const varRegex = /^ *?var +?[A-z0-9]+ +?= +?.+$/gm
@@ -20,15 +20,15 @@ export function saveVariables(description: string, setItemData: Updater<ItemData
       if (!varName || !varValue) return
       setItemData((draft) => {
          const selectedPerkHash = draft.selectedPerkHash || 0
-         draft.saved.variables[selectedPerkHash] = draft.saved.variables[selectedPerkHash] || {}
-         draft.saved.variables[selectedPerkHash][varName] = varValue
+         draft.saved.variables[perkHash] = draft.saved.variables[perkHash] || {}
+         draft.saved.variables[perkHash][varName] = varValue
       })
    })
 
    return description.replace(/^ *?var +?[A-z0-9]+ +?= +?.+$\s/gm, '').replace(varRegex, '')
 }
 
-export function loadVariables(description: string, itemData: ItemDataTemplate) {
+export function loadVariables(description: string, perkHash: number, itemData: ItemDataTemplate) {
    const varRegex = /#[A-z0-9]+/g
    if (!varRegex.test(description)) return description
 
@@ -38,8 +38,8 @@ export function loadVariables(description: string, itemData: ItemDataTemplate) {
    variables.forEach((variable) => {
       const varName = variable.replace('#', '').trim()
       const selectedPerkHash = itemData.selectedPerkHash || 0
-      if (itemData.saved.variables?.[selectedPerkHash]?.[varName]) {
-         const variableValue = itemData.saved.variables?.[Number(selectedPerkHash)]?.[varName] || ''
+      if (itemData.saved.variables?.[perkHash]?.[varName]) {
+         const variableValue = itemData.saved.variables?.[Number(perkHash)]?.[varName] || ''
          description = description.replace(variable, variableValue)
       }
    })

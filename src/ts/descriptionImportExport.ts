@@ -51,8 +51,8 @@ export function descriptionExport(description: string, perkHash : number, setIte
 
    setItemData((draft) => {
       const selectedPerkHash = draft.selectedPerkHash || 0
-      draft.saved.perks[selectedPerkHash] = draft.saved.perks[selectedPerkHash] || {}
-      draft.saved.perks[selectedPerkHash] = completeExports
+      draft.saved.perks[perkHash] = draft.saved.perks[perkHash] || {}
+      draft.saved.perks[perkHash] = completeExports
    })
 
    description = description.replace(/(\n^export [A-z0-9 ]+ \(|export [A-z0-9 ]+ \( *?\n)/gm, '')

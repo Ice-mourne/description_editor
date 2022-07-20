@@ -1,4 +1,4 @@
-import { Description, ItemDataTemplate } from '@components/provider/dataProvider'
+import { DescriptionLine, ItemDataTemplate } from '@components/provider/dataProvider'
 import convertDescription from '@ts/convertDescription'
 import convertDescription_Crayon from '@ts/customConverters/crayon'
 import { current } from 'immer'
@@ -26,7 +26,7 @@ export function setDataToMainEditor(
       if (window?.logCustom === 'crayon') convertDescription_Crayon(editorValue, itemData, setItemData, 'main')
 
       // add converted description
-      draft.description.modified[perkHash].description = convertedDescription as WritableDraft<Description>[]
+      draft.description.modified[perkHash].description = convertedDescription as WritableDraft<DescriptionLine>[]
       // add raw description
       draft.description.modified[perkHash].editor!.mainEditor = editorValue
    })
@@ -52,7 +52,7 @@ export function setDataToSecondaryEditor(
       const convertedDescription = convertDescription(editorValue, perkHash, itemData, setItemData, 'secondary')
 
       // add converted description
-      draft.description.modified[perkHash].simpleDescription = convertedDescription as WritableDraft<Description>[]
+      draft.description.modified[perkHash].simpleDescription = convertedDescription as WritableDraft<DescriptionLine>[]
       // add raw description
       draft.description.modified[perkHash].editor!.secondaryEditor = editorValue
    })

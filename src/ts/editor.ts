@@ -1,4 +1,5 @@
 import { ItemDataTemplate } from '@components/provider/dataProvider'
+import { selfContainedKeywords } from '@data/ramdomData'
 import { editor, languages } from 'monaco-editor'
 import { imports, selfContained, tableSettings } from './autoCompletion'
 
@@ -33,22 +34,6 @@ export function createEditor(itemData: ItemDataTemplate) {
    if (containers.normal.main.firstElementChild?.classList.contains('monaco-editor')) {
       return null
    }
-
-   const selfContainedKeywords = [
-      'stasis',
-      'arc',
-      'solar',
-      'void',
-      'primary',
-      'special',
-      'heavy',
-      'background',
-      'center',
-      'bold',
-      'barrier',
-      'overload',
-      'unstoppable'
-   ]
 
    languages.register({ id: 'clarityLangue' })
    languages.setMonarchTokensProvider('clarityLangue', {
@@ -123,7 +108,7 @@ export function createEditor(itemData: ItemDataTemplate) {
 
          table: [
             [/<\$>/,          { token: 'blue', next: '@pop' }], // table end
-            [/\|[bchr]{0,4}/, { token: 'blue' }], // table only content
+            [/\|[bchr\d-]{0,5}/, { token: 'blue' }], // table only content
 
             [/@selfContained/,           { token: 'green' }],
             [/@highlightRegex/,          { token: 'blue',   next: '@highlight' }],

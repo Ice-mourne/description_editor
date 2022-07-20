@@ -43,6 +43,16 @@
    background-size: 18px 20px;
    width: 13px;
 }
+.warlock::before{
+   width: 22px;
+}
+.hunter::before{
+   width: 10px;
+}
+.titan::before {
+   width: 11px;
+}
+
 //--- elements
 .arc::before {
    background-image: url(https://www.bungie.net/common/destiny2_content/icons/DestinyDamageTypeDefinition_092d066688b879c807c3b460afdd61e6.png);
@@ -84,6 +94,19 @@
 }
 .unstoppable::before {
    background-image: url(https://www.bungie.net/common/destiny2_content/icons/DestinyBreakerTypeDefinition_825a438c85404efd6472ff9e97fc7251.png);
+   @include img_before;
+}
+//--- classes
+.warlock::before {
+   background-image: url(../../assets/svg/warlock.svg);
+   @include img_before;
+}
+.hunter::before {
+   background-image: url(../../assets/svg/hunter.svg);
+   @include img_before;
+}
+.titan::before {
+   background-image: url(../../assets/svg/titan.svg);
    @include img_before;
 }
 
@@ -131,14 +154,9 @@
 
 //--- makes table
 .table {
-   width: fit-content;
-   display: table;
-   >div {
-      display: table-row;
-      >span {
-         display: table-cell;
-         padding: 1px 3px;
-      }
+   border-collapse: collapse;
+   td:first-child {
+      padding-left: 3px;
    }
 }
 

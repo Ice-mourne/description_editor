@@ -1,4 +1,10 @@
-import { ItemDataTemplate, itemData_context, SelectableType, setItemData_context } from '@components/provider/dataProvider'
+import {
+   DescriptionWithEditor,
+   ItemDataTemplate,
+   itemData_context,
+   SelectableType,
+   setItemData_context
+} from '@components/provider/dataProvider'
 
 import { getDataFromBungie } from '@ts/getDataFromBungie'
 import { sendMessage } from '@utils/sendMessage'
@@ -28,10 +34,17 @@ export function ButtonUploadIce({ labelText }: { labelText: string }) {
       })
    }
 
+   const turnOffUploadToLive = (descriptions: DescriptionWithEditor) =>
+      Object.entries(descriptions).reduce((acc, description) => {
+         const [key, value] = description
+         acc[key] = { ...value, uploadToLive: false }
+         return acc
+      }, {} as DescriptionWithEditor)
+
    useEffect(() => {
       if (updateOriginal) {
          setItemData((draft) => {
-            draft.description.original = itemData.description.modified
+            draft.description.original = turnOffUploadToLive(itemData.description.modified)
          })
          setUpdateOriginal(false)
       }
@@ -150,7 +163,7 @@ export function ButtonDeletePerk({ labelText }: { labelText: string }) {
          setItemData((draft) => {
             draft.input.type = draftSnapshot.input.type
          })
-      }, 1);
+      }, 1)
    }
 
    return (

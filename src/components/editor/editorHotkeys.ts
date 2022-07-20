@@ -16,14 +16,14 @@ const formatTable = (editorValue: string) => {
 
          // set longest |bch length in every column
          splittedLine.forEach((text, index) => {
-            beginningSpacing[index] = Math.max(beginningSpacing[index] || 0, text.match(/\|([bchr]+)?/)![0].length)
+            beginningSpacing[index] = Math.max(beginningSpacing[index] || 0, text.match(/\|([bchr\d-]+)?/)![0].length)
          })
 
          // set longest |bch and text length in every column
          splittedLine.forEach((text, index, arr) => {
-            if (index === arr.length - 1) return // skip last column
+            // if (index === arr.length - 1) return // skip last column
 
-            const beginning = text.match(/\|([bchr]+)?/)![0]
+            const beginning = text.match(/\|([bchr\d-]+)?/)![0]
             const ending = text.replace(beginning, '').trim()
 
             const textLength = beginningSpacing[index] + ending.length
@@ -40,7 +40,7 @@ const formatTable = (editorValue: string) => {
 
             return splittedLine
                .map((text, index) => {
-                  const beginning = text.match(/\|([bchr]+)?/)![0]
+                  const beginning = text.match(/\|([bchr\d-]+)?/)![0]
                   const ending = text.replace(beginning, '').trim()
 
                   return `${beginning} ${' '.repeat(beginningSpacing[index] - beginning.length)}${ending}${' '.repeat(
@@ -48,6 +48,7 @@ const formatTable = (editorValue: string) => {
                   )}`
                })
                .join('')
+               .trim()
          })
          .join('\n')
    })
@@ -59,6 +60,15 @@ const formatTable = (editorValue: string) => {
       .join('')
 }
 
+const fixCleanText = (text: string) => {
+   return text
+      .replace('<highlight_1', '<green')
+      .replace('<highlight_2', '<yellow')
+      .replace('<highlight_3', '<blue')
+      .replace('<highlight_4', '<purple')
+      .trim()
+}
+
 export function editorHotkeys(editor: monaco.editor.IStandaloneCodeEditor) {
    var myCondition1 = editor.createContextKey(/*key name*/ 'myCondition1', /*default value*/ false)
 
@@ -66,7 +76,8 @@ export function editorHotkeys(editor: monaco.editor.IStandaloneCodeEditor) {
       monaco.KeyCode.ScrollLock,
       function () {
          const newValue = formatTable(editor.getValue())
-         editor.setValue(newValue)
+         const cleanValue = fixCleanText(newValue)
+         editor.setValue(cleanValue)
       },
       'myCondition1'
    )

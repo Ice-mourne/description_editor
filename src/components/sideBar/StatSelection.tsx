@@ -39,7 +39,8 @@ export function StatSelection() {
       'chargeDraw',
       'ready',
       'stow',
-      'damage'
+      'damage',
+      'airborne'
    ]
 
    const onShowHideStats = (statIndex: number, activeOrPassiveStat: ActivePassive) =>

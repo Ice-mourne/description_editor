@@ -1,4 +1,5 @@
-import { Description, ItemDataTemplate, LinesContent } from '@components/provider/dataProvider'
+import { CellContent, DescriptionLine, ItemDataTemplate, LinesContent } from '@components/provider/dataProvider'
+import { selfContainedKeywords } from '@data/ramdomData'
 import { Updater } from 'use-immer'
 import { descriptionExport, descriptionImport } from './descriptionImportExport'
 import { doMath } from './doMath'
@@ -8,18 +9,7 @@ import { loadVariables, saveVariables } from './variableSaveLoad'
 
 const convertLinesContent = (line: string, table: boolean) => {
    const regexStart = '<(?:'
-   const selfContained = [
-      'stasis',
-      'arc',
-      'solar',
-      'void',
-      'primary',
-      'special',
-      'heavy',
-      'barrier',
-      'overload',
-      'unstoppable'
-   ]
+   const selfContained = selfContainedKeywords
    const simpleWrappers = ['bold', 'pve', 'pvp', 'background', 'green', 'blue', 'purple', 'yellow']
    const complexWrappers = ['link', 'title', 'formula']
    const regexEnd = ').*?/>'
@@ -32,24 +22,30 @@ const convertLinesContent = (line: string, table: boolean) => {
    const splittedLine = line.split(fullRegex).filter((line) => line !== '') // line.trim() !== '')
    return splittedLine.reduce((acc, text) => {
       if (table && /\|/.test(text)) {
-         const classes: { [key: string]: string } = {
+         const inCellClasses: { [key: string]: string } = {
             b: 'bold',
             c: 'center',
             h: 'background',
             r: 'right'
          }
 
-         const classNames = text
-            .match(/\|[bchr]+/)?.[0]
+         const cellClassNames = text
+            .match(/\|[bchr\d-]+/)?.[0]
             .split('')
-            .map((c) => classes[c])
+            .filter((char) => inCellClasses[char] !== undefined)
+            .map((c) => inCellClasses[c])
 
-         const test = {
-            text: text.replace(/\|([bchr]+)?/g, '').trim(),
-            classNames
-         }
+         const span = text.match(/\|([bchr\d-]+)?/)?.[0]?.match(/-\d|\d/g)
 
-         acc.push(test)
+         const colSpan = span?.filter((number) => Number(number) > 0)[0]
+         const rowSpan = span?.filter((number) => Number(number) < 0)[0] || 0
+
+         acc.push({
+            text: text.replace(/\|([bchr\d-]+)?/g, '').trim(),
+            cellClassNames,
+            colSpan: Number(colSpan) || undefined,
+            rowSpan: Math.abs(Number(rowSpan)) || undefined
+         })
          return acc
       }
 
@@ -79,16 +75,18 @@ const convertLinesContent = (line: string, table: boolean) => {
 
       if (new RegExp(`${regexStart}${complexWrappers.join('|')}${regexEnd}`).test(text)) {
          const type = text.match(new RegExp(complexWrappers.join('|')))![0].trim()
-
          acc.push({
             text: text.replace(new RegExp(`<(${complexWrappers.join('|')}) | />|\\[.*?\\]`, 'g'), '').trim(),
-            [type]: text.match(/\[.*?]/)?.[0].replace(/^\[|]$/g, '').trim(),
+            [type]: text
+               .match(/\[.*?]/)?.[0]
+               .replace(/^\[|]$/g, '')
+               .trim(),
             classNames: [type]
          })
          return acc
       }
       return acc
-   }, [] as LinesContent[])
+   }, [] as LinesContent[] | CellContent[])
 }
 
 function splitTable(line: string) {
@@ -101,21 +99,33 @@ function splitTable(line: string) {
 
    return {
       classNames: [center, bold, background],
-      linesContent: splittedLine.flatMap((text) => {
-         const convertLines = convertLinesContent(text, true)
-         if (convertLines.length === 1) return convertLines
+      rowContent: splittedLine.map((text) => {
+         const convertLines: CellContent[] = convertLinesContent(text, true)
 
-         return convertLines.reduce<LinesContent>((acc, line) => {
-            if (line.classNames) acc.classNames!.push(...line.classNames)
-            if (line.text) acc.text = `${acc.text}${line.text}`
-            if (line.link) acc.link = line.link
-            if (line.formula) acc.text = line.formula
-            if (line.title) acc.text = line.title
-            return acc
-         }, {
-            text: '',
-            classNames: []
+         const filteredLines = convertLines.filter((line) => {
+            return !(
+               (line.text === undefined || line.text.trim() === '') &&
+               !line.classNames?.some((className) => typeof className === 'string') &&
+               !line.cellClassNames?.some((className) => typeof className === 'string')
+            )
          })
+
+         let colSpan: number | undefined = undefined
+         let rowSpan: number | undefined = undefined
+         let cellClassNames: (string | undefined)[] | undefined = undefined
+
+         filteredLines.forEach((line) => {
+            if (line.colSpan) colSpan = line.colSpan
+            if (line.rowSpan) rowSpan = line.rowSpan
+            if (line.cellClassNames) cellClassNames = line.cellClassNames
+         })
+
+         return {
+            colSpan,
+            rowSpan,
+            classNames: cellClassNames,
+            cellContent: filteredLines
+         }
       })
    }
 }
@@ -125,11 +135,12 @@ export default function convertDescription(
    hash: number,
    itemData: ItemDataTemplate,
    setItemData: Updater<ItemDataTemplate>,
-   editorType: string,
+   editorType: string
 ) {
    // remove \r
    let cleanText = description.replace(/\r/g, '')
 
+   cleanText = descriptionImport(cleanText, hash, itemData)
    if (editorType === 'main') {
       const text = setTitle(cleanText, hash, itemData, setItemData, editorType)
       if (text) cleanText = text
@@ -141,7 +152,6 @@ export default function convertDescription(
       if (text3) cleanText = text3
    }
    cleanText = statImport(cleanText, hash, setItemData)
-   cleanText = descriptionImport(cleanText, hash, itemData)
    cleanText = loadVariables(cleanText, hash, itemData)
    cleanText = doMath(cleanText)
 
@@ -197,7 +207,7 @@ export default function convertDescription(
          linesContent: convertLinesContent(cleanLine, false)
       })
       return acc
-   }, [] as Description[])
+   }, [] as DescriptionLine[])
 
    return parsedDescription
 }

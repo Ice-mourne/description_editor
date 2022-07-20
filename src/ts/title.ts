@@ -1,4 +1,4 @@
-import { Description, ItemDataTemplate } from '@components/provider/dataProvider'
+import { DescriptionLine, ItemDataTemplate } from '@components/provider/dataProvider'
 import { Updater } from 'use-immer'
 import convertDescription from './convertDescription'
 
@@ -25,7 +25,7 @@ export function setTitle(
       acc[exportName] = convertDescription(lines.join('\n'), perkHash, itemData, setItemData, editorType)
 
       return acc
-   }, {} as { [key: string]: Description[] })
+   }, {} as { [key: string]: DescriptionLine[] })
 
    if (!completeExports) return
 

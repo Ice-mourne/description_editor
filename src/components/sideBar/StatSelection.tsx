@@ -5,6 +5,7 @@ import { createNestedObject } from '@utils/createNestedObject'
 import { statsArrayToString, statsStringToArray } from '@utils/statsToStringAndBack'
 import { useImmer } from 'use-immer'
 import styles from './StatSelection.module.scss'
+import { cleanObject } from '@utils/removeEmptyFromObj'
 
 type StatMulti = 'stat' | 'multiplier'
 type ActivePassive = 'active' | 'passive'
@@ -80,8 +81,9 @@ export function StatSelection() {
 
       const stats = itemData.description.modified[selectedPerkHash]?.stats
       if (!stats) return
+      const cleanStats = cleanObject(stats)
 
-      Object.entries(stats).forEach(([stat, statValue]) => {
+      Object.entries(cleanStats).forEach(([stat, statValue]) => {
          const statIndex = statList.indexOf(stat)
          setShowHideStats((draft) => {
             draft[statIndex] = {

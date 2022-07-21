@@ -63,10 +63,10 @@ const formatTable = (editorValue: string) => {
 
 const fixCleanText = (text: string) => {
    const text_1 = text
-      .replace('<highlight_1', '<green')
-      .replace('<highlight_2', '<yellow')
-      .replace('<highlight_3', '<blue')
-      .replace('<highlight_4', '<purple')
+      .replaceAll('<highlight_1', '<green')
+      .replaceAll('<highlight_2', '<yellow')
+      .replaceAll('<highlight_3', '<blue')
+      .replaceAll('<highlight_4', '<purple')
       .trim()
 
    const oldTitles = text_1.match(/<title .+?\/>/g)

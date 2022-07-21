@@ -1,3 +1,4 @@
+import { useExternalEventListener } from '@utils/useExternalEventListener'
 import * as monaco from 'monaco-editor'
 
 const formatTable = (editorValue: string) => {
@@ -61,26 +62,37 @@ const formatTable = (editorValue: string) => {
 }
 
 const fixCleanText = (text: string) => {
-   return text
+   const text_1 = text
       .replace('<highlight_1', '<green')
       .replace('<highlight_2', '<yellow')
       .replace('<highlight_3', '<blue')
       .replace('<highlight_4', '<purple')
       .trim()
+
+   const oldTitles = text_1.match(/<title .+?\/>/g)
+   if (oldTitles === null) return text_1
+
+   const text_2 = oldTitles.reduce((acc, title) => {
+      const titleName = title.match(/(?<=<title).+?(?=\[)/)?.[0].trim()
+      const titleText = title.match(/(?<=\[).+?(?=])/)?.[0].trim()
+
+      // change title to new format
+      acc = acc.replace(title, `<title ${titleName} [${titleName?.toLocaleLowerCase()}] \/>`)
+      // add title content part
+      acc = `${acc}\ntitle ${titleName?.toLocaleLowerCase()} (\n${titleText}\n)`
+
+      return acc
+   }, text_1)
+
+   return text_2
 }
 
 export function editorHotkeys(editor: monaco.editor.IStandaloneCodeEditor) {
-   var myCondition1 = editor.createContextKey(/*key name*/ 'myCondition1', /*default value*/ false)
-
-   editor.addCommand(
-      monaco.KeyCode.ScrollLock,
-      function () {
-         const newValue = formatTable(editor.getValue())
-         const cleanValue = fixCleanText(newValue)
-         editor.setValue(cleanValue)
-      },
-      'myCondition1'
-   )
-
-   myCondition1.set(true)
+   const editorHotKey = (e: KeyboardEvent) => {
+      if (e.key !== 'ScrollLock') return
+      const newValue = formatTable(editor.getValue())
+      const cleanValue = fixCleanText(newValue)
+      editor.setValue(cleanValue)
+   }
+   window.addEventListener('keyup', (e) => editorHotKey(e as KeyboardEvent))
 }

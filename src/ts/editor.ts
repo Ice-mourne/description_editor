@@ -214,6 +214,13 @@ export function createEditor(itemData: ItemDataTemplate) {
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
             {
+               label: 'import secondary',
+               insertText: 'import secondary from $0',
+               documentation: `Imports everything from secondary editor of selected perk`,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
+            {
                label: 'import stats',
                insertText: 'import stats from $0',
                documentation: `Allows importing stats from other descriptions\nimport stats from none can be used to clear stats`,

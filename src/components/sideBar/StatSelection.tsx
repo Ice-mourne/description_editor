@@ -63,7 +63,7 @@ export function StatSelection() {
       setItemData((draft) => {
          createNestedObject(
             draft.description.modified,
-            [draft.input.perkHash, 'stats', statList[indexOfStatName], activeOrPassiveStat, statMultiplayerOrValue],
+            [draft.selectedPerkHash, 'stats', statList[indexOfStatName], activeOrPassiveStat, statMultiplayerOrValue],
             statsStringToArray(e.target.value)
          )
       })

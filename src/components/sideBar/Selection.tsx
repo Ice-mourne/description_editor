@@ -4,7 +4,7 @@ import {
    SelectableType,
    setItemData_context
 } from '@components/provider/dataProvider'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useImmer } from 'use-immer'
 
 import styles from './Selection.module.scss'
@@ -12,6 +12,7 @@ import styles from './Selection.module.scss'
 export function PerkSelection() {
    const setItemData = useContext(setItemData_context)
    const itemData = useContext(itemData_context)
+   const [perkHash, setPerkHash] = useState<number>(0)
 
    const typeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setItemData((draft) => {
@@ -66,7 +67,29 @@ export function PerkSelection() {
       setItemData((draft) => {
          draft.selectedPerkHash = selectedItem
       })
+      setPerkHash(itemData.description.modified?.[e.target.value]?.id || 0)
    }
+
+   const [externalEvent, setExternalEvent] = useState<WheelEvent | null>(null)
+   useEffect(
+      () =>
+         document.querySelector('body')?.addEventListener('wheel', (e) => {
+            if (e.altKey) setExternalEvent(e)
+         }),
+      [externalEvent]
+   )
+
+   useEffect(() => {
+      if (externalEvent === null) return
+      const index = Object.values(perks).findIndex((perk) => perk.id === itemData.selectedPerkHash)
+
+      const perk =
+         externalEvent.deltaY < 0 ? perks[Math.max(index - 1, 0)] : perks[Math.min(index + 1, perks.length - 1)]
+      setItemData((draft) => {
+         draft.selectedPerkHash = perk.id
+      })
+      setPerkHash(perk.id)
+   }, [externalEvent])
 
    return (
       <div className={styles.selection_list}>
@@ -97,7 +120,7 @@ export function PerkSelection() {
                <option value="artifactMod">Artifact Mod</option>
             </optgroup>
          </select>
-         <select onChange={(e) => itemChange(e)}>
+         <select onChange={(e) => itemChange(e)} value={perkHash}>
             {perks.map((item, i) => {
                return (
                   <option

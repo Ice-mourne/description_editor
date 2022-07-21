@@ -30,9 +30,8 @@ export function setTitle(
    if (!completeExports) return
 
    setItemData((draft) => {
-      const selectedPerkHash = draft.selectedPerkHash || 0
-      draft.description.modified[selectedPerkHash].titles = draft.description.modified[selectedPerkHash]?.titles || {}
-      draft.description.modified[selectedPerkHash].titles = completeExports
+      draft.description.modified[perkHash].titles = draft.description.modified[perkHash]?.titles || {}
+      draft.description.modified[perkHash].titles = completeExports
    })
 
    description = description.replace(/(\n)?^title [A-z0-9 ]+ \([\s\S]*?\n\)(\n)?/gm, '')

@@ -57,18 +57,18 @@ const convertLinesContent = (line: string, table: boolean) => {
          return acc
       }
 
-      // if only self contained return relevant class name
-      if (new RegExp(`${regexStart}${selfContained.join('|')}${regexEnd}`).test(text)) {
-         acc.push({
-            classNames: [text.match(new RegExp(selfContained.join('|')))![0].trim()]
-         })
-         return acc
-      }
-
       if (new RegExp(`${regexStart}${simpleWrappers.join('|')}${regexEnd}`).test(text)) {
          acc.push({
             text: text.replace(new RegExp(`<(${simpleWrappers.join('|')}) | />`, 'g'), ''),
             classNames: [text.match(new RegExp(simpleWrappers.join('|')))![0].trim()]
+         })
+         return acc
+      }
+
+      // if only self contained return relevant class name
+      if (new RegExp(`${regexStart}${selfContained.join('|')}${regexEnd}`).test(text)) {
+         acc.push({
+            classNames: [text.match(new RegExp(selfContained.join('|')))![0].trim()]
          })
          return acc
       }
@@ -140,15 +140,17 @@ export default function convertDescription(
    // remove \r
    let cleanText = description.replace(/\r/g, '')
 
+   // import 2 times in case imported description has its own imports
+   cleanText = descriptionImport(cleanText, hash, itemData)
    cleanText = descriptionImport(cleanText, hash, itemData)
    if (editorType === 'main') {
       const text = setTitle(cleanText, hash, itemData, setItemData, editorType)
       if (text) cleanText = text
 
-      const text2 = descriptionExport(cleanText, hash, setItemData)
+      const text2 = saveVariables(cleanText, hash, setItemData)
       if (text2) cleanText = text2
 
-      const text3 = saveVariables(cleanText, hash, setItemData)
+      const text3 = descriptionExport(cleanText, hash, setItemData)
       if (text3) cleanText = text3
    }
    cleanText = statImport(cleanText, hash, setItemData)

@@ -32,7 +32,6 @@ export function descriptionExport(description: string, perkHash : number, setIte
    const exports = description.match(/^export [A-z0-9 ]+ \([\s\S]*?\n\) *?$/gm)
 
    setItemData((draft) => {
-      // const selectedPerkHash = draft.selectedPerkHash || 0
       delete draft.saved.perks[perkHash]
    })
 
@@ -50,7 +49,6 @@ export function descriptionExport(description: string, perkHash : number, setIte
    if (!completeExports) return
 
    setItemData((draft) => {
-      const selectedPerkHash = draft.selectedPerkHash || 0
       draft.saved.perks[perkHash] = draft.saved.perks[perkHash] || {}
       draft.saved.perks[perkHash] = completeExports
    })

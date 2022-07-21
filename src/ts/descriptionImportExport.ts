@@ -35,13 +35,17 @@ export function descriptionExport(description: string, perkHash : number, setIte
       delete draft.saved.perks[perkHash]
    })
 
-   const completeExports = exports?.reduce((acc, export_) => {
+   let hiddenExportIndexes: number[] = []
+
+   const completeExports = exports?.reduce((acc, export_, index) => {
       const lines = export_.split('\n')
       const exportName = lines[0].replace(/export|\(.*/gi, '').trim()
       lines.splice(0, 1)
       lines.splice(-1, 1)
 
-      acc[exportName] = lines.join('\n')
+      acc[exportName.replace('hidden', '').trim()] = lines.join('\n')
+
+      if (/hidden/.test(exportName)) hiddenExportIndexes.push(index)
 
       return acc
    }, {} as { [key: string]: string })
@@ -53,9 +57,9 @@ export function descriptionExport(description: string, perkHash : number, setIte
       draft.saved.perks[perkHash] = completeExports
    })
 
-   Object.keys(completeExports).forEach((exportName, index) => {
-      if (/hidden/.test(exportName) && exports) {
-         description = description.replace(exports[index], '')
+   hiddenExportIndexes.forEach((exportIndex) => {
+      if (exports) {
+         description = description.replace(exports[exportIndex], '')
       }
    })
 

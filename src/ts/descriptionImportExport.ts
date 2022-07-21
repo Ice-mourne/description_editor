@@ -53,6 +53,12 @@ export function descriptionExport(description: string, perkHash : number, setIte
       draft.saved.perks[perkHash] = completeExports
    })
 
+   Object.keys(completeExports).forEach((exportName, index) => {
+      if (/hidden/.test(exportName) && exports) {
+         description = description.replace(exports[index], '')
+      }
+   })
+
    description = description.replace(/(\n^export [A-z0-9 ]+ \(|export [A-z0-9 ]+ \( *?\n)/gm, '')
    description = description.replace(/(\n^\)$|^\)$\n)/gm, '')
 

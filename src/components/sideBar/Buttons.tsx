@@ -44,7 +44,10 @@ export function ButtonUploadIce({ labelText }: { labelText: string }) {
    useEffect(() => {
       if (updateOriginal) {
          setItemData((draft) => {
-            draft.description.original = turnOffUploadToLive(itemData.description.modified)
+            const newDescription = turnOffUploadToLive(itemData.description.modified)
+            draft.description.original = newDescription
+            draft.description.modified = newDescription
+            draft.description.descriptionsIce = newDescription
          })
          setUpdateOriginal(false)
       }

@@ -74,7 +74,10 @@ export function PerkSelection() {
    useEffect(
       () =>
          document.querySelector('body')?.addEventListener('wheel', (e) => {
-            if (e.altKey) setExternalEvent(e)
+            if (e.shiftKey) {
+               e.preventDefault()
+               setExternalEvent(e)
+            }
          }),
       [externalEvent]
    )

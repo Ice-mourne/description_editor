@@ -1,3 +1,5 @@
+@import '../../data/variables';
+
 .selection_list {
    display: flex;
    flex-direction: column;
@@ -8,7 +10,7 @@
       color: hsl(0, 0%, 100%);
       border: 2px solid hsl(0, 0%, 36%);
       optgroup {
-         color: hsl(38, 80%, 56%);
+         color: $orange-color;
          option {
             color: hsl(0, 0%, 100%);
          }
@@ -29,14 +31,15 @@
 }
 
 .button {
-   background-color: hsl(0, 0%, 20%);
+   background-color: $button-background-color;
    color: hsl(0, 0%, 100%);
    padding: 2px 3px;
    margin: 2px 0 2px 0;
    width: 100%;
-}
-.button:hover {
-   color: hsl(38, 80%, 56%);
+   border-color: $button-border-color;
+   &:hover {
+      color: $orange-color;
+   }
 }
 
 .hidden {

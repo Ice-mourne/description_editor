@@ -59,7 +59,7 @@ export function createEditor(itemData: ItemDataTemplate) {
          'sword',
          'glaive'
       ]
-         .map((w) => ` ${w}(, )?`)
+         .map((w) => ` ${w},? ?`)
          .join('|'),
 
       highlightRegex: /<(green|blue|purple|yellow|bold|pve|pvp)/,
@@ -72,14 +72,17 @@ export function createEditor(itemData: ItemDataTemplate) {
 
             [/< table( wide| center| formula){0,3}? >/,   { token: 'blue', next: '@table' }], // table start
 
-            [/< +?weapon type +?\(@weapons{0,20}?\) +?>/, { token: 'blue' }],
-            [/<\$\$>/,                                    { token: 'blue' }],
+            [/< weapon type \(@weapons{0,20}? \) >/, { token: 'blue' }],
+            [/<\$\$>/,                               { token: 'blue' }],
 
             [/@selfContained/,  { token: 'green' }],
             [/@highlightRegex/, { token: 'blue', next: '@highlight'}],
 
             [/<(formula |link |title )/, { token: 'green', next: '@extra' }],
             [/\${.*?/,                   { token: 'yellow', next: '@math' }],
+
+            [/var .+? = /, { token: '@rematch', next: '@variable' }],
+            [/#[A-z0-9]+/, { token: 'green' }],
          ],
 
          import: [ //--- done
@@ -94,8 +97,8 @@ export function createEditor(itemData: ItemDataTemplate) {
 
             [/< table( wide| center| formula){0,3}? >/, { token: 'blue', next: '@table' }], // table start
 
-            [/< +?weapon type +?\(@weapons{0,20}?\) +?>/, { token: 'blue' }],
-            [/<\$\$>/,                                    { token: 'blue' }],
+            [/< weapon type \(@weapons{0,20}?\) >/, { token: 'blue' }],
+            [/<\$\$>/,                              { token: 'blue' }],
 
             [/@selfContained/,  { token: 'green' }],
             [/@highlightRegex/, { token: 'blue', next: '@highlight'}],
@@ -103,13 +106,17 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/<(formula |link |title )/, { token: 'green',  next: '@extra' }],
             [/\${.*?/,                   { token: 'yellow', next: '@math' }],
 
+            [/var .+? = /, { token: '@rematch', next: '@variable' }],
+            [/#[A-z0-9]+/, { token: 'green' }],
+
             [/^\)/, { token: 'purple', next: '@pop' }], // end of export
          ],
 
          table: [
-            [/<\$>/,          { token: 'blue', next: '@pop' }], // table end
+            [/<\$>/,             { token: 'blue', next: '@pop' }], // table end
             [/\|[bchr\d-]{0,5}/, { token: 'blue' }], // table only content
 
+            [/#[A-z0-9]+/,               { token: 'green' }],
             [/@selfContained/,           { token: 'green' }],
             [/@highlightRegex/,          { token: 'blue',   next: '@highlight' }],
             [/<(formula |link |title )/, { token: 'green',  next: '@extra' }],
@@ -117,16 +124,24 @@ export function createEditor(itemData: ItemDataTemplate) {
          ],
 
          highlight: [
-            [/\/>/,    { token: 'blue',   next: '@pop' }],
-            [/\${.*?/, { token: 'yellow', next: '@math' }]
+            [/\/>/,        { token: 'blue',   next: '@pop' }],
+            [/\${.*?/,     { token: 'yellow', next: '@math' }],
+            [/#[A-z0-9]+/, { token: 'green' }],
          ],
          extra: [
-            [/ \/>/,    { token: 'green',  next: '@pop' }],
-            [/\[.+?\]/, { token: 'blue' }],
-            [/\${.*?/,  { token: 'yellow', next: '@math' }]
+            [/ \/>/,       { token: 'green',  next: '@pop' }],
+            [/\[.+?\]/,    { token: 'blue' }],
+            [/\${.*?/,     { token: 'yellow', next: '@math' }],
+            [/#[A-z0-9]+/, { token: 'green' }],
          ],
          math: [
-            [/}/, { token: 'yellow', next: '@pop' }],
+            [/}/,          { token: 'yellow', next: '@pop' }],
+            [/#[A-z0-9]+/, { token: 'green' }],
+         ],
+         variable: [
+            [/ = /,       { token: 'purple', next: '@pop' }],
+            [/var /,      { token: 'purple' }],
+            [/[A-z0-9]+/, { token: 'lightBlue' }]
          ]
       }
    })
@@ -171,6 +186,13 @@ export function createEditor(itemData: ItemDataTemplate) {
          if (/^import .+? from.*?/.test(lineContent)) conditionalSuggestions = imports(position, lineContent, itemData)
 
          const suggestions = [
+            {
+               label: 'weapon type',
+               insertText: ['< weapon type ( ${1:weapon type} ) >', '$0', '<$$>'].join('\n'),
+               documentation: `Title witch will show up in description`,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
             {
                label: 'title',
                insertText: '<title ${1: } [${2:name}] />',
@@ -234,7 +256,13 @@ export function createEditor(itemData: ItemDataTemplate) {
                kind: languages.CompletionItemKind.Class,
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
-
+            {
+               label: 'variable',
+               insertText: 'var ${1:name} = ${0:value}',
+               documentation: `Variable with value specific to this perk if descriptions vas imported to other perk you can define new variable to have different value on other perk`,
+               kind: languages.CompletionItemKind.Class,
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
             {
                label: 'bold text',
                insertText: '<bold ${1: } />',
@@ -336,6 +364,11 @@ export function createEditor(itemData: ItemDataTemplate) {
             {
                label: 'highlight purple',
                insertText: '<purple ${1: } />',
+               insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
+            } as unknown as ConditionalSuggestions,
+            {
+               label: 'math',
+               insertText: '\$\{${1:math stuff}\}',
                insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet
             } as unknown as ConditionalSuggestions,
 

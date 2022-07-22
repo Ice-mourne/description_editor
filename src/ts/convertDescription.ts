@@ -15,7 +15,7 @@ const convertLinesContent = (line: string, table: boolean) => {
    const regexEnd = ').*?/>'
 
    const fullRegex = new RegExp(
-      `(${regexStart}${[...selfContained, ...simpleWrappers, ...complexWrappers].join('|')}${regexEnd})`,
+      `(${regexStart}${[...selfContained, ...simpleWrappers, ...complexWrappers].join('|')}${regexEnd}|⮬)`,
       'g'
    )
 
@@ -82,6 +82,14 @@ const convertLinesContent = (line: string, table: boolean) => {
                .replace(/^\[|]$/g, '')
                .trim(),
             classNames: [type]
+         })
+         return acc
+      }
+
+      if (text === '⮬') {
+         acc.push({
+            text: '⮬',
+            classNames: ['enhancedArrow']
          })
          return acc
       }

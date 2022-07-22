@@ -1,4 +1,3 @@
-import { useExternalEventListener } from '@utils/useExternalEventListener'
 import * as monaco from 'monaco-editor'
 
 const formatTable = (editorValue: string) => {
@@ -19,6 +18,12 @@ const formatTable = (editorValue: string) => {
          splittedLine.forEach((text, index) => {
             beginningSpacing[index] = Math.max(beginningSpacing[index] || 0, text.match(/\|([bchr\d-]+)?/)![0].length)
          })
+      })
+
+      tableLines.forEach((line, index, arr) => {
+         if (index === 0) return line
+         if (index === arr.length - 1) return line
+         const splittedLine = line.split(/(\|.+?(?=\|)|\|.+?$)/).filter((line) => line.trim() !== '')
 
          // set longest |bch and text length in every column
          splittedLine.forEach((text, index, arr) => {
@@ -89,6 +94,9 @@ const fixCleanText = (text: string) => {
 
 export function editorHotkeys(editor: monaco.editor.IStandaloneCodeEditor) {
    const editorHotKey = (e: KeyboardEvent) => {
+      if (e.key === 'Pause') {
+         '⮬'
+      }
       if (e.key !== 'ScrollLock') return
       const newValue = formatTable(editor.getValue())
       const cleanValue = fixCleanText(newValue)

@@ -1,5 +1,6 @@
 import { DescriptionLine, ItemWithEditor, LinesContent, RowContent } from '@components/provider/dataProvider'
 import { useState } from 'react'
+import { Updater, useImmer } from 'use-immer'
 import styles from './Description.module.scss'
 
 const calculateStat = (formula?: string) => {
@@ -38,7 +39,7 @@ export function DescriptionBuilder({
    description: DescriptionLine[]
    perk?: ItemWithEditor
 }): JSX.Element {
-   const [hoverPopup, setHoverPopup] = useState<JSX.Element | null>(null)
+   const [hoverPopup, setHoverPopup] = useImmer<{ [key: string]: JSX.Element }>({})
 
    const buildLine = (description: DescriptionLine, i: number) => (
       <div className={joinClassNames(description.classNames)} key={i}>
@@ -46,10 +47,10 @@ export function DescriptionBuilder({
             <span className={joinClassNames(linesContent?.classNames)} key={i}>
                {linesContent?.title ? (
                   <span
-                     onMouseEnter={(e) => onHover(e, setHoverPopup, linesContent?.title, perk)}
-                     onMouseLeave={(e) => onHover(e, setHoverPopup)}
+                     onMouseEnter={(e) => onHover(e, setHoverPopup, linesContent.title!, perk)}
+                     onMouseLeave={(e) => onHover(e, setHoverPopup, linesContent.title!)}
                   >
-                     {hoverPopup}
+                     {hoverPopup?.[linesContent.title]}
                      {linesContent?.text}
                   </span>
                ) : (
@@ -72,11 +73,11 @@ export function DescriptionBuilder({
                className={joinClassNames(cellContent?.classNames)}
                key={i}
                onMouseEnter={
-                  cellContent?.title ? (e) => onHover(e, setHoverPopup, cellContent?.title, perk) : undefined
+                  cellContent?.title ? (e) => onHover(e, setHoverPopup, cellContent.title!, perk) : undefined
                }
-               onMouseLeave={cellContent?.title ? (e) => onHover(e, setHoverPopup) : undefined}
+               onMouseLeave={cellContent?.title ? (e) => onHover(e, setHoverPopup, cellContent.title!) : undefined}
             >
-               {hoverPopup}
+               {cellContent?.title && hoverPopup?.[cellContent?.title]}
                {otherOptions(cellContent) || cellContent?.text}
             </span>
          ))}
@@ -103,15 +104,21 @@ export function DescriptionBuilder({
 
    function onHover(
       e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
-      setHoverPopup: React.Dispatch<React.SetStateAction<JSX.Element | null>>,
-      name?: string,
+      setHoverPopup: Updater<{ [key: string]: JSX.Element }>,
+      name: string,
       perk?: ItemWithEditor
    ) {
       if (e.type === 'mouseenter' && name && perk?.titles) {
-         setHoverPopup(<div className={styles.titleContainer}>{buildDescription(perk.titles[name])}</div>)
+         setHoverPopup((draft) => {
+            draft[name] = (
+               <div className={styles.titleContainer}>{perk.titles?.[name] && buildDescription(perk.titles[name])}</div>
+            )
+         })
       }
       if (e.type === 'mouseleave') {
-         setHoverPopup(<></>)
+         setHoverPopup((draft) => {
+            delete draft[name]
+         })
       }
    }
 

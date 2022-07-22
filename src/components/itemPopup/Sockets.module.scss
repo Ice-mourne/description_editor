@@ -1,3 +1,5 @@
+@import '../../data/variables';
+
 .item_sockets {
    display: flex;
    flex-direction: row;
@@ -45,5 +47,5 @@
    }
 }
 .sockets img:hover {
-   outline: 1px solid hsl(38, 80%, 56%);
+   outline: 1px solid $orange-color;
 }

@@ -1,3 +1,5 @@
+@import '../../data/variables';
+
 .login_container {
    display: grid;
    grid-template-columns: auto auto;
@@ -11,10 +13,14 @@
    }
 }
 .login_btn {
-   background-color: hsl(0, 0%, 20%);
+   background-color: $button-background-color;
+   border-color: $button-border-color;;
    color: hsl(0, 0%, 100%);
    width: 50%;
    padding: 2px 3px;
    margin: 2px 0 2px 0;
    align-self: center;
+   &:hover {
+      color: $orange-color;
+   }
 }

@@ -1,3 +1,5 @@
+@import '../../data/variables';
+
 .stat_input {
    display: grid;
    grid-template-columns: auto auto;
@@ -9,7 +11,7 @@
       color: hsl(0, 0%, 100%);
    }
    input::placeholder {
-      color: hsl(38, 80%, 56%);
+      color: $orange-color;
    }
 }
 .stat_name {
@@ -21,18 +23,19 @@
    grid-template-columns: 30% 40% 30%;
    justify-content: center;
    button {
-      background-color: hsl(0, 0%, 20%);
+      background-color: $button-background-color;
+      border-color: $button-border-color;
       padding: 2px 3px;
-   }
-   button:hover {
-      color: hsl(38, 80%, 56%);
+      &:hover {
+         color: $orange-color;
+      }
    }
 }
 .stat_container {
    padding: 5px 0 5px 0;
 }
 .active_button {
-   color: hsl(38, 80%, 56%);
+   color: $orange-color;
 }
 .default_button {
    color: hsl(0, 0%, 100%);

@@ -37,14 +37,22 @@ export async function uploadDescriptions(
 
    // update only parts that were changed this will allow multiple people work on this
    const updatedDataClovis = differences.reduce((acc, key) => {
-      acc.descriptions[key] = {
+      acc[key] = {
          ...newData.description.modified[key],
          inLiveDatabase: uploadToLive,
          lastUpdate: Date.now(),
          updatedBy: login.username
       }
       return acc
-   }, dataClovisJson as { descriptions: DescriptionWithEditor })
+   }, dataClovisJson as  DescriptionWithEditor )
+
+   // this will remove broken perks
+   const cleanedDataClovis = Object.entries(updatedDataClovis).reduce((acc, [key, perk]) => {
+      if (!('editor' in perk && 'name' in perk && 'description' in perk && 'type' in perk)) return acc
+      acc[key] = perk
+
+      return acc
+   }, {} as DescriptionWithEditor )
 
    const clovisResp = await githubPut(
       apiUrls.clovis,
@@ -52,7 +60,7 @@ export async function uploadDescriptions(
          sha: dataClovis.sha,
          content: JSON.stringify(
             {
-               descriptions: updatedDataClovis.descriptions,
+               descriptions: cleanedDataClovis,
                saved: newData.saved
             },
             null,
@@ -226,7 +234,7 @@ export async function uploadDescriptions(
          sha: dataIce.sha,
          content: JSON.stringify(
             {
-               descriptions: newData.description.modified,
+               descriptions: cleanedDataClovis,
                saved: newData.saved
             },
             null,

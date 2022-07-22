@@ -78,7 +78,7 @@ export function PerkSelection() {
                e.preventDefault()
                setExternalEvent(e)
             }
-         }),
+         }, { passive: false }),
       [externalEvent]
    )
 
@@ -88,6 +88,7 @@ export function PerkSelection() {
 
       const perk =
          externalEvent.deltaY < 0 ? perks[Math.max(index - 1, 0)] : perks[Math.min(index + 1, perks.length - 1)]
+      if (!perk) return
       setItemData((draft) => {
          draft.selectedPerkHash = perk.id
       })

@@ -3,23 +3,23 @@
    color: hsl(0, 100%, 80%);
 }
 .pve {
-   color: hsl(220deg, 100%, 70%);
+   color: hsl(220deg, 100%, 75%);
 }
 .green {
    color: hsl(116, 58%, 65%);
 }
 .yellow {
-   color: hsl(51, 100%, 50%);
+   color: hsl(51, 100%, 45%);
 }
 .blue {
-   color: hsl(180, 100%, 50%);
+   color: hsl(180, 100%, 45%);
 }
 .purple {
-   color: hsl(300, 100%, 77%);
+   color: hsl(300, 100%, 81%);
 }
 
 .enhancedArrow {
-   color: #ffc300;
+   color: hsl(46, 100%, 50%);
 }
 
 //--- images
@@ -127,7 +127,7 @@
    font-weight: bold;
 }
 .background {
-   background-color: hsla(0, 0%, 100%, 0.17);
+   background-color: hsla(0, 0%, 100%, 0.15);
 }
 .title {
    text-decoration: underline;
@@ -161,6 +161,16 @@
    border-collapse: collapse;
    td:first-child {
       padding-left: 3px;
+   }
+}
+.bgEven {
+   tr:nth-child(even) {
+      background-color: hsla(0, 0%, 100%, 0.15);
+   }
+}
+.bgOdd {
+   tr:nth-child(odd) {
+      background-color: hsla(0, 0%, 100%, 0.15);
    }
 }
 

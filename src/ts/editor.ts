@@ -1,5 +1,5 @@
 import { ItemDataTemplate } from '@components/provider/dataProvider'
-import { selfContainedKeywords } from '@data/ramdomData'
+import { selfContainedKeywords } from '@data/randomData'
 import { editor, languages } from 'monaco-editor'
 import { imports, selfContained, tableSettings } from './autoCompletion'
 
@@ -57,7 +57,9 @@ export function createEditor(itemData: ItemDataTemplate) {
          'sidearm',
          'bow',
          'sword',
-         'glaive'
+         'glaive',
+
+         'other'
       ]
          .map((w) => ` ${w},? ?`)
          .join('|'),
@@ -70,7 +72,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/^import [A-z0-9 ]+? from (\d+?|self|none)/, { token: '@rematch', next: '@import' }], //--- done
             [/^(export|title) [A-z0-9 ]+? \(/,            { token: '@rematch', next: '@export' }],
 
-            [/< table( wide| center| formula){0,3}? >/,   { token: 'blue', next: '@table' }], // table start
+            [/< table( wide| center| formula| background_1| background_2){0,3}? >/,   { token: 'blue', next: '@table' }], // table start
 
             [/< weapon type \(@weapons{0,20}? \) >/, { token: 'blue' }],
             [/<\$\$>/,                               { token: 'blue' }],
@@ -95,7 +97,7 @@ export function createEditor(itemData: ItemDataTemplate) {
             [/[A-z0-9 ]+?(?= \()/, { token: 'lightBlue' }], // exports name
             [/\( *?$/,             { token: 'purple'    }], // (
 
-            [/< table( wide| center| formula){0,3}? >/, { token: 'blue', next: '@table' }], // table start
+            [/< table( wide| center| formula| background_1| background_2){0,3}? >/, { token: 'blue', next: '@table' }], // table start
 
             [/< weapon type \(@weapons{0,20}?\) >/, { token: 'blue' }],
             [/<\$\$>/,                              { token: 'blue' }],
@@ -155,7 +157,7 @@ export function createEditor(itemData: ItemDataTemplate) {
          { token: 'purple',    foreground: 'c586c0' }, // export purple
          { token: 'lightBlue', foreground: '9cdcfe' }, // let blue
          { token: 'yellow',    foreground: 'dcdcaa' }, // function yellow
-         { token: 'test',      foreground: 'dcdcaa' }  // function yellow
+         { token: 'test',      foreground: 'dcdcaa' }  // function yellow 
       ],
       // prettier-ignore
       colors: {

@@ -36,6 +36,20 @@ export function tableSettings(position: monaco.Position, line: string) {
          ...settings,
          range
       })
+   if (!/background_1/.test(line))
+      suggestions.push({
+         label: 'background_1',
+         insertText: 'background_1',
+         ...settings,
+         range
+      })
+   if (!/background_2/.test(line))
+      suggestions.push({
+         label: 'background_2',
+         insertText: 'background_2',
+         ...settings,
+         range
+      })
    return suggestions
 }
 

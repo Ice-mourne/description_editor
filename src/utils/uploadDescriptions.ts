@@ -44,7 +44,7 @@ export async function uploadDescriptions(
          updatedBy: login.username
       }
       return acc
-   }, dataClovisJson as  DescriptionWithEditor )
+   }, dataClovisJson as DescriptionWithEditor)
 
    // this will remove broken perks
    const cleanedDataClovis = Object.entries(updatedDataClovis).reduce((acc, [key, perk]) => {
@@ -52,7 +52,7 @@ export async function uploadDescriptions(
       acc[key] = perk
 
       return acc
-   }, {} as DescriptionWithEditor )
+   }, {} as DescriptionWithEditor)
 
    const clovisResp = await githubPut(
       apiUrls.clovis,
@@ -112,7 +112,7 @@ export async function uploadDescriptions(
    const updatedData = Object.entries(newData.description.modified).reduce(
       (acc, [hash, perk]) => {
          if (perk.editor === undefined) {
-            console.log([hash, perk]);
+            console.log([hash, perk])
             sendMessage(`${hash} is broken perk remove that crap manually`)
             return acc
          }
@@ -133,7 +133,13 @@ export async function uploadDescriptions(
 
          const cleanData = cleanObject({
             description: convertDescription(perk.editor!.mainEditor, Number(hash), newData, setItemData!, 'main'),
-            simpleDescription: convertDescription(perk.editor!.secondaryEditor, Number(hash), newData, setItemData!, 'secondary'),
+            simpleDescription: convertDescription(
+               perk.editor!.secondaryEditor,
+               Number(hash),
+               newData,
+               setItemData!,
+               'secondary'
+            ),
             stats: perk.stats
          })
 
@@ -144,7 +150,13 @@ export async function uploadDescriptions(
          }
          acc.crayon[Number(hash)] = {
             ...baseInfo,
-            description: convertDescription_Crayon(perk.editor!.mainEditor, Number(hash), newData, setItemData!, 'main'),
+            description: convertDescription_Crayon(
+               perk.editor!.mainEditor,
+               Number(hash),
+               newData,
+               setItemData!,
+               'main'
+            ),
             stats: cleanData.stats
          }
          acc.dim[Number(hash)] = {

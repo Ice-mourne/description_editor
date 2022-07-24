@@ -62,6 +62,8 @@ export interface DescriptionLine {
    isFormula?: boolean | undefined
    /** Contents of table \<table> */
    table?: TableLine[]
+   /** If this exists that means this line only applies to some specific weapon types */
+   weaponTypes?: (string | undefined)[]
 }
 
 export type SelectableType =

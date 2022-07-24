@@ -1,5 +1,5 @@
 import { CellContent, DescriptionLine, ItemDataTemplate, LinesContent } from '@components/provider/dataProvider'
-import { selfContainedKeywords } from '@data/ramdomData'
+import { selfContainedKeywords } from '@data/randomData'
 import { Updater } from 'use-immer'
 import { descriptionExport, descriptionImport } from './descriptionImportExport'
 import { doMath } from './doMath'
@@ -102,11 +102,19 @@ function splitTable(line: string) {
    const bold = /<bold\/>/.test(line) ? 'bold' : undefined
    const background = /<background\/>/.test(line) ? 'background' : undefined
 
-   const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
+   const green = /<green\/>/.test(line) ? 'green' : undefined
+   const blue = /<blue\/>/.test(line) ? 'blue' : undefined
+   const purple = /<purple\/>/.test(line) ? 'purple' : undefined
+   const yellow = /<yellow\/>/.test(line) ? 'yellow' : undefined
+
+   const cleanLine = line.replace(
+      /(<center\/>)|(<bold\/>)|(<background\/>)|(<green\/>)|(<blue\/>)|(<purple\/>)|(<yellow\/>)/g,
+      ''
+   )
    const splittedLine = cleanLine.split(/(\|.+?(?=\|)|\|.+?$)/).filter((line) => line.trim() !== '')
 
    return {
-      classNames: [center, bold, background],
+      classNames: [center, bold, background, green, blue, purple, yellow],
       rowContent: splittedLine.map((text) => {
          const convertLines: CellContent[] = convertLinesContent(text, true)
 
@@ -168,27 +176,38 @@ export default function convertDescription(
    // split lines in to array of lines
    const lineArr = cleanText.trim().split('\n')
 
+   let weaponTypes: string[] | null = null
    let tableIndex: number | null = null
    const parsedDescription = lineArr.reduce((acc, line, lineIndex) => {
+      if (weaponTypes !== null && /^<\$\$>/.test(line)) {
+         weaponTypes = null
+         return acc
+      }
+      if (/^< weapon type \(.+?\) >/.test(line)) {
+         weaponTypes = line.match(/\(.+?\)/)![0].replace(/\(|\)/g, '').split(',').map((type) => type.trim())
+         return acc
+      }
+
       //--- start of table code
       // if line starts with < table // start table stuff
-      if (tableIndex === null && /^\s*< table /.test(line)) {
+      if (tableIndex === null && /^< table /.test(line)) {
          tableIndex = lineIndex
          const wide = / wide /.test(line) ? 'wide' : undefined
          const centered = / center /.test(line) ? 'centerTable' : undefined
          const formula = / formula /.test(line) ? 'formula' : undefined
-         const backgroundOdd = / background_2 /.test(line) ? 'bgOdd' : undefined
-         const backgroundEven = / background_1 /.test(line) ? 'bgEven' : undefined
+         const backgroundOdd = / background_1 /.test(line) ? 'bgOdd' : undefined
+         const backgroundEven = / background_2 /.test(line) ? 'bgEven' : undefined
          acc[tableIndex] = {
             classNames: ['table', wide, centered, backgroundOdd, backgroundEven],
             isFormula: formula ? true : undefined,
-            table: []
+            table: [],
+            weaponTypes: weaponTypes ? weaponTypes : undefined
          }
          return acc
       }
 
       // if line starts with <$> exit table stuff
-      if (tableIndex !== null && /^\s*<\$>/.test(line)) {
+      if (tableIndex !== null && /^<\$>/.test(line)) {
          tableIndex = null
          return acc
       }
@@ -214,7 +233,8 @@ export default function convertDescription(
       const cleanLine = line.replace(/(<center\/>)|(<bold\/>)|(<background\/>)/g, '')
       acc.push({
          classNames: [center, bold, background],
-         linesContent: convertLinesContent(cleanLine, false)
+         linesContent: convertLinesContent(cleanLine, false),
+         weaponTypes: weaponTypes ? weaponTypes : undefined
       })
       return acc
    }, [] as DescriptionLine[])

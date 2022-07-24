@@ -95,7 +95,7 @@ const fixCleanText = (text: string) => {
 export function editorHotkeys(editor: monaco.editor.IStandaloneCodeEditor) {
    const editorHotKey = (e: KeyboardEvent) => {
       if (e.key === 'Pause') {
-         '⮬'
+         ;('⮬')
       }
       if (e.key !== 'ScrollLock') return
       const newValue = formatTable(editor.getValue())

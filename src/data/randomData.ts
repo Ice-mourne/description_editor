@@ -18,5 +18,10 @@ export const selfContainedKeywords = [
 
    'warlock',
    'hunter',
-   'titan'
+   'titan',
+
+   'green',
+   'blue',
+   'purple',
+   'yellow',
 ]
